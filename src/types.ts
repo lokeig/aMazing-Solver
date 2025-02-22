@@ -14,18 +14,24 @@ type Maze = {
 //   width and height > 0
 //   cells size correspond to width and height
 
-type Action = { move: Direction } | { lookup: Pos };
-type MazeSolver = (m: Maze) => Action[];
+type MoveAction = { type: "move", dir: Direction };
+type LookupAction = { type: "lookup", pos: Pos };
+type Action = MoveAction | LookupAction;
+type Path = Action[];
+type MazeSolver = (m: Maze) => Path;
 type MazeGenerator = (w: number, h: number) => Maze;
 
 function pos_eq(p: Pos, q: Pos): boolean;
 function get_cell(p: Pos, m: Maze): Cell;
 function is_wall(c: Cell): boolean;
 
-function move_action(d: Direction): Action;
-function lookup_action(p: Pos): Action;
+function move_action(d: Direction): MoveAction;
+function lookup_action(p: Pos): MoveAction;
+function is_move_action(a: Action): a is MoveAction;
+function is_lookup_action(a: Action): a is LookupAction;
+
+function verify_path(p: Path, m: Maze): boolean;
 
 function set_cell(val: Cell, p: Pos, m: Maze): void;
-function set_maze(val: Maze): void;
 function draw_cell(val: Cell, p: Pos): void;
 function draw_maze(m: Maze): void;
