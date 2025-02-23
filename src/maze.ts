@@ -41,6 +41,19 @@ export function is_wall(c: Cell): boolean {
     return c === "wall";
 }
 
+export function step_in_dir(p: Pos, d: Direction): Pos {
+    switch (d) {
+        case "up":
+            return make_pos(p.x, p.y - 1);
+        case "down":
+            return make_pos(p.x, p.y + 1);
+        case "left":
+            return make_pos(p.x - 1, p.y);
+        case "right":
+            return make_pos(p.x + 1, p.y);
+    }
+}
+
 export function move_action(d: Direction): MoveAction {
     return { type: "move", dir: d };
 }
@@ -62,25 +75,10 @@ export function verify_path(path: Path, m: Maze): boolean {
 
     for (const a of path) {
         if (is_move_action(a)) {
-            switch (a.dir) {
-                case "up":
-                    p.y--;
-                    break;
-                case "down":
-                    p.y++;
-                    break;
-                case "left":
-                    p.x--;
-                    break;
-                case "right":
-                    p.x++;
-                    break;
-            }
-
+            p = step_in_dir(p, a.dir);
             if (is_wall(get_cell(p, m))) {
                 return false;
             }
-
         } else if (!within_maze(a.pos, m)) {
             return false;
         }
