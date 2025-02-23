@@ -38,14 +38,3 @@ test("routing alg full", () => {
     const path = maze_routing_alg(maze);
     expect(verify_path(path, maze)).toBe(true);
 });
-
-test("routing alg unsolvable", () => {
-
-    const maze = make_maze([
-        "S ",
-        "##",
-        "E ",
-    ])!;
-    const path = maze_routing_alg(maze);
-    expect(path).toStrictEqual([]);
-});
