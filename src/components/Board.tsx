@@ -64,28 +64,30 @@ function Board() {
     };
 
     const styles = (node: Node): string => (
-        isSameNode(node, grid.start) ? "bg-emerald-500 animate-node border-0" :
-        isSameNode(node, grid.end) ? "bg-red-500 animate-node border-0" :
-        node.isWall ? "bg-slate-700 animate-node border-0" :
-        "border border-slate-200"
+        isSameNode(node, grid.start) ? "bg-emerald-500 animate-node" :
+        isSameNode(node, grid.end) ? "bg-red-500 animate-node" :
+        node.isWall ? "bg-slate-700 animate-node" :
+        "border border-collapse border-slate-200"
     );
 
     return (
-        <div className="flex items-center justify-center size-full select-none">
-            <div className="flex flex-col border border-slate-200" onMouseUp={handleMouseUp}>
+        <div className="flex items-center justify-center size-full select-none" onMouseUp={handleMouseUp}>
+            <table>
+                <tbody>
                 {grid.nodes.map((row, i) => (
-                    <div key={i} className="flex flex-row">
+                    <tr key={i} className="center">
                         {row.map((node) => (
-                            <div
+                            <td
                                 key={`${node.row}-${node.col}`}
                                 className={`size-8 ${styles(node)}`}
                                 onMouseDown={() => handleMouseDown(node)}
                                 onMouseEnter={() => handleMouseEnter(node)}
                             />
                         ))}
-                    </div>
+                    </tr>
                 ))}
-            </div>
+                </tbody>
+            </table>
         </div>
     );
 }

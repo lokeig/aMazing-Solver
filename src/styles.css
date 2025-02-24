@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-    --animate-node: node 0.3s ease;
+    --animate-node: node 0.3s ease-in-out;
     
     @keyframes node {
         0% {
@@ -10,11 +10,9 @@
         }
         50% {
             transform: scale(1.2);
-            border-radius: 5%;
         }
         100% {
             transform: scale(1.0);
-            border-radius: 0;
         }
     }
 }
