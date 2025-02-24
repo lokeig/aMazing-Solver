@@ -58,8 +58,7 @@ function left_selection_try_order(src: Pos, dst: Pos): Direction[] {
     }
 }
 
-// could use the fact that there is no productive path to optimize lookups
-function right_hand_rule_try_order(src: Pos, dst: Pos, last_move: Direction): Direction[] {
+function right_hand_rule_try_order(last_move: Direction): Direction[] {
     switch (last_move) {
         case "up":
             return ["right", "up", "left", "down"];
@@ -97,13 +96,18 @@ export const maze_routing_alg: MazeSolver = solver_wrapper((
                 }
             }
 
-            if (last_move === null) {
-                return [];
-            }
+            // unsolvable
+            if (last_move === null) return [];
 
             while (MD(cur(), goal) !== MD_best || find_productive_path(cur(), goal, lookup) === null) {
-                const try_order = right_hand_rule_try_order(cur(), goal, last_move);
+                const try_order = right_hand_rule_try_order(last_move);
                 for (const dir of try_order) {
+                    // don't double check same dir after noting there is no productive path
+                    if (MD(cur(), goal) === MD_best && cur().x < goal.x && dir === "right") continue;
+                    if (MD(cur(), goal) === MD_best && cur().x > goal.x && dir === "left") continue;
+                    if (MD(cur(), goal) === MD_best && cur().y < goal.y && dir === "up") continue;
+                    if (MD(cur(), goal) === MD_best && cur().y > goal.y && dir === "down") continue;
+
                     if (try_move(cur(), dir, lookup, move)) {
                         last_move = dir;
                         break;
