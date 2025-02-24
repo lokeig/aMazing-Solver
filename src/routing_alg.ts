@@ -1,57 +1,30 @@
-import { Direction, get_cell, is_wall, lookup_action, make_pos, move_action, pos_eq, step_in_dir, within_maze, type Maze, type MazeSolver, type Path, type Pos } from "./maze";
+import {
+    type Direction, type MazeSolver, type Pos, type Cell,
+    is_wall, pos_eq, solver_wrapper, step_in_dir,
+} from "./maze";
 
 function MD(p: Pos, q: Pos): number {
     return Math.abs(p.x - q.x) + Math.abs(p.y - q.y);
 }
 
-function try_move(p: Pos, dir: Direction, m: Maze, path: Path): [Pos, boolean] {
-    const next_pos = step_in_dir(p, dir);
-    if (within_maze(next_pos, m)) {
-        path.push(lookup_action(next_pos));
-        if (!is_wall(get_cell(next_pos, m))) {
-            path.push(move_action(dir));
-            return [next_pos, true];
-        }
+function try_move(p: Pos, dir: Direction, lookup: (p: Pos) => Cell, move: (d: Direction) => void): boolean {
+    if (!is_wall(lookup(step_in_dir(p, dir)))) {
+        move(dir);
+        return true;
+    } else {
+        return false;
     }
-    return [p, false]
-
 }
 
-function find_productive_path(src: Pos, dst: Pos, m: Maze, path: Path): Direction | null {
-    if (src.x < dst.x) {
-        const next = step_in_dir(src, "right");
-        if (within_maze(next, m)) {
-            path.push(lookup_action(next));
-            if (!is_wall(get_cell(next, m))) {
-                return "right";
-            }
-        }
-    } else if (src.x > dst.x) {
-        const next = step_in_dir(src, "left");
-        if (within_maze(next, m)) {
-            path.push(lookup_action(next));
-            if (!is_wall(get_cell(next, m))) {
-                return "left";
-            }
-        }
-    }
-
-    if (src.y < dst.y) {
-        const next = step_in_dir(src, "down");
-        if (within_maze(next, m)) {
-            path.push(lookup_action(next));
-            if (!is_wall(get_cell(next, m))) {
-                return "down";
-            }
-        }
-    } else if (src.y > dst.y) {
-        const next = step_in_dir(src, "up");
-        if (within_maze(next, m)) {
-            path.push(lookup_action(next));
-            if (!is_wall(get_cell(next, m))) {
-                return "up";
-            }
-        }
+function find_productive_path(src: Pos, dst: Pos, lookup: (p: Pos) => Cell): Direction | null {
+    if (src.x < dst.x && !is_wall(lookup(step_in_dir(src, "right")))) {
+        return "right";
+    } else if (src.x > dst.x && !is_wall(lookup(step_in_dir(src, "left")))) {
+        return "left";
+    } else if (src.y < dst.y && !is_wall(lookup(step_in_dir(src, "down")))) {
+        return "down";
+    } else if (src.y > dst.y && !is_wall(lookup(step_in_dir(src, "up")))) {
+        return "up";
     }
 
     return null;
@@ -101,25 +74,24 @@ function right_hand_rule_try_order(src: Pos, dst: Pos, last_move: Direction): Di
 
 // explanation: https://en.wikipedia.org/wiki/Maze-solving_algorithm#Maze-routing_algorithm
 // won't always halt when in an unsolvable maze
-export const maze_routing_alg: MazeSolver = (m: Maze) => {
-    const path: Path = [];
-
-    let cur: Pos = m.start;
-    let MD_best = MD(m.start, m.end);
-
-    while (!pos_eq(cur, m.end)) {
-        const productive_dir = find_productive_path(cur, m.end, m, path);
+export const maze_routing_alg: MazeSolver = solver_wrapper((
+    goal,
+    cur,
+    in_bound,
+    lookup,
+    move
+) => {
+    let MD_best = MD(cur(), goal);
+    while (!pos_eq(cur(), goal)) {
+        const productive_dir = find_productive_path(cur(), goal, lookup);
         if (productive_dir !== null) {
-            path.push(move_action(productive_dir))
-            cur = step_in_dir(cur, productive_dir);
+            move(productive_dir);
         } else {
-            MD_best = MD(cur, m.end);
-            const try_order = left_selection_try_order(cur, m.end);
+            MD_best = MD(cur(), goal);
+            const try_order = left_selection_try_order(cur(), goal);
             let last_move: Direction | null = null;
             for (const dir of try_order) {
-                let success: boolean;
-                [cur, success] = try_move(cur, dir, m, path);
-                if (success) {
+                if (try_move(cur(), dir, lookup, move)) {
                     last_move = dir;
                     break;
                 }
@@ -127,21 +99,17 @@ export const maze_routing_alg: MazeSolver = (m: Maze) => {
 
             if (last_move === null) {
                 return [];
-            } else {
-                while (MD(cur, m.end) !== MD_best || find_productive_path(cur, m.end, m, path) === null) {
-                    const try_order = right_hand_rule_try_order(cur, m.end, last_move);
-                    for (const dir of try_order) {
-                        let success: boolean;
-                        [cur, success] = try_move(cur, dir, m, path);
-                        if (success) {
-                            last_move = dir;
-                            break;
-                        }
+            }
+
+            while (MD(cur(), goal) !== MD_best || find_productive_path(cur(), goal, lookup) === null) {
+                const try_order = right_hand_rule_try_order(cur(), goal, last_move);
+                for (const dir of try_order) {
+                    if (try_move(cur(), dir, lookup, move)) {
+                        last_move = dir;
+                        break;
                     }
                 }
             }
         }
     }
-
-    return path;
-}
+});

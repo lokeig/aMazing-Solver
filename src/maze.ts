@@ -40,7 +40,6 @@ export function set_cell(val: Cell, p: Pos, m: Maze): void {
 export function is_wall(c: Cell): boolean {
     return c === "wall";
 }
-
 export function step_in_dir(p: Pos, d: Direction): Pos {
     switch (d) {
         case "up":
@@ -51,6 +50,42 @@ export function step_in_dir(p: Pos, d: Direction): Pos {
             return make_pos(p.x - 1, p.y);
         case "right":
             return make_pos(p.x + 1, p.y);
+    }
+}
+export function solver_wrapper(
+    f: (
+        goal: Pos,
+        cur: () => Pos,
+        in_bound: (p: Pos) => boolean,
+        lookup: (p: Pos) => Cell,
+        move: (d: Direction) => void
+    ) => void
+): MazeSolver {
+    return (m: Maze) => {
+        const path: Path = [];
+        let pos: Pos = m.start;
+
+        function cur(): Pos {
+            return pos;
+        }
+        function in_bound(p: Pos): boolean {
+            return within_maze(p, m);
+        }
+        function lookup(p: Pos): Cell {
+            if (within_maze(p, m)) {
+                path.push(lookup_action(p));
+                return get_cell(p, m);
+            } else {
+                return WALL_CELL;
+            }
+        }
+        function move(d: Direction): void {
+            path.push(move_action(d));
+            pos = step_in_dir(pos, d);
+        }
+
+        f(m.end, cur, in_bound, lookup, move);
+        return path;
     }
 }
 
