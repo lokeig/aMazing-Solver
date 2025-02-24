@@ -97,7 +97,7 @@ export const maze_routing_alg: MazeSolver = solver_wrapper((
             }
 
             // unsolvable
-            if (last_move === null) return [];
+            if (last_move === null) return;
 
             while (MD(cur(), goal) !== MD_best || find_productive_path(cur(), goal, lookup) === null) {
                 const try_order = right_hand_rule_try_order(last_move);
