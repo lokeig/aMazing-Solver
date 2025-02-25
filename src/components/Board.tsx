@@ -1,13 +1,13 @@
 import { useState, useRef, useCallback } from "react";
 import { produce } from "immer";
+import clsx from "clsx";
 
 interface Node {
     row: number;
     col: number;
-    isWall: boolean;
-    isVisited: boolean;
-    distance: number;
-    previous: Node | null;
+    isWall?: boolean;
+    isVisited?: boolean;
+    isPath?: boolean;
 }
 
 interface Grid {
@@ -63,23 +63,22 @@ function Board() {
         editWallRef.current = null;
     };
 
-    const styles = (node: Node): string => (
-        isSameNode(node, grid.start) ? "bg-emerald-500 animate-node" :
-        isSameNode(node, grid.end) ? "bg-red-500 animate-node" :
-        node.isWall ? "bg-slate-700 animate-node" :
-        "border border-collapse border-slate-200"
-    );
+    const styles = (node: Node): string => clsx({
+        "start": isSameNode(node, grid.start),
+        "end": isSameNode(node, grid.end),
+        "wall": node.isWall,
+    });
 
     return (
-        <div className="flex items-center justify-center size-full select-none" onMouseUp={handleMouseUp}>
+        <div className="board" onMouseUp={handleMouseUp}>
             <table>
                 <tbody>
                 {grid.nodes.map((row, i) => (
-                    <tr key={i} className="center">
+                    <tr key={i}>
                         {row.map((node) => (
                             <td
                                 key={`${node.row}-${node.col}`}
-                                className={`size-8 ${styles(node)}`}
+                                className={clsx(styles(node), "node")}
                                 onMouseDown={() => handleMouseDown(node)}
                                 onMouseEnter={() => handleMouseEnter(node)}
                             />
@@ -93,7 +92,7 @@ function Board() {
 }
 
 function makeNode(row: number, col: number): Node {
-    return { row, col, isWall: false, isVisited: false, distance: Infinity, previous: null };
+    return { row, col };
 }
 
 function getGridSize(): number[] {
