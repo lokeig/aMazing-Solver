@@ -1,5 +1,5 @@
 import { make_maze, verify_path } from "../src/maze";
-import { A_Star } from "../src/a_star"
+import { A_Star } from "../src/algorithms/a_star"
 
 test("A* only forward", () => {
     const maze = make_maze([

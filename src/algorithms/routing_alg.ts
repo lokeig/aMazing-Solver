@@ -1,7 +1,7 @@
 import {
     type Direction, type MazeSolver, type Pos, type Cell,
     is_wall, pos_eq, solver_wrapper, step_in_dir,
-} from "./maze";
+} from "../maze.ts";
 
 function MD(p: Pos, q: Pos): number {
     return Math.abs(p.x - q.x) + Math.abs(p.y - q.y);

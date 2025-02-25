@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from "react";
 import { produce } from "immer";
 import clsx from "clsx";
 
-interface Node {
+export interface Node {
     row: number;
     col: number;
     isWall?: boolean;
@@ -10,7 +10,9 @@ interface Node {
     isPath?: boolean;
 }
 
-interface Grid {
+export interface Grid {
+    rows: number;
+    cols: number;
     nodes: Node[][];
     start: Node;
     end: Node;
@@ -50,7 +52,7 @@ function Board() {
         if (!mouseDown) return;
         if (moveNodeRef.current) {
             if (node.isWall || isSameNode(node, grid.start) || isSameNode(node, grid.end)) return;
-            updateGrid({ ...node, isWall: false });
+            updateGrid({ ...node });
         } else if (editWallRef.current) {
             if (isSameNode(node, grid.start) || isSameNode(node, grid.end)) return;
             updateGrid({ ...node, isWall: editWallRef.current === "add" });
@@ -108,7 +110,7 @@ function makeGrid(): Grid {
     );
     const start: Node = nodes[Math.floor(rows / 2)][Math.floor(cols / 4)];
     const end: Node = nodes[Math.floor(rows / 2)][Math.floor(3 * cols / 4)];
-    return { nodes, start, end };
+    return { rows, cols, nodes, start, end };
 }
 
 function isSameNode(a: Node, b: Node): boolean {
