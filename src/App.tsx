@@ -1,10 +1,12 @@
 import Board from "./components/Board";
+import Header from "./components/Header.tsx";
 
 
 function App() {
 
     return (
-        <div className="relative w-screen h-screen">
+        <div className="app">
+            <Header />
             <Board />
         </div>
     );

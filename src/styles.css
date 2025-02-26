@@ -1,11 +1,23 @@
 @import "tailwindcss";
 
+.app {
+    @apply flex flex-col w-screen h-screen;
+}
+
 .board {
-    @apply flex items-center justify-center size-full select-none;
+    @apply flex-grow flex items-center justify-center select-none m-8;
 }
 
 .node {
-    @apply size-8 border border-collapse border-slate-200;
+    @apply size-8 border border-collapse border-gray-200;
+}
+
+.path {
+    @apply bg-yellow-300 border-0 animate-node;
+}
+
+.search {
+    @apply bg-indigo-500 border-slate-400 animate-search;
 }
 
 .start {
@@ -17,7 +29,7 @@
 }
 
 .wall {
-    @apply bg-slate-700 border-0 animate-node;
+    @apply bg-gray-800 border-0 animate-node;
 }
 
 @theme {
@@ -33,6 +45,23 @@
         }
         100% {
             transform: scale(1.0);
+        }
+    }
+
+    --animate-search: search 1s ease-in-out;
+    @keyframes search {
+        0% {
+            transform: scale(0.8);
+            border-radius: 10%;
+            background-color: oklch(0.685 0.169 237.323);
+        }
+        50% {
+            transform: scale(1.2);
+            background-color: oklch(.623 .214 259.815);
+        }
+        100% {
+            transform: scale(1.0);
+            background-color: oklch(0.585 0.233 277.117);
         }
     }
 }
