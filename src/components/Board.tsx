@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { A_Star } from "../algorithms/a_star.ts";
 import { dijkstra } from "../algorithms/dijkstra.ts";
 import { maze_routing_alg } from "../algorithms/routing_alg.ts";
-import { Maze, MazeSolver, step_in_dir, WALL_CELL, EMPTY_CELL } from "../maze.ts";
+import { Maze, MazeSolver, LookupAction, MoveAction, Path, step_in_dir, WALL_CELL, EMPTY_CELL } from "../maze.ts";
 
 export interface Node {
     row: number;
@@ -95,7 +95,7 @@ function Board() {
 
     return (
         <div ref={boardRef} className="board" onMouseUp={handleMouseUp}>
-            <button className="mt-4 p-2 bg-blue-500 text-white rounded" onClick={() => solveMaze(grid, dijkstra, setGrid)}>
+            <button className="mt-4 p-2 bg-blue-500 text-white rounded" onClick={() => visualize(grid, dijkstra, setGrid)}>
                 test Dijkstra
             </button>
             <table>
@@ -145,45 +145,55 @@ function gridToMaze(grid: Grid): Maze {
     };
 }
 
-function solveMaze(grid: Grid, solver: MazeSolver, setGrid: (grid: Grid) => void) {
-    const maze = gridToMaze(grid);
-    const actions = solver(maze);
+async function visualize(grid: Grid, solver: MazeSolver, setGrid: (grid: Grid) => void) {
+    const maze: Maze = gridToMaze(grid);
+    const solution: Path = solver(maze);
 
-    const seenLookups = new Set<string>();
-    const filteredActions = actions.filter((action) => {
+    const redundant = new Set<string>();
+    const actions = solution.filter((action) => {
         if (action.type === "lookup") {
             const key = `${action.pos.x},${action.pos.y}`;
-            if (seenLookups.has(key)) {
+            if (redundant.has(key)) {
                 return false;
             }
-            seenLookups.add(key);
+            redundant.add(key);
         }
         return true;
     });
 
-    let newGrid = grid;
-    let currentPos = { ...maze.start };
+    const lookups: LookupAction[] = actions.filter((action) => action.type === "lookup")
+    const moves: MoveAction[] = actions.filter((action) => action.type === "move")
 
-    filteredActions.forEach((action, i) => {
-        setTimeout(() => {
-            if (action.type === "lookup") {
-                newGrid = produce(newGrid, (draft) => {
+    for (let i = 0; i < lookups.length; i++) {
+        const action = lookups[i];
+        await new Promise<void>((resolve) => {
+            setTimeout(() => {
+                grid = produce(grid, (draft) => {
                     const node = draft.nodes[action.pos.y][action.pos.x];
-                    if (
-                        !node.isPath && !node.isStart && !node.isEnd && !node.isWall
-                    ) {
+                    if (!node.isPath && !node.isStart && !node.isEnd && !node.isWall) {
                         node.isVisited = true;
                     }
                 });
-            } else if (action.type === "move") {
-                currentPos = step_in_dir(currentPos, action.dir);
-                newGrid = produce(newGrid, (draft) => {
-                    draft.nodes[currentPos.y][currentPos.x].isPath = true;
+                setGrid(grid);
+                resolve();
+            }, 10);
+        });
+    }
+
+    let cur = { ...maze.start };
+    for (let i = 0; i < moves.length; i++) {
+        const action = moves[i];
+        await new Promise<void>((resolve) => {
+            setTimeout(() => {
+                cur = step_in_dir(cur, action.dir);
+                grid = produce(grid, (draft) => {
+                    draft.nodes[cur.y][cur.x].isPath = true;
                 });
-            }
-            setGrid(newGrid);
-        }, i * 10);
-    });
+                setGrid(grid);
+                resolve();
+            }, 10);
+        });
+    }
 }
 
 
