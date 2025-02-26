@@ -3,6 +3,7 @@ export enum TokenType {
     INT,
 
     VAR,
+    FN,
     IF,
     ELSE,
     WHILE,
@@ -25,7 +26,6 @@ export enum TokenType {
     NEQ,
     LEQ,
     GEQ,
-    ARROW,
 
     ANDAND,
     OROR,
@@ -37,7 +37,9 @@ export enum TokenType {
     SLASH,
     PERCENT,
 
+    COMMA,
     SEMICOLON,
+    EOF,
 };
 
 export type Token = {
@@ -51,6 +53,45 @@ export function make_token(type: TokenType, str: string, ln: number, col: number
     return { type, str, ln, col };
 }
 
+export function token_err_name(type: TokenType): string {
+    switch (type) {
+        case TokenType.NAME: return "name";
+        case TokenType.INT: return "integer";
+        case TokenType.VAR: return "'var'";
+        case TokenType.FN: return "'fn'";
+        case TokenType.IF: return "'if'";
+        case TokenType.ELSE: return "'else'";
+        case TokenType.WHILE: return "'while'";
+        case TokenType.RETURN: return "'return'";
+        case TokenType.CONTINUE: return "'continue'";
+        case TokenType.BREAK: return "'break'";
+        case TokenType.LPAREN: return "'('";
+        case TokenType.RPAREN: return "')'";
+        case TokenType.LSQUARE: return "'['";
+        case TokenType.RSQUARE: return "']'";
+        case TokenType.LBRACKET: return "'{'";
+        case TokenType.RBRACKET: return "'}'";
+        case TokenType.LANGLE: return "'<'";
+        case TokenType.RANGLE: return "'>'";
+        case TokenType.EQ: return "'='";
+        case TokenType.EQEQ: return "'=='";
+        case TokenType.NEQ: return "'!='";
+        case TokenType.LEQ: return "'<='";
+        case TokenType.GEQ: return "'>='";
+        case TokenType.ANDAND: return "'&&'";
+        case TokenType.OROR: return "'||'";
+        case TokenType.EXLAMATION: return "'!'";
+        case TokenType.PLUS: return "'+'";
+        case TokenType.MINUS: return "'-'";
+        case TokenType.STAR: return "'*'";
+        case TokenType.SLASH: return "'/'";
+        case TokenType.PERCENT: return "'%'";
+        case TokenType.COMMA: return "','";
+        case TokenType.SEMICOLON: return "';'";
+        case TokenType.EOF: return "end of file";
+    }
+}
+
 function is_int(s: string): boolean {
     return /^[0-9][_0-9a-zA-Z]*$/.test(s);
 }
@@ -62,6 +103,7 @@ function is_name(s: string): boolean {
 function get_keyword(s: string): TokenType | null {
     switch (s) {
         case "var": return TokenType.VAR;
+        case "fn": return TokenType.FN;
         case "if": return TokenType.IF;
         case "else": return TokenType.ELSE;
         case "while": return TokenType.WHILE;
@@ -90,7 +132,6 @@ function get_symbol(s: string): TokenType | null {
         case "!=": return TokenType.NEQ;
         case "<=": return TokenType.LEQ;
         case ">=": return TokenType.GEQ;
-        case "=>": return TokenType.ARROW;
 
         case "&&": return TokenType.ANDAND;
         case "||": return TokenType.OROR;
@@ -102,6 +143,7 @@ function get_symbol(s: string): TokenType | null {
         case "/": return TokenType.SLASH;
         case "%": return TokenType.PERCENT;
 
+        case ",": return TokenType.COMMA;
         case ";": return TokenType.SEMICOLON;
 
         default: return null;
@@ -131,7 +173,6 @@ export function tokenize(s: string, tabsize: number = 4): Token[] {
         const char: string | undefined = s[i];
         switch (char) {
             case undefined: // end of input
-                col++;
                 end_token = true;
                 break;
             case "\n":
@@ -148,6 +189,7 @@ export function tokenize(s: string, tabsize: number = 4): Token[] {
                 end_token = true;
                 break;
             default:
+                // if it was valid but is no longer, push the valid one and continue on a new one
                 if ((is_int(current) && !is_int(current + char)) ||
                     (is_name(current) && !is_name(current + char)) ||
                     (get_symbol(current) !== null && get_symbol(current + char) === null)
@@ -178,7 +220,6 @@ export function tokenize(s: string, tabsize: number = 4): Token[] {
         }
     }
 
+    tokens.push(make_token(TokenType.EOF, "", current_ln, current_col));
     return tokens;
 }
-
-tokenize("+-<=== >=> ===");

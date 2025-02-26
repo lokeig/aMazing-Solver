@@ -2,7 +2,9 @@ import { type Token, TokenType, make_token, tokenize } from "../../src/interpret
 
 test("empty", () => {
     const str: string = "";
-    const expected: Token[] = [];
+    const expected: Token[] = [
+        make_token(TokenType.EOF, "", 1, 1)
+    ];
     expect(tokenize(str)).toStrictEqual(expected);
 });
 
@@ -16,6 +18,7 @@ test("keywords", () => {
         make_token(TokenType.RETURN, "return", 2, 1),
         make_token(TokenType.CONTINUE, "continue", 2, 8),
         make_token(TokenType.BREAK, "break", 2, 17),
+        make_token(TokenType.EOF, "", 2, 22),
     ];
     expect(tokenize(str)).toStrictEqual(expected);
 });
@@ -26,6 +29,7 @@ test("more spacing", () => {
         make_token(TokenType.IF, "if", 1, 5),
         make_token(TokenType.IF, "if", 1, 10),
         make_token(TokenType.IF, "if", 2, 2),
+        make_token(TokenType.EOF, "", 2, 5),
     ];
     expect(tokenize(str)).toStrictEqual(expected);
 });
@@ -42,6 +46,8 @@ test("integers and names", () => {
         make_token(TokenType.NAME, "_test_", 6, 2),
         make_token(TokenType.NAME, "_1", 7, 2),
         make_token(TokenType.NAME, "x123", 8, 2),
+
+        make_token(TokenType.EOF, "", 8, 6),
     ];
     expect(tokenize(str)).toStrictEqual(expected);
 });
@@ -57,6 +63,7 @@ test("symbols", () => {
         make_token(TokenType.RANGLE, ">", 1, 10),
         make_token(TokenType.EQEQ, "==", 1, 12),
         make_token(TokenType.EQ, "=", 1, 14),
+        make_token(TokenType.EOF, "", 1, 15),
     ];
     expect(tokenize(str)).toStrictEqual(expected);
 });
