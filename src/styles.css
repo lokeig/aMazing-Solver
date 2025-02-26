@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+.board {
+    @apply flex items-center justify-center size-full select-none;
+}
+
+.node {
+    @apply size-8 border border-collapse border-slate-200;
+}
+
+.start {
+    @apply bg-emerald-500 border-0 animate-node;
+}
+
+.end {
+    @apply bg-red-500 border-0 animate-node;
+}
+
+.wall {
+    @apply bg-slate-700 border-0 animate-node;
+}
+
+@theme {
+    --animate-node: node 0.3s ease-in-out;
+
+    @keyframes node {
+        0% {
+            transform: scale(0.8);
+            border-radius: 10%;
+        }
+        50% {
+            transform: scale(1.2);
+        }
+        100% {
+            transform: scale(1.0);
+        }
+    }
+}
