@@ -402,12 +402,18 @@ function parse_block(peek: StackOp, consume: StackOp, end: TokenType[]): Block {
 export function parse(tokens: Token[]): Block {
     let i: number = 0;
 
+    if (!tokens.map(t => t.type).includes(TokenType.EOF)) {
+        throw new SyntaxError("No end of file.");
+    }
+
     function peek(): Token {
         return tokens[i];
     }
     function consume(): Token {
-        // stop before last
-        return i < tokens.length ? tokens[i++] : tokens[i];
+        const t = tokens[i];
+        // stop before end of file
+        if (t.type !== TokenType.EOF) i++;
+        return t;
     }
 
     return parse_block(peek, consume, [TokenType.EOF]);
