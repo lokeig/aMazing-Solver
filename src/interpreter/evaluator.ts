@@ -118,7 +118,7 @@ function is_truthy(val: RValue): boolean {
 }
 function is_eq(left: RValue, right: RValue) {
     if (left.tag !== right.tag) return make_int(0);
-    if (is_int(left)) return make_int(left.val === (right as Int).val ? 1 : 0);
+    if (is_int(left) && is_int(right)) return make_int(left.val === right.val ? 1 : 0);
     return make_int(left === right ? 1 : 0);
 }
 
@@ -412,6 +412,21 @@ function declare_prelude(env: Env, stdout: string[]): void {
             return arg.arr.pop();
         } else throw new TypeError(`Invalid type '${type_err_name(arg)}' in pop function.`);
     });
+    const e_is_int = make_builtin(args => {
+        enforce_argc(1, args);
+        const arg = args[0];
+        return make_int(is_int(arg) ? 1 : 0);
+    });
+    const e_is_arr = make_builtin(args => {
+        enforce_argc(1, args);
+        const arg = args[0];
+        return make_int(is_arr(arg) ? 1 : 0);
+    });
+    const e_is_fun = make_builtin(args => {
+        enforce_argc(1, args);
+        const arg = args[0];
+        return make_int(is_fun(arg) ? 1 : 0);
+    });
 
     env.declare("true", make_int(1));
     env.declare("false", make_int(0));
@@ -420,6 +435,9 @@ function declare_prelude(env: Env, stdout: string[]): void {
     env.declare("len", e_len);
     env.declare("push", e_push);
     env.declare("pop", e_pop);
+    env.declare("is_int", e_is_int);
+    env.declare("is_arr", e_is_arr);
+    env.declare("is_fun", e_is_fun);
 }
 
 export function evaluate(program: string, prelude: Map<string, RValue> | null = null): [(...args: RValue[]) => RValue, string[]] {

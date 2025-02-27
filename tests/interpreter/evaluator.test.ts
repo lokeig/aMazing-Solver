@@ -94,6 +94,43 @@ test("len push pop", () => {
     ]);
 });
 
+test("is_type", () => {
+    const [main, stdout] = evaluate(`
+        var a = 1;
+        var b = [];
+        var c = fn () {};
+
+        print(is_int(a));
+        print(is_arr(a));
+        print(is_fun(a));
+        
+        print(is_int(b));
+        print(is_arr(b));
+        print(is_fun(b));
+                
+        print(is_int(c));
+        print(is_arr(c));
+        print(is_fun(c));
+        
+        var main = fn () {};
+    `);
+    const output = main();
+    expect(output).toStrictEqual(make_int(0));
+    expect(stdout).toStrictEqual([
+        "1",
+        "0",
+        "0",
+
+        "0",
+        "1",
+        "0",
+
+        "0",
+        "0",
+        "1"
+    ]);
+});
+
 test("if else", () => {
     const [main, stdout] = evaluate(`
         if ([]) {

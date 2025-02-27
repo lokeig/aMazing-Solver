@@ -2,6 +2,19 @@
 
 ## Tokens
 
+### Whitespace
+
+Whitespace includes space, tab and new line and can be used to separate tokens. Excessive whitespace and any form of indentation is ignored.
+
+### Comments
+
+The first `#` character in a line and all characters after it until the next new line or end of input is ignored.
+
+#### Example
+
+    var x = 2; # this is a declaration
+    #abc # var var var ?.?
+
 ### Naming Rules
 
 A variable name is case sensitive and must start with a letter a-z or A-Z or an underscore and every following character must be a letter a-z or A-Z, an underscore or a digit 0-9. A variables cannot share a name with any of the reserved keywords.
