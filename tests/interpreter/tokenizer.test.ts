@@ -9,12 +9,13 @@ test("empty", () => {
 });
 
 test("keywords", () => {
-    const str: string = "var if else while\nreturn continue break";
+    const str: string = "var fn if else while\nreturn continue break";
     const expected: Token[] = [
         make_token(TokenType.VAR, "var", 1, 1),
-        make_token(TokenType.IF, "if", 1, 5),
-        make_token(TokenType.ELSE, "else", 1, 8),
-        make_token(TokenType.WHILE, "while", 1, 13),
+        make_token(TokenType.FN, "fn", 1, 5),
+        make_token(TokenType.IF, "if", 1, 8),
+        make_token(TokenType.ELSE, "else", 1, 11),
+        make_token(TokenType.WHILE, "while", 1, 16),
         make_token(TokenType.RETURN, "return", 2, 1),
         make_token(TokenType.CONTINUE, "continue", 2, 8),
         make_token(TokenType.BREAK, "break", 2, 17),
@@ -53,6 +54,37 @@ test("integers and names", () => {
 });
 
 test("symbols", () => {
+    const str: string = "( ) { } [ ] < > = == != <= >= && || ! + - * / % , ;"
+    const expected: Token[] = [
+        make_token(TokenType.LPAREN, "(", 1, 1),
+        make_token(TokenType.RPAREN, ")", 1, 3),
+        make_token(TokenType.LBRACKET, "{", 1, 5),
+        make_token(TokenType.RBRACKET, "}", 1, 7),
+        make_token(TokenType.LSQUARE, "[", 1, 9),
+        make_token(TokenType.RSQUARE, "]", 1, 11),
+        make_token(TokenType.LANGLE, "<", 1, 13),
+        make_token(TokenType.RANGLE, ">", 1, 15),
+        make_token(TokenType.EQ, "=", 1, 17),
+        make_token(TokenType.EQEQ, "==", 1, 19),
+        make_token(TokenType.NEQ, "!=", 1, 22),
+        make_token(TokenType.LEQ, "<=", 1, 25),
+        make_token(TokenType.GEQ, ">=", 1, 28),
+        make_token(TokenType.ANDAND, "&&", 1, 31),
+        make_token(TokenType.OROR, "||", 1, 34),
+        make_token(TokenType.EXLAMATION, "!", 1, 37),
+        make_token(TokenType.PLUS, "+", 1, 39),
+        make_token(TokenType.MINUS, "-", 1, 41),
+        make_token(TokenType.STAR, "*", 1, 43),
+        make_token(TokenType.SLASH, "/", 1, 45),
+        make_token(TokenType.PERCENT, "%", 1, 47),
+        make_token(TokenType.COMMA, ",", 1, 49),
+        make_token(TokenType.SEMICOLON, ";", 1, 51),
+        make_token(TokenType.EOF, "", 1, 52),
+    ];
+    expect(tokenize(str)).toStrictEqual(expected);
+});
+
+test("adjacent symbols", () => {
     const str: string = "+-<=== >=> ===";
     const expected: Token[] = [
         make_token(TokenType.PLUS, "+", 1, 1),
@@ -66,4 +98,8 @@ test("symbols", () => {
         make_token(TokenType.EOF, "", 1, 15),
     ];
     expect(tokenize(str)).toStrictEqual(expected);
+});
+
+test("unrecognized", () => {
+    expect(() => tokenize("?")).toThrow(SyntaxError);
 });
