@@ -236,6 +236,40 @@ test("arithmetic operators", () => {
     ]);
 });
 
+test("order of operations", () => {
+    const [main, stdout] = evaluate(`
+        var arr = [1, 2, 3];
+
+        print(-arr[1]);
+        print(1 + 2 * 3);
+        print(1 * 2 + 3);
+        print(1 + 1 == 1 * 2);
+
+        var main = fn () {};
+    `);
+    const output = main();
+    expect(output).toStrictEqual(make_int(0));
+    expect(stdout).toStrictEqual([
+        "-2",
+        "7",
+        "5",
+        "1"
+    ]);
+});
+
+test("comments", () => {
+    const [main, stdout] = evaluate(`
+        # print(1);
+        # ? udwhaiudhahdkjnaw ??? ..
+
+        # var main = fn () {};
+        var main = fn () {}; # var main = 1;
+    `);
+    const output = main();
+    expect(output).toStrictEqual(make_int(0));
+    expect(stdout).toStrictEqual([]);
+});
+
 test("operator type error", () => {
     expect(() => evaluate("+[];")).toThrow(TypeError);
     expect(() => evaluate("-[];")).toThrow(TypeError);
