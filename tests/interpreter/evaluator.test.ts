@@ -52,8 +52,10 @@ test("local function", () => {
 test("arrays", () => {
     const [main, stdout] = evaluate(`
         var a = [1, 2, 3];
-        a[0] = 4;
+        var b = a;
+        b[0] = 4;
         print(a);
+        print([] == []);
 
         var main = fn () {
             return a[0];
@@ -61,7 +63,7 @@ test("arrays", () => {
     `);
     const output = main();
     expect(output).toStrictEqual(make_int(4));
-    expect(stdout).toStrictEqual(["[4, 2, 3]"]);
+    expect(stdout).toStrictEqual(["[4, 2, 3]", "0"]);
 });
 
 test("len push pop", () => {
