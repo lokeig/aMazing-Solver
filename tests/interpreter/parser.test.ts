@@ -1,10 +1,16 @@
 import { tokenize } from "../../src/interpreter/tokenizer";
 import { parse } from "../../src/interpreter/parser";
-import { Block, make_access, make_arr, make_assignment, make_binary, make_block, make_break, make_call, make_continue, make_decl, make_if_else, make_int, make_lambda, make_return, make_unary, make_var, make_while } from "../../src/interpreter/ir";
+import { Block, make_access, make_arr, make_assignment, make_binary, make_block, make_break, make_call, make_continue, make_decl, make_if_else, make_int, make_lambda, make_nop, make_return, make_unary, make_var, make_while } from "../../src/interpreter/ir";
 
 test("empty", () => {
     const str: string = "";
     const expected: Block = make_block([]);
+    expect(parse(tokenize(str))).toStrictEqual(expected);
+});
+
+test("nop", () => {
+    const str: string = ";";
+    const expected: Block = make_block([make_nop()]);
     expect(parse(tokenize(str))).toStrictEqual(expected);
 });
 
@@ -37,8 +43,9 @@ test("expression", () => {
 });
 
 test("different bases in integer", () => {
-    const str: string = "123;0xfE8;0b1010;";
+    const str: string = "123;12___3;0xf_E8;0b10_10;";
     const expected: Block = make_block([
+        make_int(123),
         make_int(123),
         make_int(4072),
         make_int(10)
@@ -209,4 +216,47 @@ test("arrays", () => {
         )
     ]);
     expect(parse(tokenize(str))).toStrictEqual(expected);
+});
+
+test("all operators", () => {
+    const str: string = "0||0;0&&0;0==0;0!=0;0<0;0>0;0<=0;0>=0;0+0;0-0;0*0;0/0;0%0;!0;+0;-0;";
+    const expected: Block = make_block([
+        make_binary("||", make_int(0), make_int(0)),
+        make_binary("&&", make_int(0), make_int(0)),
+        make_binary("==", make_int(0), make_int(0)),
+        make_binary("!=", make_int(0), make_int(0)),
+        make_binary("<", make_int(0), make_int(0)),
+        make_binary(">", make_int(0), make_int(0)),
+        make_binary("<=", make_int(0), make_int(0)),
+        make_binary(">=", make_int(0), make_int(0)),
+        make_binary("+", make_int(0), make_int(0)),
+        make_binary("-", make_int(0), make_int(0)),
+        make_binary("*", make_int(0), make_int(0)),
+        make_binary("/", make_int(0), make_int(0)),
+        make_binary("%", make_int(0), make_int(0)),
+        make_unary("!", make_int(0)),
+        make_unary("+", make_int(0)),
+        make_unary("-", make_int(0))
+    ]);
+    expect(parse(tokenize(str))).toStrictEqual(expected);
+});
+
+test("unexpected token error", () => {
+    expect(() => parse(tokenize("var ;"))).toThrow(SyntaxError);
+    expect(() => parse(tokenize("var x = y[2] var;"))).toThrow(SyntaxError);
+    expect(() => parse(tokenize("var x = 1 )"))).toThrow(SyntaxError);
+    expect(() => parse(tokenize("var x = 1 + ("))).toThrow(SyntaxError);
+    expect(() => parse(tokenize("var x = 1 + var"))).toThrow(SyntaxError);
+    expect(() => parse(tokenize("[1, 2, 3,];"))).toThrow(SyntaxError);
+    expect(() => parse([])).toThrow(SyntaxError);
+});
+
+test("invalid integers", () => {
+    expect(() => parse(tokenize("0x;"))).toThrow(SyntaxError);
+    expect(() => parse(tokenize("0b;"))).toThrow(SyntaxError);
+    expect(() => parse(tokenize("0x_;"))).toThrow(SyntaxError);
+    expect(() => parse(tokenize("0b_____;"))).toThrow(SyntaxError);
+    expect(() => parse(tokenize("0ff;"))).toThrow(SyntaxError);
+    expect(() => parse(tokenize("0b12;"))).toThrow(SyntaxError);
+    expect(() => parse(tokenize("0xh;"))).toThrow(SyntaxError);
 });

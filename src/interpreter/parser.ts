@@ -66,21 +66,25 @@ function parse_int(token: Token): Int {
         base = 2;
     }
 
-    if (i >= str.length) {
-        throw new SyntaxError(`Invlaid integer literal at line ${token.ln}, column ${token.col}.`);
-    }
-
-    let val = 0;
+    let val: number | null = null;
     while (i < str.length) {
         const char = str[i++];
+        if (char === "_") continue;
+
         const char_val = char_val_in_base(char, base);
         if (char_val === null) {
             throw new SyntaxError(
                 `Invalid digit '${char}' in base ${base} integer literal at line ${token.ln}, column ${token.col}.`
             );
+        } else if (val === null) {
+            val = char_val;
         } else {
             val = val * base + char_val;
         }
+    }
+
+    if (val === null) {
+        throw new SyntaxError(`Invlaid integer literal at line ${token.ln}, column ${token.col}.`);
     }
 
     return make_int(val);
@@ -198,7 +202,6 @@ function parse_expr(peek: StackOp, consume: StackOp, end: TokenType[]): Expr {
         return { tag: "operator", token, symbol: token.str, precedence: operator_precedence(token.str) };
     }
     function make_lparen(token: Token): LParen {
-        console.log("test");
         return { tag: "left", token };
     }
     function make_rparen(token: Token): RParen {
