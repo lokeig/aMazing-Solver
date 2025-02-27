@@ -1,4 +1,4 @@
-import { type Token, TokenType, make_token, tokenize } from "../../src/interpreter/tokenizer";
+import { type Token, TokenType, make_token, token_err_name, tokenize } from "../../src/interpreter/tokenizer";
 
 test("empty", () => {
     const str: string = "";
@@ -102,4 +102,10 @@ test("adjacent symbols", () => {
 
 test("unrecognized", () => {
     expect(() => tokenize("?")).toThrow(SyntaxError);
+});
+
+test("error names", () => {
+    Object.values(TokenType)
+        .filter(t => typeof t === "number")
+        .forEach(t => expect(typeof token_err_name(t)).toBe("string"));
 });
