@@ -386,7 +386,9 @@ function declare_prelude(env: Env, stdout: string[]): void {
         throw new Error();
     });
     const e_print = make_builtin(args => {
-        stdout.push(args.map(to_string).join(" "))
+        const str = args.map(to_string).join(" ");
+        // console.log(str);
+        stdout.push(str);
     });
     const e_len = make_builtin(args => {
         enforce_argc(1, args);
@@ -488,9 +490,13 @@ export function evaluate_solver(program: string): MazeSolver {
                     default: throw new TypeError(`Invalid direction '${dir.val}' in move function.`);
                 }
             } else throw new TypeError(`Invalid type '${type_err_name(dir)}' in lookup function.`);
-        })
+        });
 
-        const prelude = new Map([
+        const prelude = new Map<string, RValue>([
+            ["right", make_int(0)],
+            ["up", make_int(1)],
+            ["left", make_int(2)],
+            ["down", make_int(3)],
             ["get_x", e_get_x],
             ["get_y", e_get_y],
             ["in_bound", e_in_bound],

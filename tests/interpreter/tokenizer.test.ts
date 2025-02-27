@@ -100,6 +100,15 @@ test("adjacent symbols", () => {
     expect(tokenize(str)).toStrictEqual(expected);
 });
 
+test("comments", () => {
+    const str: string = "#?test?\n+ # ?test?";
+    const expected: Token[] = [
+        make_token(TokenType.PLUS, "+", 2, 1),
+        make_token(TokenType.EOF, "", 2, 11),
+    ];
+    expect(tokenize(str)).toStrictEqual(expected);
+})
+
 test("unrecognized", () => {
     expect(() => tokenize("?")).toThrow(SyntaxError);
 });

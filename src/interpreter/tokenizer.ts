@@ -188,6 +188,15 @@ export function tokenize(s: string, tabsize: number = 4): Token[] {
                 col += tabsize - (col - 1) % tabsize; // next multiple of 4 + 1
                 end_token = true;
                 break;
+            case "#": // comment
+                while (i < s.length && s[i] !== "\n") {
+                    // skip until end of line or end of file
+                    i++;
+                    col++;
+                };
+                i--; // read end of line of file as usual
+                end_token = true;
+                break;
             default:
                 // if it was valid but is no longer, push the valid one and continue on a new one
                 if ((is_int(current) && !is_int(current + char)) ||
