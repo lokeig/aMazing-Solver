@@ -2,38 +2,42 @@ import { evaluate, make_rval_arr } from "../../src/interpreter/evaluator";
 import { make_int } from "../../src/interpreter/ir";
 
 test("most simple", () => {
-    const [main, stdout] = evaluate("var main = fn () {};");
+    const stdout: string[] = [];
+    const main = evaluate("var main = fn () {};", stdout);
     const output = main();
     expect(output).toStrictEqual(make_int(0));
     expect(stdout).toStrictEqual([]);
 });
 
 test("print and return", () => {
-    const [main, stdout] = evaluate(`
+    const stdout: string[] = [];
+    const main = evaluate(`
         var main = fn () {
             print(1);
             return 2;
         };
-    `);
+    `, stdout);
     const output = main();
     expect(output).toStrictEqual(make_int(2));
     expect(stdout).toStrictEqual(["1"]);
 });
 
 test("arguments", () => {
-    const [main, stdout] = evaluate(`
+    const stdout: string[] = [];
+    const main = evaluate(`
         var main = fn (x, y) {
             print(x + y);
             return x - y;
         };
-    `);
+    `, stdout);
     const output = main(make_int(3), make_int(5));
     expect(output).toStrictEqual(make_int(-2));
     expect(stdout).toStrictEqual(["8"]);
 });
 
 test("local function", () => {
-    const [main, stdout] = evaluate(`
+    const stdout: string[] = [];
+    const main = evaluate(`
         var f = fn (x) {
             print(x);
             return x * x;
@@ -43,14 +47,15 @@ test("local function", () => {
             print(f(x));
             return f(y);
         };
-    `);
+    `, stdout);
     const output = main(make_int(3), make_int(5));
     expect(output).toStrictEqual(make_int(25));
     expect(stdout).toStrictEqual(["3", "9", "5"]);
 });
 
 test("arrays", () => {
-    const [main, stdout] = evaluate(`
+    const stdout: string[] = [];
+    const main = evaluate(`
         var a = [1, 2, 3];
         var b = a;
         b[0] = 4;
@@ -60,14 +65,15 @@ test("arrays", () => {
         var main = fn () {
             return a[0];
         };
-    `);
+    `, stdout);
     const output = main();
     expect(output).toStrictEqual(make_int(4));
     expect(stdout).toStrictEqual(["[4, 2, 3]", "0"]);
 });
 
 test("len push pop", () => {
-    const [main, stdout] = evaluate(`
+    const stdout: string[] = [];
+    const main = evaluate(`
         var a = [1, 2, 3];
         print(len(a));
         push(a, 0);
@@ -79,7 +85,7 @@ test("len push pop", () => {
         var main = fn () {
             return a;
         };
-    `);
+    `, stdout);
     const output = main();
     expect(output).toStrictEqual(make_rval_arr([
         make_int(1),
@@ -95,7 +101,8 @@ test("len push pop", () => {
 });
 
 test("is_type", () => {
-    const [main, stdout] = evaluate(`
+    const stdout: string[] = [];
+    const main = evaluate(`
         var a = 1;
         var b = [];
         var c = fn () {};
@@ -113,7 +120,7 @@ test("is_type", () => {
         print(is_fun(c));
         
         var main = fn () {};
-    `);
+    `, stdout);
     const output = main();
     expect(output).toStrictEqual(make_int(0));
     expect(stdout).toStrictEqual([
@@ -132,7 +139,8 @@ test("is_type", () => {
 });
 
 test("if else", () => {
-    const [main, stdout] = evaluate(`
+    const stdout: string[] = [];
+    const main = evaluate(`
         if ([]) {
             print(false);
         } else {
@@ -144,14 +152,15 @@ test("if else", () => {
         var main = fn () {};
 
         if (main) print(main);
-    `);
+    `, stdout);
     const output = main();
     expect(output).toStrictEqual(make_int(0));
     expect(stdout).toStrictEqual(["1", "[]", "fn () { ... }"]);
 });
 
 test("while", () => {
-    const [main, stdout] = evaluate(`
+    const stdout: string[] = [];
+    const main = evaluate(`
         var i = 0;
         while (i < 10) {
             i = i + 1;
@@ -164,14 +173,15 @@ test("while", () => {
 
         while (false) print(false);
         while (true) return;
-    `);
+    `, stdout);
     const output = main();
     expect(output).toStrictEqual(make_int(0));
     expect(stdout).toStrictEqual(["1", "3", "4"]);
 });
 
 test("logical operators", () => {
-    const [main, stdout] = evaluate(`
+    const stdout: string[] = [];
+    const main = evaluate(`
         var f = fn () { print([]); };
 
         print(2 || f());
@@ -185,7 +195,7 @@ test("logical operators", () => {
         print(2 != 2);
 
         var main = fn () {};
-    `);
+    `, stdout);
     const output = main();
     expect(output).toStrictEqual(make_int(0));
     expect(stdout).toStrictEqual([
@@ -202,7 +212,8 @@ test("logical operators", () => {
 });
 
 test("comparison operators", () => {
-    const [main, stdout] = evaluate(`
+    const stdout: string[] = [];
+    const main = evaluate(`
         print(-1 < 0);
         print(0 < 0);
         print(-3 > 2);
@@ -211,7 +222,7 @@ test("comparison operators", () => {
         print(3 <= 2);
 
         var main = fn () {};
-    `);
+    `, stdout);
     const output = main();
     expect(output).toStrictEqual(make_int(0));
     expect(stdout).toStrictEqual([
@@ -225,7 +236,8 @@ test("comparison operators", () => {
 });
 
 test("arithmetic operators", () => {
-    const [main, stdout] = evaluate(`
+    const stdout: string[] = [];
+    const main = evaluate(`
         print(!3);
         print(!0);
         print(+-4);
@@ -248,7 +260,7 @@ test("arithmetic operators", () => {
         print([1, 2, 3] + [4, 5, 6]);
 
         var main = fn () {};
-    `);
+    `, stdout);
     const output = main();
     expect(output).toStrictEqual(make_int(0));
     expect(stdout).toStrictEqual([
@@ -276,7 +288,8 @@ test("arithmetic operators", () => {
 });
 
 test("order of operations", () => {
-    const [main, stdout] = evaluate(`
+    const stdout: string[] = [];
+    const main = evaluate(`
         var arr = [1, 2, 3];
 
         print(-arr[1]);
@@ -285,7 +298,7 @@ test("order of operations", () => {
         print(1 + 1 == 1 * 2);
 
         var main = fn () {};
-    `);
+    `, stdout);
     const output = main();
     expect(output).toStrictEqual(make_int(0));
     expect(stdout).toStrictEqual([
@@ -297,13 +310,14 @@ test("order of operations", () => {
 });
 
 test("comments", () => {
-    const [main, stdout] = evaluate(`
+    const stdout: string[] = [];
+    const main = evaluate(`
         # print(1);
         # ? udwhaiudhahdkjnaw ??? ..
 
         # var main = fn () {};
         var main = fn () {}; # var main = 1;
-    `);
+    `, stdout);
     const output = main();
     expect(output).toStrictEqual(make_int(0));
     expect(stdout).toStrictEqual([]);

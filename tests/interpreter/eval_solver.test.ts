@@ -141,7 +141,7 @@ const routing_alg_program = `
     };
 `;
 
-const maze_routing_alg = evaluate_solver(routing_alg_program);
+const [maze_routing_alg, _] = evaluate_solver(routing_alg_program);
 
 test("routing alg only forward", () => {
     const maze = make_maze([

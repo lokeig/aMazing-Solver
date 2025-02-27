@@ -440,9 +440,14 @@ function declare_prelude(env: Env, stdout: string[]): void {
     env.declare("is_fun", e_is_fun);
 }
 
-export function evaluate(program: string, prelude: Map<string, RValue> | null = null): [(...args: RValue[]) => RValue, string[]] {
+export function evaluate(
+    program: string,
+    stdout: string[] | null = null,
+    prelude: Map<string, RValue> | null = null
+): (...args: RValue[]) => RValue {
+
     const env = new Env(null);
-    const stdout: string[] = [];
+    if (stdout === null) stdout = [];
     declare_prelude(env, stdout);
     if (prelude !== null) prelude.forEach((rval, name) => env.declare(name, rval));
 
@@ -452,12 +457,13 @@ export function evaluate(program: string, prelude: Map<string, RValue> | null = 
 
     const main = program_env.get("main");
     if (is_local(main)) {
-        return [(...args) => eval_call(main, args), stdout];
+        return (...args) => eval_call(main, args);
     } else throw new TypeError("'main' must be a function.");
 }
 
-export function evaluate_solver(program: string): MazeSolver {
-    return solver_wrapper((
+export function evaluate_solver(program: string): [MazeSolver, string[]] {
+    const stdout: string[] = [];
+    const solver = solver_wrapper((
         goal,
         cur,
         in_bound,
@@ -526,7 +532,8 @@ export function evaluate_solver(program: string): MazeSolver {
             make_int(goal.y)
         ];
 
-        const [main, _stdout] = evaluate(program, prelude);
+        const main = evaluate(program, stdout, prelude);
         main(...args);
     });
+    return [solver, stdout];
 }
