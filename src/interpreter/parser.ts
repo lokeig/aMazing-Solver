@@ -302,13 +302,18 @@ function parse_decl(peek: StackOp, consume: StackOp): Decl {
     expect_type(TokenType.SEMICOLON, consume());
     return make_decl(name, expr);
 }
-function parse_assignment(peek: StackOp, consume: StackOp): Asgmt {
-    // name = ... ;
-    const name = expect_type(TokenType.NAME, consume()).str;
-    expect_type(TokenType.EQ, consume());
-    const expr = parse_expr(peek, consume, [TokenType.SEMICOLON]);
-    expect_type(TokenType.SEMICOLON, consume());
-    return make_assignment(name, expr);
+function parse_expr_stmt(peek: StackOp, consume: StackOp): Asgmt | Expr {
+    // expr ;
+    // expr = ... ;
+    const left = parse_expr(peek, consume, [TokenType.SEMICOLON, TokenType.EQ]);
+    const t = consume();
+    if (t.type === TokenType.SEMICOLON) {
+        return left;
+    } else if (t.type === TokenType.EQ) {
+        const right = parse_expr(peek, consume, [TokenType.SEMICOLON]);
+        expect_type(TokenType.SEMICOLON, consume());
+        return make_assignment(left, right);
+    } else unexpected(t);
 }
 function parse_if_else(peek: StackOp, consume: StackOp): IfElse {
     // if ( expr ) stmt else stmt
@@ -351,12 +356,9 @@ function parse_return(peek: StackOp, consume: StackOp): Return {
         return make_return(val);
     }
 }
-
 function parse_stmt(peek: StackOp, consume: StackOp): Stmt {
     const t = peek();
     switch (t.type) {
-        case TokenType.NAME:
-            return parse_assignment(peek, consume);
         case TokenType.VAR:
             return parse_decl(peek, consume);
         case TokenType.IF:
@@ -373,11 +375,6 @@ function parse_stmt(peek: StackOp, consume: StackOp): Stmt {
             consume();
             expect_type(TokenType.SEMICOLON, consume());
             return make_break();
-        case TokenType.DISCARD:
-            consume();
-            const expr = parse_expr(peek, consume, [TokenType.SEMICOLON]);
-            expect_type(TokenType.SEMICOLON, consume());
-            return expr;
         case TokenType.LBRACKET:
             consume();
             const block = parse_block(peek, consume, [TokenType.RBRACKET]);
@@ -387,10 +384,10 @@ function parse_stmt(peek: StackOp, consume: StackOp): Stmt {
             consume();
             return make_nop();
 
-        default: unexpected(t);
+        default:
+            return parse_expr_stmt(peek, consume);
     }
 }
-
 function parse_block(peek: StackOp, consume: StackOp, end: TokenType[]): Block {
     const list: Stmt[] = [];
     while (!end.includes(peek().type)) {

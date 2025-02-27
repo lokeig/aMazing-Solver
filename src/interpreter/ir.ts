@@ -58,7 +58,7 @@ export type Call = { tag: "call", f: Expr, args: Expr[] };
 export type Acc = { tag: "access", arr: Expr, i: Expr }
 
 export type Decl = { tag: "decl", var: Var, val: Expr };
-export type Asgmt = { tag: "assign", var: Var, val: Expr };
+export type Asgmt = { tag: "assign", var: Expr, val: Expr };
 export type IfElse = { tag: "if_else", pred: Expr, on_true: Stmt, on_false: Stmt };
 export type While = { tag: "while", pred: Expr, body: Stmt };
 
@@ -108,8 +108,8 @@ export function make_decl(name: string, val: Expr): Decl {
     return { tag: "decl", var: make_var(name), val };
 }
 
-export function make_assignment(name: string, val: Expr): Asgmt {
-    return { tag: "assign", var: make_var(name), val };
+export function make_assignment(variable: Expr, val: Expr): Asgmt {
+    return { tag: "assign", var: variable, val };
 }
 
 export function make_if_else(pred: Expr, on_true: Stmt, on_false: Stmt | null): IfElse {

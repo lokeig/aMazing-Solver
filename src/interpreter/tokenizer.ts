@@ -11,7 +11,6 @@ export enum TokenType {
     RETURN,
     CONTINUE,
     BREAK,
-    DISCARD,
 
     LPAREN,
     RPAREN,
@@ -66,7 +65,6 @@ export function token_err_name(type: TokenType): string {
         case TokenType.RETURN: return "'return'";
         case TokenType.CONTINUE: return "'continue'";
         case TokenType.BREAK: return "'break'";
-        case TokenType.DISCARD: return "'discard'";
         case TokenType.LPAREN: return "'('";
         case TokenType.RPAREN: return "')'";
         case TokenType.LSQUARE: return "'['";
@@ -113,7 +111,6 @@ function get_keyword(s: string): TokenType | null {
         case "return": return TokenType.RETURN;
         case "continue": return TokenType.CONTINUE;
         case "break": return TokenType.BREAK;
-        case "discard": return TokenType.DISCARD;
 
         default: return null;
     }

@@ -9,7 +9,7 @@ test("empty", () => {
 });
 
 test("expression", () => {
-    const str: string = "discard 3 * -1 + 2 % (18 / 2) * 5;";
+    const str: string = "3 * -1 + 2 % (18 / 2) * 5;";
     const expected: Block = make_block([
         make_binary(
             "+",
@@ -37,7 +37,7 @@ test("expression", () => {
 });
 
 test("different bases in integer", () => {
-    const str: string = "discard 123;discard 0xfE8;discard 0b1010;";
+    const str: string = "123;0xfE8;0b1010;";
     const expected: Block = make_block([
         make_int(123),
         make_int(4072),
@@ -51,11 +51,11 @@ test("declaration, assignment and functions", () => {
         var x = 10;
         x = 20;
         var f = fn (a, b, c) { return a + b + c; };
-        discard f(1, x, 3);
+        f(1, x, 3);
     `;
     const expected: Block = make_block([
         make_decl("x", make_int(10)),
-        make_assignment("x", make_int(20)),
+        make_assignment(make_var("x"), make_int(20)),
         make_decl(
             "f",
             make_lambda(
@@ -113,7 +113,7 @@ test("if and while", () => {
                 make_int(1),
                 make_int(1),
             ),
-            make_assignment("x", make_int(3)),
+            make_assignment(make_var("x"), make_int(3)),
             null
         ),
         make_while(
@@ -134,7 +134,7 @@ test("if and while", () => {
                     ]),
                     make_block([
                         make_assignment(
-                            "x",
+                            make_var("x"),
                             make_binary(
                                 "-",
                                 make_var("x"),
@@ -153,11 +153,12 @@ test("if and while", () => {
 test("arrays", () => {
     const str: string = `
         var arr = [ 1, 2, 3 ];
-        discard arr[0];
+        arr[0];
+        arr[1] = 4;
 
         arr = [ 1, fn () { return; }, arr ];
-        discard arr[1]();
-        discard arr[2][1];
+        arr[1]();
+        arr[2][1];
     `;
     const expected: Block = make_block([
         make_decl(
@@ -173,7 +174,14 @@ test("arrays", () => {
             make_int(0)
         ),
         make_assignment(
-            "arr",
+            make_access(
+                make_var("arr"),
+                make_int(1)
+            ),
+            make_int(4)
+        ),
+        make_assignment(
+            make_var("arr"),
             make_arr([
                 make_int(1),
                 make_lambda(
