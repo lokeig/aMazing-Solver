@@ -241,7 +241,9 @@ function eval_binary(op: BinOp, env: Env): RValue {
             left = get_rval(eval_expr(op.left, env), env);
             right = get_rval(eval_expr(op.right, env), env);
             if (is_int(left) && is_int(right)) {
-                return make_int(((left.val % right.val) + right.val) % right.val); // always positive
+                if (right.val === 0) {
+                    throw new RangeError("Modulo by zero.");
+                } else return make_int(((left.val % right.val) + right.val) % right.val); // always positive
             } else break;
 
         default: throw new SyntaxError(`Invalid binary operator '${op.symbol}'.`);

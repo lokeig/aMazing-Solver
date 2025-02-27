@@ -249,6 +249,7 @@ test("operator type error", () => {
     expect(() => evaluate("1 <= [];")).toThrow(TypeError);
     expect(() => evaluate("1 >= [];")).toThrow(TypeError);
     expect(() => evaluate("0 / 0;")).toThrow(RangeError);
+    expect(() => evaluate("0 % 0;")).toThrow(RangeError);
 });
 
 test("other type errors", () => {
