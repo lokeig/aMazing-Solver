@@ -1,10 +1,19 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { produce } from "immer";
 import clsx from "clsx";
-import { A_Star } from "../algorithms/a_star.ts";
-import { dijkstra } from "../algorithms/dijkstra.ts";
-import { maze_routing_alg } from "../algorithms/routing_alg.ts";
-import { Maze, MazeSolver, LookupAction, MoveAction, Path, step_in_dir, WALL_CELL, EMPTY_CELL } from "../maze.ts";
+import {
+    Maze,
+    MazeSolver,
+    Action,
+    LookupAction,
+    MoveAction,
+    Path,
+    Pos,
+    step_in_dir,
+    WALL_CELL,
+    EMPTY_CELL,
+} from "../maze.ts";
+import Header from "./Header.tsx";
 
 export interface Node {
     row: number;
@@ -31,16 +40,18 @@ function Board() {
     const moveNodeRef = useRef<"start" | "end" | null>(null);
     const editWallRef = useRef<"add" | "remove" | null>(null);
 
-    useEffect(() => {
+    useEffect((): void => {
         if (!boardRef.current) return;
         const { width, height } = boardRef.current.getBoundingClientRect();
-        const rows = Math.floor(height / 32);
-        const cols = Math.floor(width / 32);
+        const rows: number = Math.floor(height / 32);
+        const cols: number = Math.floor(width / 32);
         setGrid(makeGrid(rows, cols));
     }, []);
 
+    const clearGrid = (): void => setGrid(makeGrid(grid.rows, grid.cols));
+
     const updateGrid = useCallback((node: Node): void => {
-        setGrid(produce((draft) => {
+        setGrid(produce((draft): void => {
             if (moveNodeRef.current === "start") {
                 draft.nodes[draft.start.row][draft.start.col].isStart = undefined;
                 draft.start = draft.nodes[node.row][node.col];
@@ -94,37 +105,37 @@ function Board() {
     });
 
     return (
-        <div ref={boardRef} className="board" onMouseUp={handleMouseUp}>
-            <button className="mt-4 p-2 bg-blue-500 text-white rounded" onClick={() => visualize(grid, dijkstra, setGrid)}>
-                test Dijkstra
-            </button>
-            <table>
-                <tbody>
-                {grid.nodes.map((row, i) => (
-                    <tr key={i}>
-                        {row.map((node, j) => (
-                            <td
-                                key={j}
-                                className={clsx(styles(node), "node")}
-                                onMouseDown={() => handleMouseDown(node)}
-                                onMouseEnter={() => handleMouseEnter(node)}
-                            />
-                        ))}
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-        </div>
+        <>
+            <Header grid={grid} setGrid={setGrid} visualize={visualize} clearGrid={clearGrid} />
+            <div ref={boardRef} className="board" onMouseUp={handleMouseUp}>
+                <table>
+                    <tbody>
+                    {grid.nodes.map((row: Node[], i: number) => (
+                        <tr key={i}>
+                            {row.map((node: Node, j: number) => (
+                                <td
+                                    key={j}
+                                    className={clsx(styles(node), "node")}
+                                    onMouseDown={(): void => handleMouseDown(node)}
+                                    onMouseEnter={(): void => handleMouseEnter(node)}
+                                />
+                            ))}
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            </div>
+        </>
     );
 }
 
 function makeGrid(rows: number, cols: number): Grid {
     if (rows > 0 && cols > 0) {
-        const nodes: Node[][] = Array.from({ length: rows }, (_, row) =>
-            Array.from({ length: cols }, (_, col) => ({ row, col }))
+        const nodes: Node[][] = Array.from({ length: rows }, (_, row: number) =>
+            Array.from({ length: cols }, (_, col: number) => ({ row, col }))
         );
-        const start = nodes[Math.floor(rows / 2)][Math.floor(cols / 4)];
-        const end = nodes[Math.floor(rows / 2)][Math.floor(3 * cols / 4)];
+        const start: Node = nodes[Math.floor(rows / 2)][Math.floor(cols / 4)];
+        const end: Node = nodes[Math.floor(rows / 2)][Math.floor(3 * cols / 4)];
         start.isStart = true;
         end.isEnd = true;
         return { rows, cols, nodes, start, end };
@@ -139,20 +150,20 @@ function gridToMaze(grid: Grid): Maze {
         end: { x: grid.end.col, y: grid.end.row },
         width: grid.nodes[0].length,
         height: grid.nodes.length,
-        cells: grid.nodes.map(row =>
-            row.map(node => (node.isWall ? WALL_CELL : EMPTY_CELL))
+        cells: grid.nodes.map((row: Node[]) =>
+            row.map((node: Node) => (node.isWall ? WALL_CELL : EMPTY_CELL))
         ),
     };
 }
 
-async function visualize(grid: Grid, solver: MazeSolver, setGrid: (grid: Grid) => void) {
+async function visualize(grid: Grid, solver: MazeSolver, setGrid: (grid: Grid) => void): Promise<void> {
     const maze: Maze = gridToMaze(grid);
     const solution: Path = solver(maze);
 
     const redundant = new Set<string>();
-    const actions = solution.filter((action) => {
+    const actions: Action[] = solution.filter((action: Action): boolean => {
         if (action.type === "lookup") {
-            const key = `${action.pos.x},${action.pos.y}`;
+            const key = `${action.pos.x}${action.pos.y}`;
             if (redundant.has(key)) {
                 return false;
             }
@@ -161,14 +172,14 @@ async function visualize(grid: Grid, solver: MazeSolver, setGrid: (grid: Grid) =
         return true;
     });
 
-    const lookups: LookupAction[] = actions.filter((action) => action.type === "lookup")
-    const moves: MoveAction[] = actions.filter((action) => action.type === "move")
+    const lookups: LookupAction[] = actions.filter((action: Action): action is LookupAction => action.type === "lookup")
+    const moves: MoveAction[] = actions.filter((action: Action): action is MoveAction => action.type === "move")
 
-    for (let i = 0; i < lookups.length; i++) {
-        const action = lookups[i];
+    for (let i: number = 0; i < lookups.length; i++) {
+        const action: LookupAction = lookups[i];
         await new Promise<void>((resolve) => {
-            setTimeout(() => {
-                grid = produce(grid, (draft) => {
+            setTimeout((): void => {
+                grid = produce(grid, (draft): void => {
                     const node = draft.nodes[action.pos.y][action.pos.x];
                     if (!node.isPath && !node.isStart && !node.isEnd && !node.isWall) {
                         node.isVisited = true;
@@ -180,13 +191,13 @@ async function visualize(grid: Grid, solver: MazeSolver, setGrid: (grid: Grid) =
         });
     }
 
-    let cur = { ...maze.start };
-    for (let i = 0; i < moves.length; i++) {
-        const action = moves[i];
-        await new Promise<void>((resolve) => {
-            setTimeout(() => {
+    let cur: Pos = { ...maze.start };
+    for (let i: number = 0; i < moves.length; i++) {
+        const action: MoveAction = moves[i];
+        await new Promise<void>((resolve): void => {
+            setTimeout((): void => {
                 cur = step_in_dir(cur, action.dir);
-                grid = produce(grid, (draft) => {
+                grid = produce(grid, (draft): void => {
                     draft.nodes[cur.y][cur.x].isPath = true;
                 });
                 setGrid(grid);

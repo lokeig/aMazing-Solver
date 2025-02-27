@@ -12,12 +12,12 @@
     @apply size-8 border border-collapse border-gray-200;
 }
 
-.path {
-    @apply bg-yellow-300 border-0 animate-node;
+.search {
+    @apply bg-indigo-500 border-gray-400 animate-search;
 }
 
-.search {
-    @apply bg-indigo-500 border-slate-400 animate-search;
+.path {
+    @apply bg-yellow-300 border-0 animate-node;
 }
 
 .start {
@@ -37,7 +37,7 @@
 
     @keyframes node {
         0% {
-            transform: scale(0.8);
+            transform: scale(0.5);
             border-radius: 10%;
         }
         50% {
@@ -51,18 +51,18 @@
     --animate-search: search 1s ease-in-out;
     @keyframes search {
         0% {
-            transform: scale(0.8);
-            background-color: oklch(0.685 0.169 237.323);
+            transform: scale(0.5);
+            background-color: var(--color-sky-500);
             border-radius: 10%;
             border: none;
         }
         50% {
             transform: scale(1.2);
-            background-color: oklch(.623 .214 259.815);
+            background-color: var(--color-blue-500);
         }
         100% {
             transform: scale(1.0);
-            background-color: oklch(0.585 0.233 277.117);
+            background-color: var(--color-indigo-500);
         }
     }
 }

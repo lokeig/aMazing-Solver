@@ -1,4 +1,4 @@
-import {Grid, Node} from "../components/Board.tsx";
+import { Grid, Node } from "../components/Board.tsx";
 
 export function recursiveDivision(grid: Grid): void {
     for (let row = 0; row < grid.rows; row++) {
