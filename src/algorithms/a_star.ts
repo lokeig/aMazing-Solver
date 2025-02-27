@@ -33,14 +33,14 @@ export const A_Star: MazeSolver = solver_wrapper((
         parent: null,
         path: null
     }];
+
+    const pos_to_string = (pos: Pos): string => `${pos.x}, ${pos.y}`
     const visited = new Set<string>();
+    visited.add(pos_to_string(cur()));
 
     while (pending.length > 0) {
         pending.sort((a, b) => b.priority - a.priority)
         const current = pending.pop()!;
-
-        const pos_to_string = (pos: Pos): string => `${pos.x}, ${pos.y}`
-        visited.add(pos_to_string(current.pos));
 
         if (pos_eq(current.pos, goal)) {
             walk_path(current, move);
@@ -58,6 +58,7 @@ export const A_Star: MazeSolver = solver_wrapper((
         for (let neighbor of neighbors) {
             // Adds to pending if not a wall and hasn't been checked before
             if (!visited.has(pos_to_string(neighbor.pos)) && !is_wall(lookup(neighbor.pos))) {
+                visited.add(pos_to_string(neighbor.pos));
                 pending.push({
                     pos: neighbor.pos,
                     cost: current.cost + 1,
