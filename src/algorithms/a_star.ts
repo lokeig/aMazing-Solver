@@ -1,7 +1,7 @@
 import {
     type MazeSolver, type Pos, type Direction,
     is_wall, pos_eq, step_in_dir, solver_wrapper
-} from "../maze.ts";
+} from "../maze";
 
 const heuristic = (p: Pos, goal: Pos): number => {
     return Math.abs(p.x - goal.x) + Math.abs(p.y - goal.y);
