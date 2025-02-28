@@ -309,6 +309,25 @@ test("order of operations", () => {
     ]);
 });
 
+test("scope", () => {
+    const stdout: string[] = [];
+    const main = evaluate(`
+        var x = 1;
+        {
+            print(x);
+            x = 3;
+            var x = 2;
+            print(x);
+        }
+        print(x);
+
+        var main = fn () {};
+    `, stdout);
+    const output = main();
+    expect(output).toStrictEqual(make_int(0));
+    expect(stdout).toStrictEqual(["1", "2", "3"]);
+});
+
 test("comments", () => {
     const stdout: string[] = [];
     const main = evaluate(`
