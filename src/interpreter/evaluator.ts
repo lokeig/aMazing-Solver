@@ -409,7 +409,11 @@ function declare_prelude(env: Env, stdout: string[]): void {
         enforce_argc(1, args);
         const arg = args[0];
         if (is_arr(arg)) {
-            return arg.arr.pop();
+            if (arg.arr.length > 0) {
+                return arg.arr.pop();
+            } else {
+                throw new RangeError("Cannot pop empty array.");
+            }
         } else throw new TypeError(`Invalid type '${type_err_name(arg)}' in pop function.`);
     });
     const e_is_int = make_builtin(args => {

@@ -370,6 +370,7 @@ test("array out of bounds error", () => {
     expect(() => evaluate("[1, 2][-1];")).toThrow(RangeError);
     expect(() => evaluate("[1, 2][2];")).toThrow(RangeError);
     expect(() => evaluate("var x = [1]; x[0] = fn () { return pop(x); }();")).toThrow(RangeError);
+    expect(() => evaluate("pop([]);")).toThrow(RangeError);
 });
 
 test("wrong number of parameters error", () => {
