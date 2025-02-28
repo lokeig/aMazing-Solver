@@ -1,18 +1,28 @@
 import { Grid, Node } from "../components/Board.tsx";
 
-export function recursiveDivision(grid: Grid): void {
-    for (let row = 0; row < grid.rows; row++) {
-        for (const col of [0, grid.cols - 1]) {
-            setWall(grid.nodes[row][col]);
+export function recursiveDivision(grid: Grid): Grid {
+    const maze: Grid = {
+        nodes: grid.nodes.map(row => row.map(node => ({ ...node }))),
+        start: { ...grid.start },
+        end: { ...grid.end },
+        rows: grid.rows,
+        cols: grid.cols,
+    };
+
+    for (let row = 0; row < maze.rows; row++) {
+        for (const col of [0, maze.cols - 1]) {
+            setWall(maze.nodes[row][col]);
         }
     }
-    for (let col = 0; col < grid.cols; col++) {
-        for (const row of [0, grid.rows - 1]) {
-            setWall(grid.nodes[row][col]);
+    for (let col = 0; col < maze.cols; col++) {
+        for (const row of [0, maze.rows - 1]) {
+            setWall(maze.nodes[row][col]);
         }
     }
 
-    divide(grid, 1, grid.rows - 2, 1, grid.cols - 2, getAxis(grid.rows - 2, grid.cols - 2));
+    divide(maze, 1, grid.rows - 2, 1, maze.cols - 2, getAxis(maze.rows - 2, maze.cols - 2));
+
+    return maze;
 }
 
 function divide(grid: Grid, r1: number, r2: number, c1: number, c2: number, axis: "H" | "V") {

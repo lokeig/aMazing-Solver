@@ -55,7 +55,7 @@ export const A_Star: MazeSolver = solver_wrapper((
             { direction: "right", pos: step_in_dir(current.pos, "right") }
         ];
 
-        for (let neighbor of neighbors) {
+        for (const neighbor of neighbors) {
             // Adds to pending if not a wall and hasn't been checked before
             if (!visited.has(pos_to_string(neighbor.pos)) && !is_wall(lookup(neighbor.pos))) {
                 visited.add(pos_to_string(neighbor.pos));

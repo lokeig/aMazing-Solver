@@ -1,20 +1,14 @@
-import { Dispatch, SetStateAction, useState } from "react";
-import {produce} from "immer";
+import { useState } from "react";
 import { Button, Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";
 import { ChevronDownIcon, PlayIcon } from "@heroicons/react/24/outline";
-import {recursiveDivision} from "../algorithms/recursive-division.ts";
-import { A_Star } from "../algorithms/a_star.ts";
+import { useGrid } from "./GridContext.tsx";
+import { Grid, Node } from "./Board.tsx";
+import { makeGrid, getNodeID } from "../utils.ts";
+import { visualize } from "./visualizer.ts";
 import { dijkstra } from "../algorithms/dijkstra.ts";
+import { A_Star } from "../algorithms/a_star.ts";
 import { maze_routing_alg } from "../algorithms/routing_alg.ts";
-import { Grid } from "./Board.tsx";
-import { MazeSolver } from "../maze.ts";
-
-interface HeaderProps {
-    grid: Grid;
-    setGrid: Dispatch<SetStateAction<Grid>>;
-    visualize: (grid: Grid, solver: MazeSolver, setGrid: Dispatch<SetStateAction<Grid>>) => void;
-    clearGrid: () => void;
-}
+import { recursiveDivision } from "../algorithms/recursive-division.ts";
 
 const algorithms = [
     { id: 0, name: "Dijkstra", fn: dijkstra },
@@ -22,8 +16,22 @@ const algorithms = [
     { id: 2, name: "Maze Routing", fn: maze_routing_alg },
 ];
 
-function Header({ grid, setGrid, visualize, clearGrid }: HeaderProps) {
+function Header() {
+    const { grid, setGrid } = useGrid();
     const [selected, setSelected] = useState(algorithms[0]);
+
+    const clearBoard = (): void => {
+        if (!document.querySelector(".wall, .search, .path")) return;
+        setGrid((prev: Grid): Grid => makeGrid(prev.rows, prev.cols));
+        grid.nodes.flat().map((node: Node): void => {
+            const cell: HTMLElement | null = document.getElementById(getNodeID(node.row, node.col));
+            cell?.classList.remove("search", "path");
+        });
+    };
+
+    const generateMaze = (): void => {
+        setGrid((prev: Grid): Grid => recursiveDivision(prev));
+    };
 
     return (
         <header>
@@ -49,18 +57,14 @@ function Header({ grid, setGrid, visualize, clearGrid }: HeaderProps) {
 
                         <Button
                             className="flex items-center bg-gray-700 text-white px-5 py-3 rounded-lg shadow-md cursor-pointer hover:bg-gray-600"
-                            onClick={() => {
-                                setGrid(produce((draft) => {
-                                    recursiveDivision(draft);
-                                }));
-                            }}
+                            onClick={generateMaze}
                         >
                             Generate Maze
                         </Button>
 
                         <Button
                             className="flex items-center bg-red-700 text-white px-5 py-3 rounded-lg shadow-md cursor-pointer hover:bg-red-600"
-                            onClick={clearGrid}
+                            onClick={clearBoard}
                         >
                             Clear Board
                         </Button>
@@ -69,7 +73,7 @@ function Header({ grid, setGrid, visualize, clearGrid }: HeaderProps) {
                     <div className="flex space-x-4">
                         <Button
                             className="flex items-center bg-indigo-700 text-white px-5 py-3 rounded-lg shadow-md cursor-pointer hover:bg-indigo-600"
-                            onClick={() => visualize(grid, selected.fn, setGrid)}
+                            onClick={() => visualize(grid, selected.fn)}
                         >
                             <PlayIcon className="h-5 w-5 mr-2" /> Run
                         </Button>
