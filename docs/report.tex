@@ -210,13 +210,13 @@ Statements must be of one of the following forms.
         \textit{expression} \verb|;|                                                                      & Expression, ignoring result \\
         \verb|var| \textit{name} \verb|=| \textit{expression} \verb|;|                                    & Variable declaration        \\
         \textit{expression} \verb|=| \textit{expression} \verb|;|                                         & Variable assignment         \\
-        \verb|if| \verb|(| \textit{expression} \verb|)| \textit{statement}                                & Conditional                 \\
-        \verb|if| \verb|(| \textit{expression} \verb|)| \textit{statement} \verb|else| \textit{statement} & Conditional                 \\
-        \verb|while| \verb|(| \textit{expression} \verb|)| \textit{statement}                             & Loop                        \\
+        \verb|if| \verb|(| \textit{expression} \verb|)| \textit{statement}                                & If conditional              \\
+        \verb|if| \verb|(| \textit{expression} \verb|)| \textit{statement} \verb|else| \textit{statement} & If-else conditional         \\
+        \verb|while| \verb|(| \textit{expression} \verb|)| \textit{statement}                             & While loop                  \\
         \verb|return| \verb|;|                                                                            & Return                      \\
         \verb|return| \textit{expression} \verb|;|                                                        & Return value                \\
-        \verb|continue| \verb|;|                                                                          & Continue loop               \\
-        \verb|break| \verb|;|                                                                             & Break loop                  \\
+        \verb|continue| \verb|;|                                                                          & Continue                    \\
+        \verb|break| \verb|;|                                                                             & Break                       \\
         \verb|{| \textit{statement} \ldots \verb|}|                                                       & Code block                  \\
     \end{tabular}
 \end{table}
@@ -280,86 +280,220 @@ An integer is truthy if it is not 0. An array is truthy if its length is not 0. 
 
 \subsubsection{Operators}
 
-\paragraph{\texttt{f(x)} \quad Function call}
+\paragraph{Function call \quad \texttt{f(x)}} \
 
-Takes a function as its primary operand and optionally a list of values between the parenthesis as arguments to the function. Returns a value.
+Takes a function as its primary operand and optionally a list of values between the parentheses as arguments to the function. Returns the value returned by its body or 0 if no return value was returned.
 
-\paragraph{\texttt{a[i]} \quad Array subscripting}
+\paragraph{Array subscripting \quad \texttt{a[i]}} \
 
 Takes an array as its primary operand and an integer between the brackets to use as index. The index must be between 0 (inclusive) and the length of the array (exclusive) where 0 corresponds to the first element in the array. Returns the value stored at that index which can be assigned to.
 
 
-\paragraph{\texttt{!x} \quad Logical NOT}
+\paragraph{Logical NOT \quad \texttt{!x}} \
 
 Takes a value as operand and returns 0 if its truthy and 1 otherwise.
 
-\paragraph{\texttt{+i} \quad Unary plus}
+\paragraph{Unary plus \quad \texttt{+i}} \
 
 Takes an integer and returns the same integer.
 
-\paragraph{\texttt{-i} \quad Unary minus}
+\paragraph{Unary minus \quad \texttt{-i}} \
 
 Takes an integer and returns its negation.
 
-\paragraph{\texttt{i*i} \quad Multiplication}
+\paragraph{Multiplication \quad \texttt{i*i}} \
 
 Takes two integers and returns their product.
 
-\paragraph{\texttt{i/i} \quad Division}
+\paragraph{Division \quad \texttt{i/i}} \
 
 Takes two integers and returns the floor of their quotient. If the right operand is 0 an exception is thrown.
 
-\paragraph{\texttt{i\%i} \quad Modulo}
+\paragraph{Modulo \quad \texttt{i\%i}} \
 
 Takes two integers and returns the integer $ a - b \left\lfloor \frac{a}{b} \right\rfloor $ where a is the left operand and b the right operand. If the right operand is 0 an exception is thrown.
 
-\paragraph{\texttt{x+x} \quad Addition / Concatenation}
+\paragraph{Addition / Concatenation \quad \texttt{x+x}} \
 
 Takes two integers or two arrays. If they are integers it returns their sum. If they are arrays it returns a new array containing all the elements in the left operand followed by all the elements in the right operand.
 
-\paragraph{\texttt{i-i} \quad Subtraction}
+\paragraph{Subtraction \quad \texttt{i-i}} \
 
 Takes two integers and returns their difference.
 
-\paragraph{\texttt{i<i} \quad Less than}
+\paragraph{Less than \quad \texttt{i<i}} \
 
 Takes two integers and returns 1 if the left operand is less than the right operand or 0 otherwise.
 
-\paragraph{\texttt{i<=i} \quad Less than or equal to}
+\paragraph{Less than or equal to \quad \texttt{i<=i}} \
 
 Takes two integers and returns 1 if the left operand is less than or equal to the right operand or 0 otherwise.
 
-\paragraph{\texttt{i>i} \quad Greater than}
+\paragraph{Greater than \quad \texttt{i>i}} \
 
 Takes two integers and returns 1 if the left operand is greater than the right operand or 0 otherwise.
 
-\paragraph{\texttt{i>=i} \quad Greater than or equal to}
+\paragraph{Greater than or equal to \quad \texttt{i>=i}} \
 
 Takes two integers and returns 1 if the left operand is greater than or equal to the right operand or 0 otherwise.
 
-\paragraph{\texttt{x==x} \quad Equality}
+\paragraph{Equality \quad \texttt{x==x}} \
 
 Takes two values and returns 1 if they are equal or 0 otherwise.
 
-\paragraph{\texttt{x!=x} \quad Inequality}
+\paragraph{Inequality \quad \texttt{x!=x}} \
 
 Takes two values and returns 0 if they are equal or 1 otherwise.
 
-\paragraph{\texttt{x\&\&x} \quad Logical AND}
+\paragraph{Logical AND \quad \texttt{x\&\&x}} \
 
 Evaluates the left operand and returns it if it is not truthy. Otherwise it evaluates the right operand and returns it.
 
-\paragraph{\texttt{x||x} \quad Logical NOT}
+\paragraph{Logical NOT \quad \texttt{x||x}} \
 
 Evaluates the left operand and returns it if it is truthy. Otherwise it evaluates the right operand and returns it.
 
 \subsubsection{Statements}
 
-\subsubsection{Functions}
+\paragraph{No operation \quad \texttt{;}} \
+
+Does nothing.
+
+\paragraph{Expression \quad \texttt{x;}} \
+
+Evaluates the expression, discarding its value.
+
+\paragraph{Variable declaration \quad \texttt{var n = x;} } \
+
+Declares a variable with the name following the var keyword in the current frame and assigns it the value on the right hand side of the equals sign.
+
+\paragraph{Variable assignment \quad \texttt{x = x;} } \
+
+If the left hand side of the equals sign is a variable name, that variable is assigned the value on the right hand side of the equals sign.
+
+If the left hand sign is an array subscripting expression, the element at that index of the array is assigned the value on the right hand side of the equals sign.
+
+Otherwise and error is thrown.
+
+\paragraph{If conditional \quad \texttt{if (x) s} } \
+
+If the value inside the parentheses is truthy the statement following them is executed in a new frame. Any returns, continues and breaks are passed through.
+
+\paragraph{If-else conditional \quad \texttt{if (x) s else (x) s} } \
+
+If the value inside the parentheses is truthy the statement following them is executed in a new frame. Otherwise the statement following the else keyword is executed in a new frame. Any returns, continues and breaks are passed through.
+
+\paragraph{While loop \quad \texttt{while (x) s}} \
+
+Evaluates the expression inside the parentheses in a new frame. If it is truthy the statement following them is evaluated. If it is a return, the return is carried through. If it is a break, the loop stops. Otherwise, this is repeated.
+
+\paragraph{Return \quad \texttt{return;}} \
+
+Skips all following statement when inside a code block and returns 0 when inside a function.
+
+\paragraph{Return value \quad \texttt{return x;}} \
+
+Skips all following statement when inside a code block and returns the value following the return keyword when inside a function.
+
+\paragraph{Continue \quad \texttt{continue;}} \
+
+Skips all following statements when inside a code block.
+
+\paragraph{Break \quad \texttt{break;}} \
+
+Skips all following statement when inside a code block and stops the loop when inside a while loop.
+
+\paragraph{Code block \quad \texttt{\{s\ldots\}}} \
+
+Evaluates all statements inside the curly brackets in a new frame. If a statement is a return, continue or break, the statements following it are not evaluated and the return, continue or break is passed through.
 
 \subsubsection{Predefined Values}
 
+\paragraph{\texttt{true}} \
+
+The integer 1.
+
+\paragraph{\texttt{false}} \
+
+The integer 0.
+
+\paragraph{\texttt{panic}} \
+
+A function that takes no arguments and throws an error.
+
+\paragraph{\texttt{print}} \
+
+A function that takes any number of arguments of any types and prints them to stdout separated by spaces.
+
+\paragraph{\texttt{len}} \
+
+A function that takes an array as only argument and returns its length as an integer.
+
+\paragraph{\texttt{push}} \
+
+A function that takes an array as its first argument and a value of any type as its second argument and adds then second argument to end of the array, increasing its length by one. Returns 0.
+
+\paragraph{\texttt{pop}} \
+
+A function that takes an array as its only argument. If the array if empty, an error is thrown. Otherwise the last element of the array is removed, reducing its length by one. Returns the removed element.
+
+\paragraph{\texttt{is\_int}} \
+
+A function that takes a value as its only argument and returns 1 if it is an integer or 0 otherwise.
+
+\paragraph{\texttt{is\_arr}} \
+
+A function that takes a value as its only argument and returns 1 if it is an array or 0 otherwise.
+
+\paragraph{\texttt{is\_fun}} \
+
+A function that takes a value as its only argument and returns 1 if it is a function or 0 otherwise.
+
 \subsection{Maze Mode}
+
+Maze mode is meant to aid in creating maze solving algorithms using the language and is what is used by aMazing Solver.
+
+\subsubsection{The main Function}
+
+The main function will be called with two integers, The first being the x coordinate of the goal and the second being the y coordinate of the goal. The return value is ignored.
+
+\subsubsection{Additional Predefined Values}
+
+\paragraph{\texttt{right}} \
+
+The integer 0.
+
+\paragraph{\texttt{up}} \
+
+The integer 1.
+
+\paragraph{\texttt{left}} \
+
+The integer 2.
+
+\paragraph{\texttt{down}} \
+
+The integer 3.
+
+\paragraph{\texttt{get\_x}} \
+
+A function that takes no arguments and returns the current x coordinate within the maze as an integer.
+
+\paragraph{\texttt{get\_y}} \
+
+A function that takes no arguments and returns the current y coordinate within the maze as an integer.
+
+\paragraph{\texttt{in\_bound}} \
+
+A function that takes two integer arguments and returns 1 if the position with x value equal to the first argument and y value equal to the second argument is within the bounds of the maze. Otherwise it returns 0.
+
+\paragraph{\texttt{is\_wall}} \
+
+A function that takes two integer arguments and returns 1 if the position with x value equal to the first argument and y value equal to the second argument is within the bounds of the maze or if that position is occupied by a wall. Otherwise it returns 0.
+
+\paragraph{\texttt{move}} \
+
+A function that takes one integer value. If the value is 0, the current x coordinate is incremented by one. If the value is 1, the current y coordinate is decremented by one. If the value is 2, the current x coordinate is decremented by one. If the value is 3, the current y coordinate is incremented by one. Otherwise an error is thrown.
 
 \newpage
 
