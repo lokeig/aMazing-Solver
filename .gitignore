@@ -1,3 +1,8 @@
+# latex
+
+**/*.synctex.gz
+**/*.pdf
+
 # Logs
 logs
 *.log
