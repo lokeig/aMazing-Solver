@@ -122,8 +122,8 @@ All symbols (including operators) are parsed greedily, not ending a symbol befor
 \paragraph{Example}
 
 \begin{verbatim}
-    === → == =
-    =!= → = !=
+    ===  → == =
+    =!=  → = !=
     |||| → || ||
 \end{verbatim}
 
@@ -406,13 +406,28 @@ A function that takes a value as its only argument and returns 1 if it is an arr
 
 A function that takes a value as its only argument and returns 1 if it is a function or 0 otherwise.
 
+\paragraph{Example}
+
+\begin{verbatim}
+    print(true, false, len([3, 2]));      # "1 0 2"
+    var x = [1, 2]; push(x, 3); print(x); # "[1, 2, 3]"
+    var x = [1, 2]; print(pop(x), x);     # "3, [1, 2]"
+    print(is_int(true));                  # "1"
+    print(is_arr([3, 2][0]));             # "0"
+    print(is_fun(is_fun));                # "1"
+\end{verbatim}
+
 \subsection{Maze Mode}
 
 Maze mode is meant to aid in creating maze solving algorithms using the language and is what is used by aMazing Solver.
 
+\subsubsection{Mazes}
+
+A maze is a grid of cells with a current position and a goal position. Each cell in the grid can be either a wall or not a wall and a valid maze solving algorithm should never occupy the same space as a wall. The top left cell has x coordinate 0 and y coordinate 0 and the x and y coordinates of cells increase as you move right and down through the maze respectively.
+
 \subsubsection{The main Function}
 
-The main function will be called with two integers, The first being the x coordinate of the goal and the second being the y coordinate of the goal. The return value is ignored.
+The main function will be called with two integers, The first being the x coordinate of the goal and the second being the y coordinate of the goal. If the main function returns when the current position is the same as the goal position and the current position has never overlapped with a wall or exceeded the boundaries of the maze, it has successfully solved the maze. The return value is ignored.
 
 \subsubsection{Additional Predefined Values}
 
@@ -451,3 +466,12 @@ A function that takes two integer arguments and returns 1 if the position with x
 \paragraph{\texttt{move}} \
 
 A function that takes one integer value. If the value is 0, the current x coordinate is incremented by one. If the value is 1, the current y coordinate is decremented by one. If the value is 2, the current x coordinate is decremented by one. If the value is 3, the current y coordinate is incremented by one. Otherwise an error is thrown.
+
+\paragraph{Example}
+
+\begin{verbatim}
+    # Moves down if there is no wall below.
+    if (!is_wall(get_x(), get_y() + 1)) {
+        move(down);
+    }
+\end{verbatim}
