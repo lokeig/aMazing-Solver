@@ -1,9 +1,10 @@
 \documentclass[12pt, a4paper]{article}
-\usepackage[swedish]{babel}
+\usepackage[english]{babel}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage[hidelinks]{hyperref}
+\usepackage{float}
 
 \begin{document}
 
@@ -38,7 +39,329 @@
 
 \section{Documentation}
 
-\section{aMazing-language Specification}
+\newpage
+
+\section{aMazing Language Specification}
+
+\subsection{Tokens}
+
+\subsubsection{Comments}
+
+The first \verb|#| character in a line and all characters after it until the next new line or end of input is ignored.
+
+\paragraph{Example}
+
+\begin{verbatim}
+    var x = 2; # this is a declaration
+    #abc # var var var ?
+\end{verbatim}
+
+\subsubsection{Naming Rules}
+
+A variable name is case sensitive and must start with a letter a-z or A-Z or an underscore and every following character must be a letter a-z or A-Z, an underscore or a digit 0-9. A variables cannot share a name with any of the reserved keywords.
+
+\paragraph{Example}
+
+\begin{verbatim}
+    x
+    _x
+    x1
+    _123    
+\end{verbatim}
+
+\subsubsection{Integers}
+
+An integer literal is case insensitive must start with a digit 0-9 and every following character must be a letter a-z or A-Z, an underscore or a digit 0-9. Underscores are ignored for purposes of determining its value.
+
+If it begins with \verb|0b| it is a binary integer and can only contain binary digits. At least one non-underscore character must follow.
+
+If it begins with \verb|0x| it is a hexadecimal integer and can only contain hexadecimal digits. At least one non-underscore character must follow.
+
+Otherwise it is a decimal integer and can only contain decimal digits.
+
+\paragraph{Example}
+
+\begin{verbatim}
+    1234     → 1234
+    1_234    → 1234
+    0x1f     → 31
+    0x_1__f_ → 31
+    0b01010  → 10
+    0b1_010  → 10
+\end{verbatim}
+
+\subsubsection{Reserved Keywords}
+
+\begin{itemize}
+    \item \verb|var|
+    \item \verb|fn|
+    \item \verb|if|
+    \item \verb|else|
+    \item \verb|while|
+    \item \verb|return|
+    \item \verb|continue|
+    \item \verb|break|
+\end{itemize}
+
+\subsubsection{Operators}
+
+\paragraph{Unary Prefix Operators}
+
+All unary prefix operators have the same precedence which is higher than all binary operators. All unary prefix operators are right-to-left associative.
+
+\begin{table}[H]
+    \begin{tabular}{ l l }
+        \verb|!| & Logical NOT \\
+        \verb|+| & Unary plus  \\
+        \verb|-| & Unary minus
+    \end{tabular}
+\end{table}
+
+\paragraph{Binary Operators}
+
+Binary operators are listed top to bottom in descending precedence. Operators on the same line have the same precedence. All binary operators are left-to-right associative.
+
+\begin{table}[H]
+    \begin{tabular}{ l l }
+        \verb|*| \verb|/| \verb|%|            & Multiplication, division and modulo \\
+        \verb|+| \verb|-|                     & Addition and subtraction            \\
+        \verb|<| \verb|<=| \verb|>| \verb|>=| & The common relational operators     \\
+        \verb|==| \verb|!=|                   & Equality and inequality             \\
+        \verb|&&|                             & Logical AND                         \\
+        \verb||||                             & Logical OR
+    \end{tabular}
+\end{table}
+
+\paragraph{Example}
+
+\begin{verbatim}
+    x[y]()      → (x[y])()
+    !-x         → !(-x)
+
+    x + y * z   → x + (y * z)
+    x + y - z   → (x + y) - z
+    x && y || z → (x && y) || z
+
+    -x[y]       → -(x[y])
+    -x + -y     → (-x) + (-y)
+    x() + y[z]  → (x()) + (y[z])
+\end{verbatim}
+
+\subsubsection{Other Symbols}
+
+All symbols (including operators) are parsed greedily, not ending a symbol before it would become invalid or encounters whitespace.
+
+\begin{table}[H]
+    \begin{tabular}{ l l }
+        \verb|(| \verb|)| & Overriding precedence      \\
+        \verb|{| \verb|}| & Grouping statements        \\
+        \verb|[| \verb|]| & Creating arrays            \\
+        \verb|=|          & Declaration and assignment \\
+        \verb|,|          & Separating elements        \\
+        \verb|;|          & End statement
+    \end{tabular}
+\end{table}
+
+\paragraph{Example}
+
+\begin{verbatim}
+    === → == =
+    =!= → = !=
+    |||| → || ||
+\end{verbatim}
+
+\subsection{Syntax}
+
+\subsubsection{Expressions}
+
+Expressions must be of one of the following forms.
+
+\begin{table}[H]
+    \begin{tabular}{ l l }
+        \textit{name}                                                                                      & Variable name         \\
+        \textit{integer}                                                                                   & Integer literal       \\
+        \verb|(| \textit{expression} \verb|)|                                                              & Overriding precedence \\
+        \verb|[| \textit{expression} \ldots \verb|]|                                                       & Array literal         \\
+        \verb|fn| \verb|(| \textit{expression} \ldots \verb|)| \verb|{| \textit{statement} \ldots \verb|}| & Function literal      \\
+        \textit{expression} \verb|(| \textit{expression} \ldots \verb|)|                                   & Function call         \\
+        \textit{expression} \verb|(| \textit{expression} \verb|)|                                          & Array subscripting    \\
+        \textit{unary-prefix-operator} \textit{expression}                                                 & Unary prefix operator \\
+        \textit{expression} \textit{binary-operator} \textit{expression}                                   & Binary operator
+    \end{tabular}
+\end{table}
+
+\paragraph{Example}
+
+\begin{verbatim}
+    [1, 2, 3] + [x, y, z]
+    fn () {}
+    (fn (x, y) { return x + y; })()
+    -x[y]
+    1 * (1 + 1)
+\end{verbatim}
+
+\subsubsection{Statements}
+
+Statements must be of one of the following forms.
+
+\begin{table}[H]
+    \begin{tabular}{ l l }
+        \verb|;|                                                                                          & No operation                \\
+        \textit{expression} \verb|;|                                                                      & Expression, ignoring result \\
+        \verb|var| \textit{name} \verb|=| \textit{expression} \verb|;|                                    & Variable declaration        \\
+        \textit{expression} \verb|=| \textit{expression} \verb|;|                                         & Variable assignment         \\
+        \verb|if| \verb|(| \textit{expression} \verb|)| \textit{statement}                                & Conditional                 \\
+        \verb|if| \verb|(| \textit{expression} \verb|)| \textit{statement} \verb|else| \textit{statement} & Conditional                 \\
+        \verb|while| \verb|(| \textit{expression} \verb|)| \textit{statement}                             & Loop                        \\
+        \verb|return| \verb|;|                                                                            & Return                      \\
+        \verb|return| \textit{expression} \verb|;|                                                        & Return value                \\
+        \verb|continue| \verb|;|                                                                          & Continue loop               \\
+        \verb|break| \verb|;|                                                                             & Break loop                  \\
+        \verb|{| \textit{statement} \ldots \verb|}|                                                       & Code block                  \\
+    \end{tabular}
+\end{table}
+
+\paragraph{Example}
+
+\begin{verbatim}
+    var x = 1;
+    x = 2;
+    if (x) return x; else if (y) continue; else break;
+    while (f(x));
+    { var x = 1; x = 2; }
+\end{verbatim}
+
+\subsection{Types}
+
+There are three types: integer, array and function. Variables, elements, parameters and return values do not have types associated with them and can store, accept and return different types than they did originally. No two values of different types are equal.
+
+\paragraph{Integer}
+
+An integer stores a whole number. Two integers are equal if they represent the same number.
+
+\paragraph{Array}
+
+An array stores a reference to an ordered list of elements that can be of different types. Elements can be modified, added or removed from the list and all arrays storing the same reference will observe the effect. Two arrays are equal if they store the same reference.
+
+\paragraph{Function}
+
+A function stores a reference to an object that can be called with a list of ordered values that can be of different types as its arguments to return a value of any type. Two functions are equal if they store the same reference.
+
+\subsection{Environment}
+
+The first frame created which points to nothing contains all predefined values. This is what the program frame, where the user written code runs, points to. After executing, the program frame must contain a variable named \verb|main| that stores a function. The number and types of the arguments this function is called with will depend on the implementation.
+
+\paragraph{Creation}
+
+When a statement inside a conditional, loop or code block is executed, it will do so inside a newly created frame pointing to the frame the condition, loop or code block was executed inside. Additionally a function object will store what frame it was created in and when called, the body will be executed in a new frame pointing to the one stored in the function object. The function body is executed in the same frame that the parameters were declared in.
+
+\paragraph{Usage}
+
+When reading or assigning to a variable, the name will be search for within the current frame and if it has not been declared, it will recursively search the frame it points to. If it has not been declared and it does not point to anything, an error is thrown. When declaring a variable, if the name has not been declared in the current frame, it will be, otherwise an error is thrown. Note that if a variable is read or assigned to but would be declared later in the same scope, the reading or assigning will still search the frame pointed to.
+
+\paragraph{Example}
+
+\begin{verbatim}
+    var x = 1;
+    {
+        print(x); # 1
+        x = 3;
+        var x = 2;
+        print(x); # 2
+    }
+    print(x) # 3
+\end{verbatim}
+
+\subsection{Semantics}
+
+\subsubsection{Truth Value}
+
+An integer is truthy if it is not 0. An array is truthy if its length is not 0. A function is always truthy.
+
+\subsubsection{Operators}
+
+\paragraph{\texttt{f(x)} \quad Function call}
+
+Takes a function as its primary operand and optionally a list of values between the parenthesis as arguments to the function. Returns a value.
+
+\paragraph{\texttt{a[i]} \quad Array subscripting}
+
+Takes an array as its primary operand and an integer between the brackets to use as index. The index must be between 0 (inclusive) and the length of the array (exclusive) where 0 corresponds to the first element in the array. Returns the value stored at that index which can be assigned to.
+
+
+\paragraph{\texttt{!x} \quad Logical NOT}
+
+Takes a value as operand and returns 0 if its truthy and 1 otherwise.
+
+\paragraph{\texttt{+i} \quad Unary plus}
+
+Takes an integer and returns the same integer.
+
+\paragraph{\texttt{-i} \quad Unary minus}
+
+Takes an integer and returns its negation.
+
+\paragraph{\texttt{i*i} \quad Multiplication}
+
+Takes two integers and returns their product.
+
+\paragraph{\texttt{i/i} \quad Division}
+
+Takes two integers and returns the floor of their quotient. If the right operand is 0 an exception is thrown.
+
+\paragraph{\texttt{i\%i} \quad Modulo}
+
+Takes two integers and returns the integer $ a - b \left\lfloor \frac{a}{b} \right\rfloor $ where a is the left operand and b the right operand. If the right operand is 0 an exception is thrown.
+
+\paragraph{\texttt{x+x} \quad Addition / Concatenation}
+
+Takes two integers or two arrays. If they are integers it returns their sum. If they are arrays it returns a new array containing all the elements in the left operand followed by all the elements in the right operand.
+
+\paragraph{\texttt{i-i} \quad Subtraction}
+
+Takes two integers and returns their difference.
+
+\paragraph{\texttt{i<i} \quad Less than}
+
+Takes two integers and returns 1 if the left operand is less than the right operand or 0 otherwise.
+
+\paragraph{\texttt{i<=i} \quad Less than or equal to}
+
+Takes two integers and returns 1 if the left operand is less than or equal to the right operand or 0 otherwise.
+
+\paragraph{\texttt{i>i} \quad Greater than}
+
+Takes two integers and returns 1 if the left operand is greater than the right operand or 0 otherwise.
+
+\paragraph{\texttt{i>=i} \quad Greater than or equal to}
+
+Takes two integers and returns 1 if the left operand is greater than or equal to the right operand or 0 otherwise.
+
+\paragraph{\texttt{x==x} \quad Equality}
+
+Takes two values and returns 1 if they are equal or 0 otherwise.
+
+\paragraph{\texttt{x!=x} \quad Inequality}
+
+Takes two values and returns 0 if they are equal or 1 otherwise.
+
+\paragraph{\texttt{x\&\&x} \quad Logical AND}
+
+Evaluates the left operand and returns it if it is not truthy. Otherwise it evaluates the right operand and returns it.
+
+\paragraph{\texttt{x||x} \quad Logical NOT}
+
+Evaluates the left operand and returns it if it is truthy. Otherwise it evaluates the right operand and returns it.
+
+\subsubsection{Statements}
+
+\subsubsection{Functions}
+
+\subsubsection{Predefined Values}
+
+\subsection{Maze Mode}
+
+\newpage
 
 \section{Discussion}
 
