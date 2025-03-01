@@ -1,16 +1,23 @@
 import { useState } from "react";
-import { Button, Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";
-import { ChevronDownIcon, PlayIcon } from "@heroicons/react/24/outline";
 import { useGrid } from "./GridContext.tsx";
 import { Grid, Node } from "./Board.tsx";
+import { MazeSolver } from "../maze.ts";
+import { visualize } from "../visualizer.ts";
 import { makeGrid, getNodeID } from "../utils.ts";
-import { visualize } from "./visualizer.ts";
+import { recursiveDivision } from "../algorithms/recursive_division.ts";
 import { dijkstra } from "../algorithms/dijkstra.ts";
 import { A_Star } from "../algorithms/a_star.ts";
 import { maze_routing_alg } from "../algorithms/routing_alg.ts";
-import { recursiveDivision } from "../algorithms/recursive-division.ts";
+import { Button, Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";
+import { ChevronDownIcon, PlayIcon } from "@heroicons/react/24/outline";
 
-const algorithms = [
+type Algorithm = {
+    id: number;
+    name: string;
+    fn: MazeSolver;
+}
+
+const algorithms: Algorithm[] = [
     { id: 0, name: "Dijkstra", fn: dijkstra },
     { id: 1, name: "A*", fn: A_Star },
     { id: 2, name: "Maze Routing", fn: maze_routing_alg },
@@ -30,6 +37,9 @@ function Header() {
     };
 
     const generateMaze = (): void => {
+        if (document.querySelector(".wall, .search, .path")) {
+            clearBoard();
+        }
         setGrid((prev: Grid): Grid => recursiveDivision(prev));
     };
 
@@ -46,7 +56,7 @@ function Header() {
                                     {selected.name} <ChevronDownIcon className="h-5 w-5 ml-2" />
                                 </ListboxButton>
                                 <ListboxOptions className="absolute mt-2 w-full bg-gray-700 text-white rounded-lg shadow-md">
-                                    {algorithms.map((algo) => (
+                                    {algorithms.map((algo: Algorithm) => (
                                         <ListboxOption key={algo.id} value={algo} className="px-4 py-2 cursor-pointer m-1 rounded-md select-none hover:bg-gray-600">
                                             {algo.name}
                                         </ListboxOption>

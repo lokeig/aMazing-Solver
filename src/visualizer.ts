@@ -1,6 +1,6 @@
-import { Grid, Node } from "./Board.tsx";
-import { Action, LookupAction, Maze, MazeSolver, MoveAction, Path, Pos, step_in_dir } from "../maze.ts";
-import { getNodeID } from "../utils.ts";
+import { Grid, Node } from "./components/Board.tsx";
+import { Maze, MazeSolver, Cell, Action, LookupAction, MoveAction, Path, Pos, step_in_dir } from "./maze.ts";
+import { getNodeID } from "./utils.ts";
 
 function gridToMaze(grid: Grid): Maze {
     return {
@@ -8,8 +8,8 @@ function gridToMaze(grid: Grid): Maze {
         end: { x: grid.end.col, y: grid.end.row },
         width: grid.nodes[0].length,
         height: grid.nodes.length,
-        cells: grid.nodes.map((row: Node[]) =>
-            row.map((node: Node) => (node.isWall ? "wall" : "empty"))
+        cells: grid.nodes.map((row: Node[]): Cell[] =>
+            row.map((node: Node): Cell => (node.isWall ? "wall" : "empty"))
         ),
     };
 }
@@ -23,7 +23,7 @@ export async function visualize(grid: Grid, solver: MazeSolver): Promise<void> {
 
     for (let i: number = 0; i < lookups.length; i++) {
         const action: LookupAction = lookups[i];
-        await new Promise<void>((resolve) => {
+        await new Promise<void>((resolve): void => {
             setTimeout((): void => {
                 const node: Node = grid.nodes[action.pos.y][action.pos.x];
                 const cell: HTMLElement | null = document.getElementById(getNodeID(node.row, node.col));
@@ -38,11 +38,11 @@ export async function visualize(grid: Grid, solver: MazeSolver): Promise<void> {
     let cur: Pos = { ...maze.start };
     for (let i: number = 0; i < moves.length; i++) {
         const action: MoveAction = moves[i];
-        await new Promise<void>((resolve) => {
+        await new Promise<void>((resolve): void => {
             setTimeout((): void => {
                 cur = step_in_dir(cur, action.dir);
-                const node = grid.nodes[cur.y][cur.x];
-                const cell = document.getElementById(getNodeID(node.row, node.col));
+                const node: Node = grid.nodes[cur.y][cur.x];
+                const cell: HTMLElement | null = document.getElementById(getNodeID(node.row, node.col));
                 cell?.classList.add("path");
                 resolve();
             }, 10);

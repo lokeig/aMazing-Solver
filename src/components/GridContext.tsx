@@ -2,7 +2,7 @@ import { ReactNode, Dispatch, SetStateAction, createContext, useContext, useStat
 import { Grid } from "./Board.tsx";
 import { makeGrid } from "../utils.ts";
 
-interface GridState {
+type GridState = {
     grid: Grid;
     setGrid: Dispatch<SetStateAction<Grid>>;
 }

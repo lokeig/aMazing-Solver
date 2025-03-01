@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useGrid } from "./GridContext.tsx";
 import { makeGrid, getNodeID } from "../utils.ts";
 import clsx from "clsx";
 
-export interface Node {
+export type Node = {
     row: number;
     col: number;
     isStart?: boolean;
@@ -11,7 +11,7 @@ export interface Node {
     isWall?: boolean;
 }
 
-export interface Grid {
+export type Grid = {
     nodes: Node[][];
     start: Node;
     end: Node;
@@ -33,7 +33,7 @@ function Board() {
         setGrid(makeGrid(rows, cols));
     }, [setGrid]);
 
-    const editWall = (row: number, col: number) => {
+    const editWall = (row: number, col: number): void => {
         const node: Node = grid.nodes[row][col];
         const cell: HTMLElement | null = document.getElementById(getNodeID(row, col));
         if (cell && !node.isStart && !node.isEnd) {
@@ -47,7 +47,7 @@ function Board() {
         }
     };
 
-    const moveNode = (row: number, col: number) => {
+    const moveNode = (row: number, col: number): void => {
         if (grid.nodes[row][col].isWall) return;
         if ((dragRef.current === "start" && grid.end.row === row && grid.end.col === col) ||
             (dragRef.current === "end" && grid.start.row === row && grid.start.col === col)) {
@@ -67,8 +67,8 @@ function Board() {
 
     const updateGrid = (): void => {
         setGrid((prev: Grid): Grid => {
-            const nodes = prev.nodes.map((row: Node[], i: number) =>
-                row.map((node: Node, j: number) => ({
+            const nodes: Node[][] = prev.nodes.map((row: Node[], i: number): Node[] =>
+                row.map((node: Node, j: number): Node => ({
                     row: node.row,
                     col: node.col,
                     isWall: document.getElementById(getNodeID(i, j))?.classList.contains("wall"),
@@ -92,7 +92,7 @@ function Board() {
         }
     };
 
-    const handleMouseEnter = (row: number, col: number) => {
+    const handleMouseEnter = (row: number, col: number): void => {
         if (dragRef.current) {
             moveNode(row, col);
         } else if (wallRef.current) {
