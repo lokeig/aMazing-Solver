@@ -1,8 +1,10 @@
 import { type Decl, type Block, type Expr, type Int, make_decl, make_var, make_int, make_arr, make_unary, make_call, make_access, Stmt, make_lambda, make_binary, Asgmt, make_assignment, make_if_else, IfElse, While, make_while, Return, make_return, make_nop, make_continue, make_break, make_block } from "./ir";
 import { token_err_name, TokenType, type Token } from "./tokenizer";
 
+// function operating on the token stack
 type StackOp = () => Token;
 
+// returns the operator precedence (higher number should be evaluated first)
 function operator_precedence(symbol: string): number {
     switch (symbol) {
         case "||": return 1;
@@ -23,9 +25,11 @@ function operator_precedence(symbol: string): number {
     }
 }
 
+// throws unexpected token syntax error 
 function unexpected(token: Token): never {
     throw new SyntaxError(`Unexpected ${token_err_name(token.type)} at line ${token.ln}, column ${token.col}.`);
 }
+// throws unexpected token syntax error describing was what expected
 function expect_type(type: TokenType, token: Token): Token {
     if (token.type === type) {
         return token;
@@ -36,6 +40,7 @@ function expect_type(type: TokenType, token: Token): Token {
     }
 }
 
+// returns the digit value in any base <= 36 or null if not a digit in that base
 function char_val_in_base(char: string, base: number): number | null {
     let val;
     if (char >= "0" && char <= "9") {
@@ -54,14 +59,15 @@ function char_val_in_base(char: string, base: number): number | null {
         return null;
     }
 }
+// converts integer token to integer value
 function parse_int(token: Token): Int {
     const str = token.str;
-    let i = 0;
-    let base = 10;
-    if (str.startsWith("0x") || str.startsWith("0X")) {
+    let i = 0; // index of where the actual integer starts
+    let base = 10; // default to decimal
+    if (str.startsWith("0x") || str.startsWith("0X")) { // hexadecimal
         i = 2;
         base = 16;
-    } else if (str.startsWith("0b") || str.startsWith("0B")) {
+    } else if (str.startsWith("0b") || str.startsWith("0B")) { // binary
         i = 2;
         base = 2;
     }
@@ -69,10 +75,10 @@ function parse_int(token: Token): Int {
     let val: number | null = null;
     while (i < str.length) {
         const char = str[i++];
-        if (char === "_") continue;
+        if (char === "_") continue; // ignore underscores
 
         const char_val = char_val_in_base(char, base);
-        if (char_val === null) {
+        if (char_val === null) { // invalid digit
             throw new SyntaxError(
                 `Invalid digit '${char}' in base ${base} integer literal at line ${token.ln}, column ${token.col}.`
             );
@@ -83,13 +89,15 @@ function parse_int(token: Token): Int {
         }
     }
 
-    if (val === null) {
+    if (val === null) { // must contain at least one digit
         throw new SyntaxError(`Invlaid integer literal at line ${token.ln}, column ${token.col}.`);
     }
 
     return make_int(val);
 }
 
+// parse a list of elements parsed with elem_parser, separated by a token in delim
+// and ending with a token in end which is not consumed
 function parse_list<T>(
     peek: StackOp, consume: StackOp,
     delim: TokenType[], end: TokenType[],
@@ -108,12 +116,14 @@ function parse_list<T>(
     }
 }
 
+// parse all unary postfix operators on current term
 function parse_unary(peek: StackOp, consume: StackOp, operand: Expr): Expr {
     const t = peek();
 
     let res: Expr;
     switch (t.type) {
-        case TokenType.LPAREN:
+        case TokenType.LPAREN: // function call
+            // ( x , y , z )
             consume();
             const args = parse_list(
                 peek, consume,
@@ -123,7 +133,8 @@ function parse_unary(peek: StackOp, consume: StackOp, operand: Expr): Expr {
             expect_type(TokenType.RPAREN, consume());
             res = make_call(operand, args);
             break;
-        case TokenType.LSQUARE:
+        case TokenType.LSQUARE: // array subscripting
+            // [ x ]
             consume();
             const i = parse_expr(peek, consume, [TokenType.RSQUARE]);
             expect_type(TokenType.RSQUARE, consume());
@@ -136,19 +147,20 @@ function parse_unary(peek: StackOp, consume: StackOp, operand: Expr): Expr {
     // recursive to allow stacked postfix
     return parse_unary(peek, consume, res);
 }
+// parse all unary operators on current term and parenthesis grouping
 function parse_term(peek: StackOp, consume: StackOp): Expr {
     const t = consume();
 
     let res: Expr;
     switch (t.type) {
-        case TokenType.NAME:
+        case TokenType.NAME: // variable name
             res = make_var(t.str);
             break;
-        case TokenType.INT:
+        case TokenType.INT: // integer literal
             res = parse_int(t);
             break
 
-        case TokenType.FN:
+        case TokenType.FN: // function literal
             // fn ( x, y, z ) { ... }
             expect_type(TokenType.LPAREN, consume());
             const params = parse_list(
@@ -164,10 +176,12 @@ function parse_term(peek: StackOp, consume: StackOp): Expr {
             break;
 
         case TokenType.LPAREN: // regular parenthesis grouping
+            // ( x )
             res = parse_expr(peek, consume, [TokenType.RPAREN]);
             expect_type(TokenType.RPAREN, consume());
             break;
         case TokenType.LSQUARE: // array literal
+            // [ x , y , z ]
             res = make_arr(parse_list(
                 peek, consume,
                 [TokenType.COMMA], [TokenType.RSQUARE],
@@ -176,6 +190,7 @@ function parse_term(peek: StackOp, consume: StackOp): Expr {
             expect_type(TokenType.RSQUARE, consume());
             break;
 
+        // unary prefix operators
         case TokenType.EXLAMATION:
         case TokenType.PLUS:
         case TokenType.MINUS:
@@ -186,41 +201,68 @@ function parse_term(peek: StackOp, consume: StackOp): Expr {
         default: unexpected(t);
     }
 
-    // grab postfix
+    // parse postfix
     return parse_unary(peek, consume, res);
 }
+
+// checks wether t is a token
+function is_token(t: Expr | Token): t is Token {
+    return "type" in t && Object.values(TokenType).includes(t.type)
+}
+// converts infix notation to postfix notation
+function shunting_yard(input: (Expr | Token)[]): (Expr | Token)[] {
+    const output: (Expr | Token)[] = [];
+    const operator: Token[] = []
+
+    for (const t of input) {
+        if (is_token(t)) switch (t.type) {
+            case TokenType.LPAREN:
+                operator.push(t);
+                break;
+            case TokenType.RPAREN:
+                while (true) {
+                    const top = operator.pop();
+                    if (top === undefined) unexpected(t); // mismatched parenthesis
+                    else if (top.type === TokenType.LPAREN) break;
+                    else output.push(top);
+                }
+                break
+            default:
+                while (true) {
+                    const top = operator.at(-1);
+                    if (top === undefined || top.type === TokenType.LPAREN) break;
+                    if (operator_precedence(top.str) < operator_precedence(t.str)) break;
+                    operator.pop();
+                    output.push(top);
+                }
+                operator.push(t);
+                break;
+        } else { // value
+            output.push(t);
+        }
+    }
+    while (true) {
+        const top = operator.pop();
+        if (top === undefined) break;
+        else if (top.type === TokenType.LPAREN) unexpected(top) // mismatched parenthesis
+        else output.push(top);
+    }
+
+    return output;
+}
+// parse any expression, stopping when a token in end is encountered at a valid position
 function parse_expr(peek: StackOp, consume: StackOp, end: TokenType[]): Expr {
-    type Value = { tag: "value", val: Expr };
-    type Operator = { tag: "operator", token: Token, symbol: string, precedence: number };
-    type LParen = { tag: "left", token: Token };
-    type RParen = { tag: "right", token: Token };
-
-    function make_value(val: Expr): Value {
-        return { tag: "value", val };
-    }
-    function make_operator(token: Token): Operator {
-        return { tag: "operator", token, symbol: token.str, precedence: operator_precedence(token.str) };
-    }
-    function make_lparen(token: Token): LParen {
-        return { tag: "left", token };
-    }
-    function make_rparen(token: Token): RParen {
-        return { tag: "right", token };
-    }
-
-    const input: (Value | Operator | LParen | RParen)[] = [
-        make_value(parse_term(peek, consume))
+    // evaluate terms as infix
+    const infix: (Expr | Token)[] = [
+        parse_term(peek, consume)
     ];
-
     while (!end.includes(peek().type)) {
         const t = consume();
         switch (t.type) {
+            // should not be present after parse_term but left in case that would need changing
             case TokenType.LPAREN:
-                input.push(make_lparen(t));
-                break;
             case TokenType.RPAREN:
-                input.push(make_rparen(t));
-                break;
+            // valid operators
             case TokenType.LANGLE:
             case TokenType.RANGLE:
             case TokenType.EQEQ:
@@ -234,68 +276,35 @@ function parse_expr(peek: StackOp, consume: StackOp, end: TokenType[]): Expr {
             case TokenType.STAR:
             case TokenType.SLASH:
             case TokenType.PERCENT:
-                input.push(make_operator(t));
+                infix.push(t);
                 break;
 
             default: unexpected(t);
         }
-        input.push(make_value(parse_term(peek, consume)));
+        infix.push(parse_term(peek, consume));
     }
 
-    const output: (Value | Operator)[] = []
-    const operator: (Operator | LParen)[] = []
+    // convert to postfix
+    const postfix = shunting_yard(infix);
 
-    // shunting yard algorithm
-    for (const t of input) {
-        switch (t.tag) {
-            case "value":
-                output.push(t);
-                break;
-            case "operator":
-                while (true) {
-                    const top = operator.at(-1);
-                    if (top === undefined || top.tag === "left") break;
-                    if (top.precedence < t.precedence) break;
-                    operator.pop();
-                    output.push(top);
-                }
-                operator.push(t);
-                break;
-            case "left":
-                operator.push(t);
-                break;
-            case "right":
-                while (true) {
-                    const top = operator.pop();
-                    if (top === undefined) unexpected(t.token); // mismatched parenthesis
-                    else if (top.tag === "left") break;
-                    else output.push(top);
-                }
-        }
-    }
-    while (true) {
-        const top = operator.pop();
-        if (top === undefined) break;
-        else if (top.tag === "left") unexpected(top.token) // mismatched parenthesis
-        else output.push(top);
-    }
-    // end of shunting yard
-
+    // evaluate postfix
     const stack: Expr[] = [];
-    for (const t of output) {
-        if (t.tag === "value") {
-            stack.push(t.val);
-        } else {
+    for (const t of postfix) {
+        if (is_token(t)) {
+            // pop top 2 to use as arguments and push result back on top
             const right = stack.pop();
             const left = stack.pop();
-            if (right === undefined || left === undefined) unexpected(t.token) // not sure if this can occur
-            stack.push(make_binary(t.symbol, left, right));
+            if (right === undefined || left === undefined) unexpected(t) // not sure if this can occur
+            stack.push(make_binary(t.str, left, right));
+        } else {
+            stack.push(t);
         }
     }
     if (stack.length !== 1) throw new SyntaxError("Invalid Expression."); // not sure if this can occur
     return stack[0];
 }
 
+// parse declaration statement
 function parse_decl(peek: StackOp, consume: StackOp): Decl {
     // var name = ... ;
     expect_type(TokenType.VAR, consume());
@@ -305,6 +314,7 @@ function parse_decl(peek: StackOp, consume: StackOp): Decl {
     expect_type(TokenType.SEMICOLON, consume());
     return make_decl(name, expr);
 }
+// parse expression or assignment statement
 function parse_expr_stmt(peek: StackOp, consume: StackOp): Asgmt | Expr {
     // expr ;
     // expr = ... ;
@@ -318,6 +328,7 @@ function parse_expr_stmt(peek: StackOp, consume: StackOp): Asgmt | Expr {
         return make_assignment(left, right);
     } else unexpected(t);
 }
+// parses if or if-else statement
 function parse_if_else(peek: StackOp, consume: StackOp): IfElse {
     // if ( expr ) stmt else stmt
     // if ( expr ) stmt
@@ -335,6 +346,7 @@ function parse_if_else(peek: StackOp, consume: StackOp): IfElse {
         return make_if_else(pred, on_true, null);
     }
 }
+// parses while statement
 function parse_while(peek: StackOp, consume: StackOp): While {
     // while ( expr ) stmt
     expect_type(TokenType.WHILE, consume());
@@ -345,6 +357,7 @@ function parse_while(peek: StackOp, consume: StackOp): While {
     return make_while(pred, body);
 }
 
+// parses return or return value statement
 function parse_return(peek: StackOp, consume: StackOp): Return {
     // return ;
     // return expr ;
@@ -359,6 +372,8 @@ function parse_return(peek: StackOp, consume: StackOp): Return {
         return make_return(val);
     }
 }
+
+// parses any statement
 function parse_stmt(peek: StackOp, consume: StackOp): Stmt {
     const t = peek();
     switch (t.type) {
@@ -371,19 +386,23 @@ function parse_stmt(peek: StackOp, consume: StackOp): Stmt {
         case TokenType.RETURN:
             return parse_return(peek, consume);
         case TokenType.CONTINUE:
+            // continue ;
             consume();
             expect_type(TokenType.SEMICOLON, consume());
             return make_continue();
         case TokenType.BREAK:
+            // break ;
             consume();
             expect_type(TokenType.SEMICOLON, consume());
             return make_break();
-        case TokenType.LBRACKET:
+        case TokenType.LBRACKET: // code block
+            // { ... }
             consume();
             const block = parse_block(peek, consume, [TokenType.RBRACKET]);
             expect_type(TokenType.RBRACKET, consume());
             return block;
-        case TokenType.SEMICOLON:
+        case TokenType.SEMICOLON: // no operation
+            // ;
             consume();
             return make_nop();
 
@@ -391,6 +410,7 @@ function parse_stmt(peek: StackOp, consume: StackOp): Stmt {
             return parse_expr_stmt(peek, consume);
     }
 }
+// parse code block stopping when a token in end is encountered at a valid position
 function parse_block(peek: StackOp, consume: StackOp, end: TokenType[]): Block {
     const list: Stmt[] = [];
     while (!end.includes(peek().type)) {
@@ -399,19 +419,28 @@ function parse_block(peek: StackOp, consume: StackOp, end: TokenType[]): Block {
     return make_block(list);
 }
 
+/**
+ * Converts an array of tokens to intermediate representation to use for evaluating.
+ * Throws syntax error when encountering invalid token sequences.
+ * @param tokens The program token array
+ * @returns The parsed program
+ */
 export function parse(tokens: Token[]): Block {
-    let i: number = 0;
+    let i: number = 0; // treat tokens as stack with i pointing to the top
 
+    // must have an end of file
     if (!tokens.map(t => t.type).includes(TokenType.EOF)) {
         throw new SyntaxError("No end of file.");
     }
 
+    // return the top of the token "stack"
     function peek(): Token {
         return tokens[i];
     }
+    // remove and return the top of the "stack"
     function consume(): Token {
         const t = tokens[i];
-        // stop before end of file
+        // never remove the end of file
         if (t.type !== TokenType.EOF) i++;
         return t;
     }

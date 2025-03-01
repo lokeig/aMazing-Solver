@@ -1,0 +1,15 @@
+When entering the website you are presented with a grid that fills most of the screen. The size of the grid changes when you zoom in or out and refresh the page. On the left side, there is a green node and opposite side on the right, there is a red node. The green one represents the maze’s starting position, while the red node marks the goal. 
+
+Clicking on a blank node in the grid turns it black, meaning it is a wall that can not be walked through. Clicking on a black node returns it blank (white colored) meaning it is walkable.
+
+At the top of the screen, a dark blue header contains three clickable buttons at its center. 
+
+\begin{enumerate}
+    \item Algorithm - opens a drop down menu with all available maze solving algorithms. Clicking on one selects it to be used to solve mazes.  
+    \item Generate maze -  recursively generates a maze that fills the grid.
+    \item Clear canvas - Returns the state of the grid to its original position by turning every node except green and red blank. 
+\end{enumerate}
+
+On the right of the header, there is a button that says Run Maze. Clicking it starts an animation of the selected algorithm attempting the current maze. First purple is drawn to show nodes that the algorithm has visited.  After visiting the end node, a yellow path is drawn from green to red, showing the solution the algorithm found. 
+
+Below the header, an explanation of all colours can be found.
