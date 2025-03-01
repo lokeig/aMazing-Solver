@@ -1,5 +1,6 @@
-import { Grid, Node } from "./components/Board.tsx";
-import { Maze, MazeSolver, Cell, Action, LookupAction, MoveAction, Path, Pos, step_in_dir } from "./maze.ts";
+import type { Grid, Node } from "./components/Board.tsx";
+import type { Maze, MazeSolver, Cell, Action, LookupAction, MoveAction, Path, Pos } from "./maze.ts";
+import { step_in_dir } from "./maze.ts";
 import { getNodeID } from "./utils.ts";
 
 function gridToMaze(grid: Grid): Maze {

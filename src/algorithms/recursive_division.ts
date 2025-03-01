@@ -1,4 +1,4 @@
-import { Grid, Node } from "../components/Board.tsx";
+import type { Grid, Node } from "../components/Board.tsx";
 
 type Axis = "H" | "V";
 

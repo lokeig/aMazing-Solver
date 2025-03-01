@@ -9,7 +9,7 @@ export type Node = {
     isStart?: boolean;
     isEnd?: boolean;
     isWall?: boolean;
-}
+};
 
 export type Grid = {
     nodes: Node[][];
@@ -17,7 +17,7 @@ export type Grid = {
     end: Node;
     rows: number;
     cols: number;
-}
+};
 
 function Board() {
     const { grid, setGrid } = useGrid();

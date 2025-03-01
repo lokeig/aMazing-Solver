@@ -1,4 +1,4 @@
-import { Grid, Node } from "./components/Board.tsx";
+import type { Grid, Node } from "./components/Board.tsx";
 
 export function getNodeID(row: number, col: number): string {
     return `node-${row}-${col}`;
