@@ -68,9 +68,9 @@ const routing_alg_program = `
             }
         } else {
             if (src_y > dst_y) {
-                return [right, up, left];
-            } else if (src_y < dst_y) {
                 return [left, down, right];
+            } else if (src_y < dst_y) {
+                return [right, up, left];
             } else {
                 return [];
             }
