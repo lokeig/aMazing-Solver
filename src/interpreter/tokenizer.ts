@@ -49,10 +49,23 @@ export type Token = {
     col: number
 };
 
+/**
+ * Token constructor
+ * @param type The type of token
+ * @param str The complete string of the token
+ * @param ln The 1-indexed line number of the token
+ * @param col The 1-indexed column number of the first character in the token
+ * @returns A new Token
+ */
 export function make_token(type: TokenType, str: string, ln: number, col: number): Token {
     return { type, str, ln, col };
 }
 
+/**
+ * The name of the token to use in error messages
+ * @param type The type of token
+ * @returns A string describing the type of token
+ */
 export function token_err_name(type: TokenType): string {
     switch (type) {
         case TokenType.NAME: return "name";
@@ -92,14 +105,19 @@ export function token_err_name(type: TokenType): string {
     }
 }
 
+// whether string is a valid integer literal
 function is_int(s: string): boolean {
+    // starts with digit and contains only underscores, digits and letters
     return /^[0-9][_0-9a-zA-Z]*$/.test(s);
 }
 
+// wether string is a valid variable name or keyword
 function is_name(s: string): boolean {
+    // starts with underscore or letter and contains only underscores, digits and letters
     return /^[_a-zA-Z][_0-9a-zA-Z]*$/.test(s);
 }
 
+// the type of the keyword or null if it is not a valid keyword
 function get_keyword(s: string): TokenType | null {
     switch (s) {
         case "var": return TokenType.VAR;
@@ -116,6 +134,7 @@ function get_keyword(s: string): TokenType | null {
     }
 }
 
+// the type of the symbol or null if it is not a valid symbol
 function get_symbol(s: string): TokenType | null {
     switch (s) {
         case "(": return TokenType.LPAREN;
@@ -150,6 +169,7 @@ function get_symbol(s: string): TokenType | null {
     }
 }
 
+// the type of the token or null if it is not a valid token
 function get_token_type(s: string): TokenType | null {
     return get_keyword(s)
         ?? get_symbol(s)
@@ -158,17 +178,24 @@ function get_token_type(s: string): TokenType | null {
                 : null);
 }
 
+/**
+ * Converts a program string to an array of tokens to use for parsing.
+ * Throws syntax error when encountering invalid character sequences.
+ * @param s The program string
+ * @param tabsize What multiple of column number to jump to when encountering a tab character
+ * @returns The tokenized program
+ */
 export function tokenize(s: string, tabsize: number = 4): Token[] {
     const tokens: Token[] = []
 
     let ln: number = 1;
     let col: number = 1;
 
-    let current_ln: number = ln;
-    let current_col: number = col;
+    let current_ln: number = ln; // starting ln of current token
+    let current_col: number = col; // starting col of current token
     let current: string = "";
     for (let i = 0; i <= s.length; i++) {
-        let end_token: boolean = false;
+        let end_token: boolean = false; // whether current should be pushed as a full token this iteration
 
         const char: string | undefined = s[i];
         switch (char) {
@@ -185,16 +212,16 @@ export function tokenize(s: string, tabsize: number = 4): Token[] {
                 end_token = true;
                 break;
             case "\t":
-                col += tabsize - (col - 1) % tabsize; // next multiple of 4 + 1
+                col += tabsize - (col - 1) % tabsize; // next multiple of tabsize + 1 (1-indexed)
                 end_token = true;
                 break;
             case "#": // comment
+                // skip until end of line or end of file
                 while (i < s.length && s[i] !== "\n") {
-                    // skip until end of line or end of file
                     i++;
                     col++;
                 };
-                i--; // read end of line of file as usual
+                i--; // read end of line or file as usual
                 end_token = true;
                 break;
             default:
@@ -212,7 +239,7 @@ export function tokenize(s: string, tabsize: number = 4): Token[] {
         }
 
         if (end_token) {
-            if (current.length > 0) {
+            if (current.length > 0) { // don't push empty tokens
                 const type = get_token_type(current);
                 if (type === null) {
                     throw new SyntaxError(`Unrecognized token '${current}' at line ${ln}, column ${col}.`);
@@ -229,6 +256,7 @@ export function tokenize(s: string, tabsize: number = 4): Token[] {
         }
     }
 
+    // always end with end of file
     tokens.push(make_token(TokenType.EOF, "", current_ln, current_col));
     return tokens;
 }
