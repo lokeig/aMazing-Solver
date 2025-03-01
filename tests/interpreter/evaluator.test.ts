@@ -1,4 +1,4 @@
-import { evaluate, make_rval_arr } from "../../src/interpreter/evaluator";
+import { evaluate, make_arr } from "../../src/interpreter/evaluator";
 import { make_int } from "../../src/interpreter/ir";
 
 test("most simple", () => {
@@ -87,7 +87,7 @@ test("len push pop", () => {
         };
     `, stdout);
     const output = main();
-    expect(output).toStrictEqual(make_rval_arr([
+    expect(output).toStrictEqual(make_arr([
         make_int(1),
         make_int(2)
     ]));
@@ -286,6 +286,34 @@ test("arithmetic operators", () => {
         "[1, 2, 3, 4, 5, 6]"
     ]);
 });
+
+test("modulo", () => {
+    const stdout: string[] = [];
+    const main = evaluate(`
+        var main = fn () {
+            var i = -20;
+            while (i <= 20) {
+                var j = -20;
+                while (j <= 20) {
+                    # don't divide by 0.
+                    if (j != 0) {
+
+                        var a = i % j;
+                        var b = i - j * (i / j);
+
+                        if (a != b) return 1; # make sure it is always the same
+                    } 
+                    j = j + 1;
+                }
+                i = i + 1; 
+            }
+            return 0;
+        };
+    `, stdout);
+    const output = main();
+    expect(output).toStrictEqual(make_int(0));
+    expect(stdout).toStrictEqual([]);
+})
 
 test("order of operations", () => {
     const stdout: string[] = [];

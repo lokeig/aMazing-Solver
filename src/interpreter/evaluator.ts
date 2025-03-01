@@ -1,21 +1,23 @@
-import { is_wall, make_pos, MazeSolver, solver_wrapper } from "../maze";
-import { BinOp, Block, Break, Continue, Expr, is_expr, make_break, make_continue, make_int, Stmt, UnOp, type Int, type Lambda, type Var } from "./ir";
+import { is_wall, make_pos, type MazeSolver, solver_wrapper } from "../maze";
+import { type BinOp, type Block, type Break, type Continue, type Expr, is_expr, make_break, make_continue, make_int, type Stmt, type UnOp, type Int, type Lambda, type Var } from "./ir";
 import { parse } from "./parser";
 import { tokenize } from "./tokenizer";
 
+// Frame in the environment model
 class Env {
-    private parent: Env | null;
-    private frame: Map<string, RValue>;
+    private parent: Env | null; // previous frame
+    private frame: Map<string, RValue>; // name value lookup
 
     constructor(parent: Env | null) {
         this.parent = parent;
         this.frame = new Map();
     }
 
+    // get value of variable with name
     get(name: string): RValue {
         if (this.frame.has(name)) {
             const val = this.frame.get(name);
-            if (val === undefined) {
+            if (val === undefined) { // won't happen currently since you can't declare without value
                 throw new ReferenceError(`'${name}' is undefined.`);
             } else {
                 return val;
@@ -23,22 +25,22 @@ class Env {
         } else if (this.parent === null) {
             throw new ReferenceError(`'${name}' is undeclared.`);
         } else {
-            return this.parent.get(name);
+            return this.parent.get(name); // get from previous frame
         }
     }
 
+    // set value of variable with name
     set(name: string, val: RValue): void {
-        if (val === undefined) {
-            throw new ReferenceError(`Cannot assign undefined to '${name}'.`);
-        } if (this.frame.has(name)) {
+        if (this.frame.has(name)) {
             this.frame.set(name, val);
         } else if (this.parent === null) {
             throw new ReferenceError(`'${name}' is undeclared.`);
         } else {
-            this.parent.set(name, val);
+            this.parent.set(name, val); // set in previous frame
         }
     }
 
+    // declare variable with name and value
     declare(name: string, val: RValue): void {
         if (this.frame.has(name)) {
             throw new ReferenceError(`'${name}' is already declared.`);
@@ -48,60 +50,90 @@ class Env {
     }
 };
 
+// user defined function
 type LocalFun = { tag: "local_fun", lambda: Lambda, env: Env };
+// predeclared function
 type BuiltinFun = { tag: "builtin_fun", f: (args: RValue[]) => RValue | void };
 type Fun = LocalFun | BuiltinFun;
 
-type RValArr = { tag: "r_arr", arr: RValue[] }
-type RValue = Int | Fun | RValArr;
+// actual values
+type Arr = { tag: "r_arr", arr: RValue[] }
+export type RValue = Int | Fun | Arr;
 
-type Ref = { tag: "ref", arr: RValArr, i: number };
+// assignable values that can be read to get rvalues
+type Ref = { tag: "ref", arr: Arr, i: number };
 type LValue = Var | Ref;
 
-type RValRet = { tag: "r_ret", val: RValue | null };
-type JmpStmt = null | RValRet | Continue | Break;
+type Ret = { tag: "r_ret", val: RValue | null };
+type JmpStmt = null | Ret | Continue | Break;
 
+/**
+ * RValue constructor for predeclared functions.
+ * @param f The function to be called
+ * @returns A new RValue
+ */
 export function make_builtin(f: (args: RValue[]) => RValue | void): BuiltinFun {
     return { tag: "builtin_fun", f };
 }
+/**
+ * RValue constructor for user defined function
+ * @param lambda The parsed lambda function to evaluate when called
+ * @param env The environment the function will point to when called 
+ * @returns A new RValue
+ */
 export function make_fun(lambda: Lambda, env: Env): LocalFun {
     return { tag: "local_fun", lambda, env };
 }
-export function make_rval_arr(arr: RValue[]): RValArr {
+/**
+ * RValue constructor for arrays.
+ * @param arr An array of the elements the array should include
+ * @returns A new RValue
+ */
+export function make_arr(arr: RValue[]): Arr {
     return { tag: "r_arr", arr };
 }
-function make_rval_ret(val: RValue | null): RValRet {
+// RValue constructor for return statements
+function make_ret(val: RValue | null): Ret {
     return { tag: "r_ret", val };
 }
-function make_ref(arr: RValArr, i: number): Ref {
+// LValue constructor for array subscripts
+function make_ref(arr: Arr, i: number): Ref {
     return { tag: "ref", arr, i };
 }
 
+// Wether val is an LValue
 function is_lval(val: RValue | LValue): val is LValue {
     return ["var", "ref"].includes(val.tag);
 }
+// Wether val is an integer
 function is_int(val: RValue): val is Int {
     return val.tag === "int";
 }
+// Wether val is a predefined function
 function is_builtin(val: RValue): val is BuiltinFun {
     return val.tag === "builtin_fun";
 }
+// Wether val is a user defined function
 function is_local(val: RValue): val is LocalFun {
     return val.tag === "local_fun";
 }
+// Wether val is a function
 function is_fun(val: RValue): val is Fun {
     return is_local(val) || is_builtin(val);
 }
-function is_arr(val: RValue): val is RValArr {
+// Wether val is an Array
+function is_arr(val: RValue): val is Arr {
     return val.tag === "r_arr";
 }
 
+// The name of the type to use in error messages
 function type_err_name(t: RValue): string {
     if (is_int(t)) return "integer";
     if (is_fun(t)) return "function";
     if (is_arr(t)) return "array";
-    return "{ error }";
+    return "{ error }"; // can't happen
 }
+// throw error unless the length of argv matches argc
 function enforce_argc(argc: number, argv: RValue[]): void {
     if (argc < argv.length) {
         throw new TypeError("Too many arguments in function call.");
@@ -110,52 +142,60 @@ function enforce_argc(argc: number, argv: RValue[]): void {
     }
 }
 
+// whether variable is truthy
 function is_truthy(val: RValue): boolean {
     if (is_int(val)) return val.val !== 0;
     if (is_fun(val)) return true;
     if (is_arr(val)) return val.arr.length > 0;
-    return false;
+    return false; // can't happen
 }
+// whether to values are equal
 function is_eq(left: RValue, right: RValue) {
-    if (left.tag !== right.tag) return make_int(0);
-    if (is_int(left) && is_int(right)) return make_int(left.val === right.val ? 1 : 0);
-    return make_int(left === right ? 1 : 0);
+    if (left.tag !== right.tag) return make_int(0); // type mismatch
+    if (is_int(left) && is_int(right)) return make_int(left.val === right.val ? 1 : 0); // integers are special
+    return make_int(left === right ? 1 : 0); // must be the same objects
 }
 
+// get the value from an lvalue or just return the rvalue
 function get_rval(val: RValue | LValue, env: Env): RValue {
-    if (val.tag === "var") {
+    if (val.tag === "var") { // variable lookup
         return env.get(val.name);
-    } else if (val.tag === "ref") {
-        if (0 <= val.i && val.i < val.arr.arr.length) {
+    } else if (val.tag === "ref") { // array subscript
+        if (0 <= val.i && val.i < val.arr.arr.length) { // make sure it's not out of range
             return val.arr.arr[val.i];
+            // i don't believe this should ever error
         } else throw new RangeError(`${val.i} is outside the range of array with length ${val.arr.arr.length}`);
-    } else {
+    } else { // rvalue to begin with
         return val;
     }
 }
+// assign to lvalue
 function set_lval(lval: LValue, rval: RValue, env: Env): void {
-    if (lval.tag === "var") {
+    if (lval.tag === "var") { // variable assignment
         env.set(lval.name, rval);
-    } else if (0 <= lval.i && lval.i < lval.arr.arr.length) {
+    } else if (0 <= lval.i && lval.i < lval.arr.arr.length) { // array subscript
         lval.arr.arr[lval.i] = rval;
+        // i don't believe this should ever error
     } else throw new RangeError(`${lval.i} is outside the range of array with length ${lval.arr.arr.length}`);
 }
+// declare variable name
 function decl_var(variable: Var, rval: RValue, env: Env): void {
     env.declare(variable.name, rval);
 }
 
+// evaluate unary prefix operator
 function eval_unary(op: UnOp, env: Env): RValue {
     let oper: RValue;
     switch (op.symbol) {
-        case "!":
+        case "!": // logical not
             oper = get_rval(eval_expr(op.operand, env), env);
             return make_int(is_truthy(oper) ? 0 : 1);
-        case "+":
+        case "+": // no nothing
             oper = get_rval(eval_expr(op.operand, env), env);
             if (is_int(oper)) {
                 return oper;
             } else break;
-        case "-":
+        case "-": // negate value
             oper = get_rval(eval_expr(op.operand, env), env);
             if (is_int(oper)) {
                 return make_int(-oper.val);
@@ -165,17 +205,18 @@ function eval_unary(op: UnOp, env: Env): RValue {
     }
     throw new TypeError(`Invalid type '${type_err_name(oper)}' in unary operator '${op.symbol}'.`);
 }
+// evaluate binary operator
 function eval_binary(op: BinOp, env: Env): RValue {
     let left: RValue;
     let right: RValue;
     switch (op.symbol) {
         case "||":
             left = get_rval(eval_expr(op.left, env), env);
-            if (is_truthy(left)) return left;
+            if (is_truthy(left)) return left; // short-circuit
             else return get_rval(eval_expr(op.right, env), env);
         case "&&":
             left = get_rval(eval_expr(op.left, env), env);
-            if (!is_truthy(left)) return left;
+            if (!is_truthy(left)) return left; // short-circuit
             else return get_rval(eval_expr(op.right, env), env);
         case "==":
             left = get_rval(eval_expr(op.left, env), env);
@@ -212,10 +253,10 @@ function eval_binary(op: BinOp, env: Env): RValue {
         case "+":
             left = get_rval(eval_expr(op.left, env), env);
             right = get_rval(eval_expr(op.right, env), env);
-            if (is_int(left) && is_int(right)) {
+            if (is_int(left) && is_int(right)) { // add integers
                 return make_int(left.val + right.val);
-            } else if (is_arr(left) && is_arr(right)) {
-                return make_rval_arr([...left.arr, ...right.arr]); // concatenate arrays
+            } else if (is_arr(left) && is_arr(right)) { // concatenate arrays
+                return make_arr([...left.arr, ...right.arr]);
             } else break;
         case "-":
             left = get_rval(eval_expr(op.left, env), env);
@@ -235,7 +276,7 @@ function eval_binary(op: BinOp, env: Env): RValue {
             if (is_int(left) && is_int(right)) {
                 if (right.val === 0) {
                     throw new RangeError("Division by zero.");
-                } else return make_int(Math.floor(left.val / right.val));
+                } else return make_int(Math.floor(left.val / right.val)); // floor division, not truncation
             } else break;
         case "%":
             left = get_rval(eval_expr(op.left, env), env);
@@ -243,7 +284,7 @@ function eval_binary(op: BinOp, env: Env): RValue {
             if (is_int(left) && is_int(right)) {
                 if (right.val === 0) {
                     throw new RangeError("Modulo by zero.");
-                } else return make_int(((left.val % right.val) + right.val) % right.val); // always positive
+                } else return make_int(((left.val % right.val) + right.val) % right.val); // smallest modulo, not remainder
             } else break;
 
         default: throw new SyntaxError(`Invalid binary operator '${op.symbol}'.`);
@@ -251,27 +292,33 @@ function eval_binary(op: BinOp, env: Env): RValue {
 
     throw new TypeError(`Invalid types '${type_err_name(left)}', '${type_err_name(right)}' in binary operator '${op.symbol}'.`);
 }
+// evaluate function call
 function eval_call(f: Fun, args: RValue[]): RValue {
-    if (is_builtin(f)) {
-        return f.f(args) ?? make_int(0);
-    } else {
+    if (is_builtin(f)) { // predefined
+        return f.f(args) ?? make_int(0); // return 0 by default
+    } else { // user defined
         enforce_argc(f.lambda.params.length, args);
+        // declare parameters in new frame
         const inner_env = new Env(f.env);
         f.lambda.params.forEach((v, i) => decl_var(v, args[i], inner_env));
         const jmp = eval_block(f.lambda.body, inner_env);
         if (jmp !== null && jmp.tag === "r_ret" && jmp.val !== null) {
+            // value was returned
             return jmp.val;
         } else {
-            return make_int(0); // return 0 by default
+            // return 0 by default
+            return make_int(0);
         }
     }
 }
-function eval_access(arr: RValArr, i: number): Ref {
-    if (0 <= i && i < arr.arr.length) {
+// evaluate array subscripting
+function eval_access(arr: Arr, i: number): Ref {
+    if (0 <= i && i < arr.arr.length) { // make sure it's not out of range
         return make_ref(arr, i);
     } else throw new RangeError(`${i} is outside the range of array with length ${arr.arr.length}`)
 }
 
+// evaluate any expression
 function eval_expr(expr: Expr, env: Env): RValue | LValue {
     switch (expr.tag) {
         case "var":
@@ -279,7 +326,7 @@ function eval_expr(expr: Expr, env: Env): RValue | LValue {
         case "int":
             return expr;
         case "arr":
-            return make_rval_arr(expr.elems.map(e => get_rval(eval_expr(e, env), env)));
+            return make_arr(expr.elems.map(e => get_rval(eval_expr(e, env), env)));
         case "lambda":
             return make_fun(expr, env);
         case "unary_op":
@@ -309,8 +356,9 @@ function eval_expr(expr: Expr, env: Env): RValue | LValue {
     }
 }
 
+// evaluate any statement
 function eval_stmt(stmt: Stmt, env: Env): JmpStmt {
-    if (is_expr(stmt)) {
+    if (is_expr(stmt)) { // regular expression statement
         // get_rval to ensure no invalid references
         get_rval(eval_expr(stmt, env), env);
         return null;
@@ -323,6 +371,7 @@ function eval_stmt(stmt: Stmt, env: Env): JmpStmt {
             decl_var(stmt.var, get_rval(eval_expr(stmt.val, env), env), env);
             return null;
         case "assign":
+            // evaluate right side first in case an array is modified before assigning to a subscript of it
             const rvalue = get_rval(eval_expr(stmt.val, env), env);
             const lvalue = eval_expr(stmt.var, env);
             if (is_lval(lvalue)) {
@@ -352,9 +401,9 @@ function eval_stmt(stmt: Stmt, env: Env): JmpStmt {
             return null;
         case "return":
             if (stmt.val === null) {
-                return make_rval_ret(null);
+                return make_ret(null);
             } else {
-                return make_rval_ret(get_rval(eval_expr(stmt.val, env), env));
+                return make_ret(get_rval(eval_expr(stmt.val, env), env));
             }
         case "continue":
             return make_continue();
@@ -365,6 +414,7 @@ function eval_stmt(stmt: Stmt, env: Env): JmpStmt {
             return eval_block(stmt, inner_env);
     }
 }
+// evaluate a code block
 function eval_block(block: Block, env: Env): JmpStmt {
     for (const stmt of block.body) {
         const jmp = eval_stmt(stmt, env);
@@ -373,17 +423,20 @@ function eval_block(block: Block, env: Env): JmpStmt {
     return null;
 }
 
-function to_string(val: RValue): string {
+// converts a value to string for printing. limiting depth in case array contains itself
+function to_string(val: RValue, max_depth: number = 5): string {
+    if (max_depth == 0) return "...";
     if (is_int(val)) return val.val.toString();
     if (is_local(val)) return `fn (${val.lambda.params.map(param => param.name).join(", ")}) { ... }`;
     if (is_builtin(val)) return "{ builtin function }"
-    if (is_arr(val)) return `[${val.arr.map(to_string).join(", ")}]`;
-    return "{ error }";
+    if (is_arr(val)) return `[${val.arr.map(e => to_string(e, max_depth - 1)).join(", ")}]`;
+    return "{ error }"; // can't happen
 }
 
+// declare the predefined values
 function declare_prelude(env: Env, stdout: string[]): void {
     const e_panic = make_builtin(_args => {
-        throw new Error();
+        throw new Error("panic!");
     });
     const e_print = make_builtin(args => {
         const str = args.map(to_string).join(" ");
@@ -444,27 +497,43 @@ function declare_prelude(env: Env, stdout: string[]): void {
     env.declare("is_fun", e_is_fun);
 }
 
+/**
+ * Evaluates a program and throws an error if it is invalid.
+ * @param program The program string
+ * @param stdout An array the program will print to
+ * @param prelude A map of values that will be predefined to the program
+ * @returns The main function of the program
+ */
 export function evaluate(
     program: string,
     stdout: string[] | null = null,
     prelude: Map<string, RValue> | null = null
 ): (...args: RValue[]) => RValue {
 
-    const env = new Env(null);
-    if (stdout === null) stdout = [];
+    const env = new Env(null); // base frame without parent
+    if (stdout === null) stdout = []; // create new stdout if none was specified
     declare_prelude(env, stdout);
+    // add extra predefined values if specified
     if (prelude !== null) prelude.forEach((rval, name) => env.declare(name, rval));
 
+    // evaluate code
     const program_env = new Env(env);
     const block = parse(tokenize(program));
     eval_block(block, program_env);
 
+    // return main function
     const main = program_env.get("main");
     if (is_local(main)) {
         return (...args) => eval_call(main, args);
     } else throw new TypeError("'main' must be a function.");
 }
 
+/**
+ * Evaluates a program with extra predefined values that can be used to create a maze solving algorithm.
+ * Throws an error if the program is invalid.
+ * @param program The program string
+ * @returns A pair of the created maze solving function and the array the program will print to.
+ */
 export function evaluate_solver(program: string): [MazeSolver, string[]] {
     const stdout: string[] = [];
     const solver = solver_wrapper((
@@ -474,6 +543,7 @@ export function evaluate_solver(program: string): [MazeSolver, string[]] {
         lookup,
         move
     ) => {
+        // more predefined values
         const e_get_x = make_builtin(args => {
             enforce_argc(0, args);
             return make_int(cur().x);
@@ -536,6 +606,7 @@ export function evaluate_solver(program: string): [MazeSolver, string[]] {
             make_int(goal.y)
         ];
 
+        // evaluate and run the program
         const main = evaluate(program, stdout, prelude);
         main(...args);
     });
