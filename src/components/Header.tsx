@@ -27,19 +27,27 @@ function Header() {
     const { grid, setGrid } = useGrid();
     const [selected, setSelected] = useState(algorithms[0]);
 
-    const clearBoard = (): void => {
-        if (!document.querySelector(".wall, .search, .path")) return;
-        setGrid((prev: Grid): Grid => makeGrid(prev.rows, prev.cols));
+    const clearSearch = (): void => {
+        if (!document.querySelector(".search, .path")) return;
         grid.nodes.flat().map((node: Node): void => {
             const cell: HTMLElement | null = document.getElementById(getNodeID(node.row, node.col));
             cell?.classList.remove("search", "path");
         });
+    }
+
+    const clearBoard = (): void => {
+        if (!document.querySelector(".wall, .search, .path")) return;
+        setGrid((prev: Grid): Grid => makeGrid(prev.rows, prev.cols));
+        clearSearch();
     };
 
+    const run = async () => {
+        clearSearch();
+        await visualize(grid, selected.fn);
+    }
+
     const generateMaze = (): void => {
-        if (document.querySelector(".wall, .search, .path")) {
-            clearBoard();
-        }
+        clearBoard();
         setGrid((prev: Grid): Grid => recursiveDivision(prev));
     };
 
@@ -83,7 +91,7 @@ function Header() {
                     <div className="flex space-x-4">
                         <Button
                             className="flex items-center bg-indigo-700 text-white px-5 py-3 rounded-lg shadow-md cursor-pointer hover:bg-indigo-600"
-                            onClick={() => visualize(grid, selected.fn)}
+                            onClick={run}
                         >
                             <PlayIcon className="h-5 w-5 mr-2" /> Run
                         </Button>

@@ -23,7 +23,7 @@ function Board() {
     const { grid, setGrid } = useGrid();
     const boardRef = useRef<HTMLDivElement>(null);
     const wallRef = useRef<"add" | "remove" | null>(null);
-    const dragRef = useRef<"start" | "end" | null>(null);
+    const nodeRef = useRef<"start" | "end" | null>(null);
 
     useEffect((): void => {
         if (!boardRef.current) return;
@@ -49,15 +49,15 @@ function Board() {
 
     const moveNode = (row: number, col: number): void => {
         if (grid.nodes[row][col].isWall) return;
-        if ((dragRef.current === "start" && grid.end.row === row && grid.end.col === col) ||
-            (dragRef.current === "end" && grid.start.row === row && grid.start.col === col)) {
+        if ((nodeRef.current === "start" && grid.end.row === row && grid.end.col === col) ||
+            (nodeRef.current === "end" && grid.start.row === row && grid.start.col === col)) {
             return;
         }
-        if (dragRef.current) {
-            const node: Node = dragRef.current === "start" ? grid.start : grid.end;
-            document.getElementById(getNodeID(node.row, node.col))?.classList.remove(dragRef.current);
-            document.getElementById(getNodeID(row, col))?.classList.add(dragRef.current);
-            if (dragRef.current === "start") {
+        if (nodeRef.current) {
+            const node: Node = nodeRef.current === "start" ? grid.start : grid.end;
+            document.getElementById(getNodeID(node.row, node.col))?.classList.remove(nodeRef.current);
+            document.getElementById(getNodeID(row, col))?.classList.add(nodeRef.current);
+            if (nodeRef.current === "start") {
                 grid.start = { ...grid.start, row, col };
             } else {
                 grid.end = { ...grid.end, row, col };
@@ -83,9 +83,9 @@ function Board() {
     const handleMouseDown = (row: number, col: number): void => {
         const node: Node = grid.nodes[row][col];
         if (node.isStart) {
-            dragRef.current = "start";
+            nodeRef.current = "start";
         } else if (node.isEnd) {
-            dragRef.current = "end";
+            nodeRef.current = "end";
         } else {
             wallRef.current = node.isWall ? "remove" : "add";
             editWall(row, col);
@@ -93,7 +93,7 @@ function Board() {
     };
 
     const handleMouseEnter = (row: number, col: number): void => {
-        if (dragRef.current) {
+        if (nodeRef.current) {
             moveNode(row, col);
         } else if (wallRef.current) {
             editWall(row, col);
@@ -102,7 +102,7 @@ function Board() {
 
     const handleMouseUp = (): void => {
         wallRef.current = null;
-        dragRef.current = null;
+        nodeRef.current = null;
         updateGrid();
     };
 

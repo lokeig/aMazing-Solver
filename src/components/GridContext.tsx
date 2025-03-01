@@ -10,7 +10,7 @@ type GridState = {
 const GridContext = createContext<GridState>({
     grid: makeGrid(0, 0),
     setGrid: () => {
-        throw new Error("setGrid was called outside of GridProvider");
+        throw new Error("setGrid was used outside GridProvider");
     },
 });
 
