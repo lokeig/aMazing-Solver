@@ -49,9 +49,9 @@ function left_selection_try_order(src: Pos, dst: Pos): Direction[] {
         }
     } else {
         if (src.y > dst.y) {
-            return ["right", "up", "left"];
-        } else if (src.y < dst.y) {
             return ["left", "down", "right"];
+        } else if (src.y < dst.y) {
+            return ["right", "up", "left"];
         } else {
             return [];
         }
@@ -103,10 +103,11 @@ export const maze_routing_alg: MazeSolver = solver_wrapper((
                 const try_order = right_hand_rule_try_order(last_move);
                 for (const dir of try_order) {
                     // don't double check same dir after noting there is no productive path
-                    if (MD(cur(), goal) === MD_best && cur().x < goal.x && dir === "right") continue;
-                    if (MD(cur(), goal) === MD_best && cur().x > goal.x && dir === "left") continue;
-                    if (MD(cur(), goal) === MD_best && cur().y < goal.y && dir === "up") continue;
-                    if (MD(cur(), goal) === MD_best && cur().y > goal.y && dir === "down") continue;
+                    const at_best = MD(cur(), goal) === MD_best;
+                    if (at_best && cur().x < goal.x && dir === "right") continue;
+                    if (at_best && cur().x > goal.x && dir === "left") continue;
+                    if (at_best && cur().y < goal.y && dir === "up") continue;
+                    if (at_best && cur().y > goal.y && dir === "down") continue;
 
                     if (try_move(cur(), dir, lookup, move)) {
                         last_move = dir;
