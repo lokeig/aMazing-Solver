@@ -425,7 +425,7 @@ function eval_block(block: Block, env: Env): JmpStmt {
 
 // converts a value to string for printing. limiting depth in case array contains itself
 function to_string(val: RValue, max_depth: number = 5): string {
-    if (max_depth == 0) return "...";
+    if (max_depth === 0) return "..."; // maximum recursion reached
     if (is_int(val)) return val.val.toString();
     if (is_local(val)) return `fn (${val.lambda.params.map(param => param.name).join(", ")}) { ... }`;
     if (is_builtin(val)) return "{ builtin function }"
@@ -439,7 +439,7 @@ function declare_prelude(env: Env, stdout: string[]): void {
         throw new Error("panic!");
     });
     const e_print = make_builtin(args => {
-        const str = args.map(to_string).join(" ");
+        const str = args.map(e => to_string(e)).join(" ");
         // console.log(str);
         stdout.push(str);
     });
