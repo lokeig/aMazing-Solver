@@ -23,7 +23,7 @@ function Editor() {
     };
 
     return (
-        <div className="absolute w-1/2 h-7/10 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+        <div className="absolute w-1/2 h-7/10 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div className="absolute inset-0 w-full h-full bg-gray-800/90 backdrop-blur-2xl rounded-xl" />
 
             <div className="relative w-full h-full p-8 flex flex-col rounded-xl">

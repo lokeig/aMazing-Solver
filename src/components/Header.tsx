@@ -170,7 +170,7 @@ function Header() {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
             >
-                <div>
+                <div className="z-10">
                     <Editor />
                 </div>
             </Transition>
