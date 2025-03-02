@@ -11,12 +11,12 @@ function Editor() {
     const handleKeyDown = (e: KeyboardEvent): void => {
         if (e.key === "Tab") {
             e.preventDefault();
-            const editor = editorRef.current;
+            const editor: HTMLTextAreaElement | null = editorRef.current;
             if (!editor) return;
-            const start = editor.selectionStart;
-            const end = editor.selectionEnd;
+            const start: number = editor.selectionStart;
+            const end: number = editor.selectionEnd;
             setCode(code.slice(0, start) + "\t" + code.slice(end));
-            setTimeout(() => {
+            setTimeout((): void => {
                 editor.selectionStart = editor.selectionEnd = start + 1;
             }, 0);
         }
@@ -35,7 +35,7 @@ function Editor() {
                 </div>
                 <Textarea
                     ref={editorRef}
-                    className="w-full h-9/10 font-mono text-white resize-none focus:outline-none"
+                    className="w-full h-9/10 whitespace-pre-wrap font-mono text-white resize-none focus:outline-none"
                     spellCheck={false}
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
@@ -43,7 +43,6 @@ function Editor() {
                 />
                 <div className="w-full h-px bg-gray-500 my-2" />
                 <Textarea
-                    ref={editorRef}
                     className="w-full h-1/10 font-mono text-red-400 resize-none focus:outline-none"
                     readOnly={true}
                     spellCheck={false}
@@ -55,6 +54,5 @@ function Editor() {
         </div>
     );
 }
-
 
 export default Editor;
