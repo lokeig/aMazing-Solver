@@ -2,6 +2,13 @@
 export type Direction = "up" | "down" | "left" | "right";
 export type Pos = { x: number, y: number };
 export type Cell = "wall" | "empty";
+/**
+ * invariant:
+ * * start != end
+ * * width and height > 0
+ * * cells size correspond to width and height
+ * * the maze is solvable
+ */
 export type Maze = {
     start: Pos,
     end: Pos,
@@ -9,10 +16,6 @@ export type Maze = {
     height: number,
     cells: Cell[][]
 };
-// invariant:
-//   start != end
-//   width and height > 0
-//   cells size correspond to width and height
 
 export type MoveAction = { type: "move", dir: Direction };
 export type LookupAction = { type: "lookup", pos: Pos };
@@ -21,25 +24,69 @@ export type Path = Action[];
 export type MazeSolver = (m: Maze) => Path;
 export type MazeGenerator = (w: number, h: number) => Maze;
 
+// Cell constants
 export const WALL_CELL: Cell = "wall";
 export const EMPTY_CELL: Cell = "empty";
 
+/**
+ * Pos constructor
+ * @param x X coordinate
+ * @param y Y coordinate
+ * @returns A new Pos object
+ */
 export function make_pos(x: number, y: number): Pos {
     return { x, y };
 }
+/**
+ * Checks if two positions are equal.
+ * @param p The first position
+ * @param q The second position
+ * @returns Wether p and q have the same coordinates
+ */
 export function pos_eq(p: Pos, q: Pos): boolean {
     return p.x === q.x && p.y === q.y;
 }
+/**
+ * Finds the cell at a position within a maze.
+ * @param p The position to check
+ * @param m The maze to check
+ * @returns The cell at position p in m
+ */
 export function get_cell(p: Pos, m: Maze): Cell {
     return m.cells[p.y][p.x];
 }
+/**
+ * Changes the cell at a position within a maze.
+ * @param val The new value
+ * @param p The position to change 
+ * @param m The maze to change
+ */
 export function set_cell(val: Cell, p: Pos, m: Maze): void {
     m.cells[p.y][p.x] = val;
 }
-
-export function is_wall(c: Cell): boolean {
-    return c === "wall";
+/**
+ * Check if position is within maze
+ * @param p The position to check
+ * @param m The maze to check
+ * @returns Wether p is within the bounds of m
+ */
+export function within_maze(p: Pos, m: Maze): boolean {
+    return p.x >= 0 && p.y >= 0 && p.x < m.width && p.y < m.height;
 }
+/**
+ * Checks if a cell is a wall.
+ * @param c The cell to check
+ * @returns Wether c is a wall
+ */
+export function is_wall(c: Cell): c is "wall" {
+    return c === WALL_CELL;
+}
+/**
+ * Finds the new position after stepping one cell in a given direction.
+ * @param p The starting position
+ * @param d The direction to move in
+ * @returns The neighboring position of p in direction d
+ */
 export function step_in_dir(p: Pos, d: Direction): Pos {
     switch (d) {
         case "up":
@@ -52,6 +99,45 @@ export function step_in_dir(p: Pos, d: Direction): Pos {
             return make_pos(p.x + 1, p.y);
     }
 }
+
+/**
+ * Action constructor for move actions
+ * @param d The direction to move
+ * @returns A new Action object
+ */
+export function move_action(d: Direction): MoveAction {
+    return { type: "move", dir: d };
+}
+/**
+ * Action constructor for lookup actions
+ * @param d The position to check
+ * @returns A new Action object
+ */
+export function lookup_action(p: Pos): LookupAction {
+    return { type: "lookup", pos: p };
+}
+/**
+ * Check if action is a move action
+ * @param a The action to check
+ * @returns Wether a is a move action
+ */
+export function is_move_action(a: Action): a is MoveAction {
+    return a.type === "move";
+}
+/**
+ * Check if action is a lookup action
+ * @param a The action to check
+ * @returns Wether a is a lookup action
+ */
+export function is_lookup_action(a: Action): a is LookupAction {
+    return a.type === "lookup";
+}
+
+/**
+ * Provides helper functions to use when creating a maze solving algorithm.
+ * @param f The function to use for solving
+ * @returns A MazeSolver using f
+ */
 export function solver_wrapper(
     f: (
         goal: Pos,
@@ -62,15 +148,18 @@ export function solver_wrapper(
     ) => void
 ): MazeSolver {
     return (m: Maze) => {
-        const path: Path = [];
-        let pos: Pos = m.start;
+        const path: Path = []; // the path it followed
+        let pos: Pos = m.start; // the current position
 
+        // get current position
         function cur(): Pos {
             return pos;
         }
+        // check that position is in the bounds of the maze
         function in_bound(p: Pos): boolean {
             return within_maze(p, m);
         }
+        // get the cell at a given position or wall if outside bounds
         function lookup(p: Pos): Cell {
             if (within_maze(p, m)) {
                 path.push(lookup_action(p));
@@ -79,32 +168,24 @@ export function solver_wrapper(
                 return WALL_CELL;
             }
         }
+        // move in a direction
         function move(d: Direction): void {
             path.push(move_action(d));
             pos = step_in_dir(pos, d);
         }
 
+        // call f to solve the maze
         f(m.end, cur, in_bound, lookup, move);
         return path;
     }
 }
 
-export function move_action(d: Direction): MoveAction {
-    return { type: "move", dir: d };
-}
-export function lookup_action(p: Pos): LookupAction {
-    return { type: "lookup", pos: p };
-}
-export function is_move_action(a: Action): a is MoveAction {
-    return a.type === "move";
-}
-export function is_lookup_action(a: Action): a is LookupAction {
-    return a.type === "lookup";
-}
-
-export function within_maze(p: Pos, m: Maze): boolean {
-    return p.x >= 0 && p.y >= 0 && p.x < m.width && p.y < m.height;
-}
+/**
+ * Verify that a path ends at the end and does not go through walls
+ * @param path The path to verify
+ * @param m The maze the path is traversing
+ * @returns Wether path solver m
+ */
 export function verify_path(path: Path, m: Maze): boolean {
     let p = m.start;
 
@@ -210,9 +291,16 @@ export function make_path(str: string): Path | null {
 
     return path;
 }
+/**
+ * Joins to paths into their combined path
+ * @param a The first segment of the path
+ * @param b The second segment of the path
+ * @returns A new path starting with a and continuing with b
+ */
 export function join_paths(a: Path, b: Path): Path {
     return a.concat(b);
 }
 
+// was going to get used but apparently didn't
 export function draw_cell(val: Cell, p: Pos): void { }
 export function draw_maze(m: Maze): void { }
