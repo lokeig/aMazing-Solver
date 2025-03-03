@@ -1,7 +1,7 @@
 # latex
 
 **/*.synctex.gz
-**/*.pdf
+# **/*.pdf
 
 # Logs
 logs
