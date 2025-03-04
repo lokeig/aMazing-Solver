@@ -1,4 +1,4 @@
-import { type Decl, type Block, type Expr, type Int, make_decl, make_var, make_int, make_arr, make_unary, make_call, make_access, Stmt, make_lambda, make_binary, Asgmt, make_assignment, make_if_else, IfElse, While, make_while, Return, make_return, make_nop, make_continue, make_break, make_block } from "./ir";
+import { type Decl, type Block, type Expr, type Int, make_decl, make_var, make_int, make_arr, make_unary, make_call, make_access, type Stmt, make_lambda, make_binary, type Asgmt, make_assignment, make_if_else, type IfElse, type While, make_while, type Return, make_return, make_nop, make_continue, make_break, make_block, type For, make_for } from "./ir";
 import { token_err_name, TokenType, type Token } from "./tokenizer";
 
 // function operating on the token stack
@@ -317,7 +317,7 @@ function parse_decl(peek: StackOp, consume: StackOp): Decl {
 // parse expression or assignment statement
 function parse_expr_stmt(peek: StackOp, consume: StackOp): Asgmt | Expr {
     // expr ;
-    // expr = ... ;
+    // expr = expr ;
     const left = parse_expr(peek, consume, [TokenType.SEMICOLON, TokenType.EQ]);
     const t = consume();
     if (t.type === TokenType.SEMICOLON) {
@@ -356,6 +356,36 @@ function parse_while(peek: StackOp, consume: StackOp): While {
     const body = parse_stmt(peek, consume);
     return make_while(pred, body);
 }
+// parse for statement
+function parse_for(peek: StackOp, consume: StackOp): For {
+    // for ( expr ; expr ; expr ) stmt
+    // for ( expr = expr ; expr ; expr ) stmt
+    // for ( var name = expr ; expr ; expr ) stmt
+    // for ( expr ; expr ; expr = expr ) stmt
+    // for ( expr = expr ; expr ; expr = expr ) stmt
+    // for ( var name = expr ; expr ; expr = expr ) stmt
+    expect_type(TokenType.FOR, consume());
+    expect_type(TokenType.LPAREN, consume());
+    const start = peek().type === TokenType.VAR
+        ? parse_decl(peek, consume)
+        : parse_expr_stmt(peek, consume);
+    const pred = parse_expr(peek, consume, [TokenType.SEMICOLON]);
+    expect_type(TokenType.SEMICOLON, consume());
+
+    let end: Expr | Asgmt;
+    const left = parse_expr(peek, consume, [TokenType.RPAREN, TokenType.EQ]);
+    const t = consume();
+    if (t.type === TokenType.RPAREN) {
+        end = left;
+    } else if (t.type === TokenType.EQ) {
+        const right = parse_expr(peek, consume, [TokenType.RPAREN]);
+        expect_type(TokenType.RPAREN, consume());
+        end = make_assignment(left, right);
+    } else unexpected(t);
+
+    const body = parse_stmt(peek, consume);
+    return make_for(start, pred, end, body);
+}
 
 // parses return or return value statement
 function parse_return(peek: StackOp, consume: StackOp): Return {
@@ -383,6 +413,8 @@ function parse_stmt(peek: StackOp, consume: StackOp): Stmt {
             return parse_if_else(peek, consume);
         case TokenType.WHILE:
             return parse_while(peek, consume);
+        case TokenType.FOR:
+            return parse_for(peek, consume);
         case TokenType.RETURN:
             return parse_return(peek, consume);
         case TokenType.CONTINUE:

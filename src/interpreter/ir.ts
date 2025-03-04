@@ -12,6 +12,7 @@ export type Decl = { tag: "decl", var: Var, val: Expr };
 export type Asgmt = { tag: "assign", var: Expr, val: Expr };
 export type IfElse = { tag: "if_else", pred: Expr, on_true: Stmt, on_false: Stmt };
 export type While = { tag: "while", pred: Expr, body: Stmt };
+export type For = { tag: "for", start: Expr | Decl | Asgmt, pred: Expr, end: Expr | Asgmt, body: Stmt };
 
 export type Return = { tag: "return", val: Expr | null };
 export type Continue = { tag: "continue" };
@@ -19,7 +20,7 @@ export type Break = { tag: "break" };
 export type NOP = { tag: "no_op" };
 
 export type Expr = Var | Int | Arr | Lambda | UnOp | BinOp | Call | Acc;
-export type Stmt = NOP | Expr | Decl | Asgmt | IfElse | While | Return | Continue | Break | Block;
+export type Stmt = NOP | Expr | Decl | Asgmt | IfElse | While | For | Return | Continue | Break | Block;
 export type Block = { tag: "block", body: Stmt[] };
 
 /**
@@ -122,12 +123,23 @@ export function make_if_else(pred: Expr, on_true: Stmt, on_false: Stmt | null): 
 }
 /**
  * While constructor
- * @param pred The predicate expression to determine which branch to choose
+ * @param pred The predicate expression to determine wether to keep looping
  * @param body The statement to evaluate while pred is truthy
  * @returns A new While object
  */
 export function make_while(pred: Expr, body: Stmt): While {
     return { tag: "while", pred, body };
+}
+/**
+ * For constructor
+ * @param start The statement to execute before the loop begins
+ * @param pred The predicate expression to determine wether to keep looping
+ * @param end The expression to evaluate at the end of every loop
+ * @param body The statement to evaluate while pred is truthy
+ * @returns A new For object
+ */
+export function make_for(start: Expr | Decl | Asgmt, pred: Expr, end: Expr | Asgmt, body: Stmt): For {
+    return { tag: "for", start, pred, end, body };
 }
 /**
  * Return constructor

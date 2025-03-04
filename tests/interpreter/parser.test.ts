@@ -1,6 +1,6 @@
 import { tokenize } from "../../src/interpreter/tokenizer";
 import { parse } from "../../src/interpreter/parser";
-import { Block, make_access, make_arr, make_assignment, make_binary, make_block, make_break, make_call, make_continue, make_decl, make_if_else, make_int, make_lambda, make_nop, make_return, make_unary, make_var, make_while } from "../../src/interpreter/ir";
+import { Block, make_access, make_arr, make_assignment, make_binary, make_block, make_break, make_call, make_continue, make_decl, make_for, make_if_else, make_int, make_lambda, make_nop, make_return, make_unary, make_var, make_while } from "../../src/interpreter/ir";
 
 test("empty", () => {
     const str: string = "";
@@ -152,6 +152,56 @@ test("if and while", () => {
                     ])
                 )
             ])
+        )
+    ]);
+    expect(parse(tokenize(str))).toStrictEqual(expected);
+});
+
+test("for", () => {
+
+    const str: string = `
+        for (0; 0; 0);
+        for (x = 0; x < 10; x = x + 1);
+        for (var x = [0]; x; f(x)) {}
+    `;
+    const expected: Block = make_block([
+        make_for(
+            make_int(0),
+            make_int(0),
+            make_int(0),
+            make_nop()
+        ),
+        make_for(
+            make_assignment(
+                make_var("x"),
+                make_int(0)
+            ),
+            make_binary(
+                "<",
+                make_var("x"),
+                make_int(10)
+            ),
+            make_assignment(
+                make_var("x"),
+                make_binary(
+                    "+",
+                    make_var("x"),
+                    make_int(1),
+                )
+            ),
+            make_nop()
+        ),
+        make_for(
+            make_decl(
+                "x",
+                make_arr([make_int(0)])
+            ),
+            make_var("x"),
+            make_call(
+                make_var("f"),
+                [make_var("x")]
+            ),
+            make_block([])
         )
     ]);
     expect(parse(tokenize(str))).toStrictEqual(expected);

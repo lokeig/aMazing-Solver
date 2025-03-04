@@ -179,6 +179,24 @@ test("while", () => {
     expect(stdout).toStrictEqual(["1", "3", "4"]);
 });
 
+test("for", () => {
+    const stdout: string[] = [];
+    const main = evaluate(`
+        var i = 10;
+        for (var i = 0; i < 10; i = i + 1) {
+            if (i == 2) continue;
+            print(i);
+            if (i == 5) break;
+        }
+        fn () {for (0;1;0) return;}();
+
+        var main = fn () {};
+    `, stdout);
+    const output = main();
+    expect(output).toStrictEqual(make_int(0));
+    expect(stdout).toStrictEqual(["0", "1", "3", "4", "5"]);
+});
+
 test("logical operators", () => {
     const stdout: string[] = [];
     const main = evaluate(`

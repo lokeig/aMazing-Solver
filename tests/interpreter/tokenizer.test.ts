@@ -9,13 +9,14 @@ test("empty", () => {
 });
 
 test("keywords", () => {
-    const str: string = "var fn if else while\nreturn continue break";
+    const str: string = "var fn if else while for\nreturn continue break";
     const expected: Token[] = [
         make_token(TokenType.VAR, "var", 1, 1),
         make_token(TokenType.FN, "fn", 1, 5),
         make_token(TokenType.IF, "if", 1, 8),
         make_token(TokenType.ELSE, "else", 1, 11),
         make_token(TokenType.WHILE, "while", 1, 16),
+        make_token(TokenType.FOR, "for", 1, 22),
         make_token(TokenType.RETURN, "return", 2, 1),
         make_token(TokenType.CONTINUE, "continue", 2, 8),
         make_token(TokenType.BREAK, "break", 2, 17),

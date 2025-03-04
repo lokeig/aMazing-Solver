@@ -64,7 +64,7 @@ export type RValue = Int | Fun | Arr;
 type Ref = { tag: "ref", arr: Arr, i: number };
 type LValue = Var | Ref;
 
-type Ret = { tag: "r_ret", val: RValue | null };
+type Ret = { tag: "ret", val: RValue | null };
 type JmpStmt = null | Ret | Continue | Break;
 
 /**
@@ -94,7 +94,7 @@ export function make_arr(arr: RValue[]): Arr {
 }
 // RValue constructor for return statements
 function make_ret(val: RValue | null): Ret {
-    return { tag: "r_ret", val };
+    return { tag: "ret", val };
 }
 // LValue constructor for array subscripts
 function make_ref(arr: Arr, i: number): Ref {
@@ -302,7 +302,7 @@ function eval_call(f: Fun, args: RValue[]): RValue {
         const inner_env = new Env(f.env);
         f.lambda.params.forEach((v, i) => decl_var(v, args[i], inner_env));
         const jmp = eval_block(f.lambda.body, inner_env);
-        if (jmp !== null && jmp.tag === "r_ret" && jmp.val !== null) {
+        if (jmp !== null && jmp.tag === "ret" && jmp.val !== null) {
             // value was returned
             return jmp.val;
         } else {
@@ -395,7 +395,23 @@ function eval_stmt(stmt: Stmt, env: Env): JmpStmt {
                 if (jmp !== null) {
                     if (jmp.tag === "break") break;
                     if (jmp.tag === "continue") continue;
-                    if (jmp.tag === "r_ret") return jmp;
+                    if (jmp.tag === "ret") return jmp;
+                }
+            }
+            return null;
+        case "for":
+            const param_end = new Env(env);
+            for (
+                eval_stmt(stmt.start, param_end);
+                is_truthy(get_rval(eval_expr(stmt.pred, param_end), param_end));
+                eval_stmt(stmt.end, param_end)
+            ) {
+                const inner_env = new Env(param_end);
+                const jmp = eval_stmt(stmt.body, inner_env);
+                if (jmp !== null) {
+                    if (jmp.tag === "break") break;
+                    if (jmp.tag === "continue") continue;
+                    if (jmp.tag === "ret") return jmp;
                 }
             }
             return null;

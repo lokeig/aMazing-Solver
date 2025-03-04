@@ -7,6 +7,7 @@ export enum TokenType {
     IF,
     ELSE,
     WHILE,
+    FOR,
 
     RETURN,
     CONTINUE,
@@ -75,6 +76,7 @@ export function token_err_name(type: TokenType): string {
         case TokenType.IF: return "'if'";
         case TokenType.ELSE: return "'else'";
         case TokenType.WHILE: return "'while'";
+        case TokenType.FOR: return "'for'";
         case TokenType.RETURN: return "'return'";
         case TokenType.CONTINUE: return "'continue'";
         case TokenType.BREAK: return "'break'";
@@ -125,6 +127,7 @@ function get_keyword(s: string): TokenType | null {
         case "if": return TokenType.IF;
         case "else": return TokenType.ELSE;
         case "while": return TokenType.WHILE;
+        case "for": return TokenType.FOR;
 
         case "return": return TokenType.RETURN;
         case "continue": return TokenType.CONTINUE;
