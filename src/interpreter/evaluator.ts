@@ -358,7 +358,7 @@ function eval_expr(expr: Expr, env: Env): RValue | LValue {
 
 // evaluate any statement
 function eval_stmt(stmt: Stmt, env: Env): JmpStmt {
-    if (is_expr(stmt)) { // regular expression statement
+    if (is_expr(stmt)) { // expression statement
         // get_rval to ensure no invalid references
         get_rval(eval_expr(stmt, env), env);
         return null;

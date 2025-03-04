@@ -1,0 +1,19 @@
+\subsection{aMazing Language Interpreter}
+
+\subsubsection{Tokenizer}
+
+The first step of interpreting a string is to convert it to an array of tokens. A token consists of its type, the text it represents, the line number it started on and the column number it started on.
+
+The input string is read one character at a time and that character is added to a string containing the current token. When whitespace is encountered or the current token string would become invalid, the current token string is matched against keyword, symbols, integer literal rules and variable naming rules. It it matches any of them, a new token of that type is pushed to the resulting array and the current token string is reset to begin accumulating the next token.
+
+\subsubsection{Parser}
+
+Second is to convert the token array of tokens into intermediate representation. The intermediate representation is a tree-like structure where each node contains the type of expression or statement it represents as well as what other values and nodes it consists of.
+
+The input array is treated as a stack from which tokens are consumed as subexpressions are parsed. The main parse function will look at the next token and depending on what it is, it will call different helper functions capable of parsing that specific type of statement. Those functions will in turn call different helpers to parse the expressions they consist of which will call helpers to parse their subexpressions. Once all subexpressions are parsed they can be combined into the full expression node and returned to be combined into a full statement node and so on.
+
+\subsubsection{Evaluator}
+
+The evaluator will use the tokenizer and parser to get the inputs intermediate representation. It uses environment frame to store a table for looking up the values associated with variable names as well as what frame to fall back on if a name could not be found.
+
+The predefined values are defined in a new environment frame before starting the evaluation of the intermediate representation in a new frame with that as fallback. Similarly to the parser, when evaluating statements, helper functions are called to parse the expressions that make them up which in turn call helper functions that evaluate their subexpressions and so on. Eventually, a function is returned that will evaluate the main function of the input using this same method.
