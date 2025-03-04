@@ -1,29 +1,29 @@
-import { make_maze, verify_path } from "../src/maze";
-import { A_Star } from "../src/algorithms/a_star"
+import { make_maze, verify_path } from "../../src/maze";
+import { dijkstra } from "../../src/algorithms/dijkstra"
 
-test("A* only forward", () => {
+test("Dijkstra only forward", () => {
     const maze = make_maze([
         "S ###",
         "# ###",
         "#   #",
         "###E#",
     ])!;
-    const path = A_Star(maze);
+    const path = dijkstra(maze);
     expect(verify_path(path, maze)).toBe(true);
 });
 
-test("A* no forks", () => {
+test("Dijkstra no forks", () => {
     const maze = make_maze([
         "S    ",
         "#### ",
         "   # ",
         "E#   ",
     ])!;
-    const path = A_Star(maze);
+    const path = dijkstra(maze);
     expect(verify_path(path, maze)).toBe(true);
 });
 
-test("A* full", () => {
+test("Dijkstra full", () => {
     const maze = make_maze([
         "## #### ##",
         "#S       #",
@@ -35,6 +35,6 @@ test("A* full", () => {
         "# #   ## #",
         "#   #    #",
     ])!;
-    const path = A_Star(maze);
+    const path = dijkstra(maze);
     expect(verify_path(path, maze)).toBe(true);
 });

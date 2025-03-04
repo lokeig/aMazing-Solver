@@ -1,29 +1,29 @@
-import { make_maze, verify_path } from "../src/maze";
-import { maze_routing_alg } from "../src/algorithms/routing_alg"
+import { make_maze, verify_path } from "../../src/maze";
+import { dfs } from "../../src/algorithms/dfs"
 
-test("routing alg only forward", () => {
+test("dfs only forward", () => {
     const maze = make_maze([
         "S ###",
         "# ###",
         "#   #",
         "###E#",
     ])!;
-    const path = maze_routing_alg(maze);
+    const path = dfs(maze);
     expect(verify_path(path, maze)).toBe(true);
 });
 
-test("routing alg no forks", () => {
+test("dfs no forks", () => {
     const maze = make_maze([
         "S    ",
         "#### ",
         "   # ",
         "E#   ",
     ])!;
-    const path = maze_routing_alg(maze);
+    const path = dfs(maze);
     expect(verify_path(path, maze)).toBe(true);
 });
 
-test("routing alg full", () => {
+test("dfs full", () => {
     const maze = make_maze([
         "## #### ##",
         "#S       #",
@@ -35,6 +35,6 @@ test("routing alg full", () => {
         "# #   ## #",
         "#   #    #",
     ])!;
-    const path = maze_routing_alg(maze);
+    const path = dfs(maze);
     expect(verify_path(path, maze)).toBe(true);
 });

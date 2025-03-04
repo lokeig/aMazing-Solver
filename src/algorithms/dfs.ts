@@ -16,7 +16,7 @@ const walk_path = (n: Node, move: (d: Direction) => void) => {
     }
 }
 
-export const dijkstra: MazeSolver = solver_wrapper((
+export const dfs: MazeSolver = solver_wrapper((
     goal,
     cur,
     in_bound,
@@ -25,7 +25,7 @@ export const dijkstra: MazeSolver = solver_wrapper((
 ) => {
     const pos_to_string = (pos: Pos): string => `${pos.x}, ${pos.y}`;
 
-    const pending: Node[] = [{pos: cur(), parent: null, path: null}];
+    const pending: Node[] = [{ pos: cur(), parent: null, path: null }];
     const visited = new Set<string>();
     visited.add(pos_to_string(cur()));
 

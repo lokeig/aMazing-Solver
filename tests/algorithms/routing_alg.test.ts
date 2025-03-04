@@ -1,29 +1,29 @@
-import { make_maze, verify_path } from "../src/maze";
-import { dijkstra } from "../src/algorithms/dijkstra"
+import { make_maze, verify_path } from "../../src/maze";
+import { maze_routing_alg } from "../../src/algorithms/routing_alg"
 
-test("Dijkstra only forward", () => {
+test("routing alg only forward", () => {
     const maze = make_maze([
         "S ###",
         "# ###",
         "#   #",
         "###E#",
     ])!;
-    const path = dijkstra(maze);
+    const path = maze_routing_alg(maze);
     expect(verify_path(path, maze)).toBe(true);
 });
 
-test("Dijkstra no forks", () => {
+test("routing alg no forks", () => {
     const maze = make_maze([
         "S    ",
         "#### ",
         "   # ",
         "E#   ",
     ])!;
-    const path = dijkstra(maze);
+    const path = maze_routing_alg(maze);
     expect(verify_path(path, maze)).toBe(true);
 });
 
-test("Dijkstra full", () => {
+test("routing alg full", () => {
     const maze = make_maze([
         "## #### ##",
         "#S       #",
@@ -35,6 +35,6 @@ test("Dijkstra full", () => {
         "# #   ## #",
         "#   #    #",
     ])!;
-    const path = dijkstra(maze);
+    const path = maze_routing_alg(maze);
     expect(verify_path(path, maze)).toBe(true);
 });
