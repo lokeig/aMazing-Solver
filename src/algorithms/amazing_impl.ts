@@ -98,10 +98,8 @@ var main = fn (goal_x, goal_y) {
             var try_order = left_selection_try_order(get_x(), get_y(), goal_x, goal_y);
             var last_move = -1;
 
-            var i = 0;
-            while (i < len(try_order)) {
+            for (var i = 0; i < len(try_order); i = i + 1) {
                 var dir = try_order[i];
-                i = i + 1;
 
                 if (try_move(get_x(), get_y(), dir)) {
                     last_move = dir;
@@ -115,10 +113,8 @@ var main = fn (goal_x, goal_y) {
             while (MD(get_x(), get_y(), goal_x, goal_y) != MD_best || find_productive_path(get_x(), get_y(), goal_x, goal_y) == -1) {
                 var try_order = right_hand_rule_try_order(last_move);
 
-                var i = 0;
-                while (i < len(try_order)) {
+                for (var i = 0; i < len(try_order); i = i + 1) {
                     var dir = try_order[i];
-                    i = i + 1;
 
                     # don't double check same dir after noting there is no productive path
                     var at_best = MD(get_x(), get_y(), goal_x, goal_y) == MD_best;
@@ -157,8 +153,7 @@ var walk_path = fn(n) {
 var sort_by_prio = fn(array) {
     var new_arr = [];
     
-    var i = 0;
-    while (i < len(array)) {
+    for (var i = 0; i < len(array); i = i + 1) {
         push(new_arr, array[i]);
 
         var j = len(new_arr) - 1;
@@ -167,21 +162,17 @@ var sort_by_prio = fn(array) {
             new_arr[j - 1] = new_arr[j];
             new_arr[j] = temp;
         }
-
-        i = i + 1;
     }
 
     return new_arr;
 };
 
 var contains = fn(arr, x, y) {
-    var i = 0;
-    while (i < len(arr)) {
+    for (var i = 0; i < len(arr); i = i + 1) {
         var cur = arr[i];
         if (cur[0] == x && cur[1] == y) {
             return true;
         }
-        i = i + 1;
     }
     return false;
 };
@@ -212,8 +203,7 @@ var main = fn (goal_x, goal_y) {
         [current[0], current[1] + 1, down]           # 3, down
         ];
 
-        var i = 0;
-        while (i < 4) {
+        for (var i = 0; i < 4; i = i + 1) {
             var neighbor = neighbors[i];
             var x = neighbor[0];
             var y = neighbor[1];
@@ -230,7 +220,6 @@ var main = fn (goal_x, goal_y) {
                     direction
                 ]);
             }
-            i = i + 1;
         } 
     } 
 };
@@ -241,21 +230,6 @@ var walk_path = fn(n) {
         walk_path(n[3]);
         move(n[4]);
     } 
-};
-
-var remove_index = fn(arr, index) {
-    var i = 0;
-    var cur_index = 0;
-    var new_arr = [];
-    while (i < len(arr)) {
-        if (i == index) {
-            i = i + 1;
-        } else {
-            push(new_arr, arr[i]);
-            i = i + 1;
-        }
-    }
-    return new_arr;
 };
 
 var sort_by_length = fn(array) {
@@ -315,8 +289,7 @@ var main = fn (goal_x, goal_y) {
         [current[0], current[1] + 1, down]           # 3, down
         ];
 
-        var i = 0;
-        while (i < 4) {
+        for (var i = 0; i < 4; i = i + 1) {
             var neighbor = neighbors[i];
             var x = neighbor[0];
             var y = neighbor[1];
@@ -332,7 +305,6 @@ var main = fn (goal_x, goal_y) {
                     direction
                 ]);
             }
-            i = i + 1;
         } 
     } 
 }; 
