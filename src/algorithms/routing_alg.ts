@@ -106,8 +106,8 @@ export const maze_routing_alg: MazeSolver = solver_wrapper((
                     const at_best = MD(cur(), goal) === MD_best;
                     if (at_best && cur().x < goal.x && dir === "right") continue;
                     if (at_best && cur().x > goal.x && dir === "left") continue;
-                    if (at_best && cur().y < goal.y && dir === "up") continue;
-                    if (at_best && cur().y > goal.y && dir === "down") continue;
+                    if (at_best && cur().y < goal.y && dir === "down") continue;
+                    if (at_best && cur().y > goal.y && dir === "up") continue;
 
                     if (try_move(cur(), dir, lookup, move)) {
                         last_move = dir;

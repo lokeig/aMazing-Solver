@@ -124,8 +124,8 @@ var main = fn (goal_x, goal_y) {
                     var at_best = MD(get_x(), get_y(), goal_x, goal_y) == MD_best;
                     if (at_best && get_x() < goal_x && dir == right) continue;
                     if (at_best && get_x() > goal_x && dir == left) continue;
-                    if (at_best && get_y() < goal_y && dir == up) continue;
-                    if (at_best && get_y() > goal_y && dir == down) continue;
+                    if (at_best && get_y() < goal_y && dir == down) continue;
+                    if (at_best && get_y() > goal_y && dir == up) continue;
 
                     if (try_move(get_x(), get_y(), dir)) {
                         last_move = dir;
