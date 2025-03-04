@@ -137,3 +137,203 @@ var main = fn (goal_x, goal_y) {
     }
 };
 `;
+export const amazing_a_star = `\
+var abs = fn (x) {
+    if (x < 0) return -x;
+    else return x;
+};
+
+var heuristic = fn(src_x, src_y, dest_x, dest_y) {
+    return abs(src_x - dest_x) + abs(src_y - dest_y);
+};
+
+var walk_path = fn(n) {
+    if (n[4] != -1 && n[5] != -1) {
+        walk_path(n[4]);
+        move(n[5]);
+    } 
+};
+
+var sort_by_prio = fn(array) {
+    var new_arr = [];
+    
+    var i = 0;
+    while (i < len(array)) {
+        push(new_arr, array[i]);
+
+        var j = len(new_arr) - 1;
+        while (j > 1 && new_arr[j][3] > new_arr[j - 1][3]) {
+            var temp = new_arr[j - 1];
+            new_arr[j - 1] = new_arr[j];
+            new_arr[j] = temp;
+        }
+
+        i = i + 1;
+    }
+
+    return new_arr;
+};
+
+var contains = fn(arr, x, y) {
+    var i = 0;
+    while (i < len(arr)) {
+        var cur = arr[i];
+        if (cur[0] == x && cur[1] == y) {
+            return true;
+        }
+        i = i + 1;
+    }
+    return false;
+};
+
+var main = fn (goal_x, goal_y) {
+    var pending = [[
+        get_x(),                                     #0 - X-pos
+        get_y(),                                     #1 - Y-Pos
+        0,                                           #2 - Cost
+        heuristic(get_x(), get_y(), goal_x, goal_y), #3 - Priority
+        -1,                                          #4 - Parent
+        -1                                           #5 - Path (right, left, up, down)
+    ]];
+    var visited = [[get_x(), get_y()]];
+    while (len(pending) > 0) {
+        pending = sort_by_prio(pending);
+        var current = pop(pending);
+
+        if (current[0] == goal_x && current[1] == goal_y) {
+            walk_path(current);
+            break;
+        }
+
+        var neighbors = [
+        [current[0] - 1, current[1], left],          # 0, left
+        [current[0] + 1, current[1], right],         # 1, right
+        [current[0], current[1] - 1, up],            # 2, up
+        [current[0], current[1] + 1, down]           # 3, down
+        ];
+
+        var i = 0;
+        while (i < 4) {
+            var neighbor = neighbors[i];
+            var x = neighbor[0];
+            var y = neighbor[1];
+            var direction = neighbor[2];
+
+            if (!is_wall(x, y) && in_bound(x, y) && !contains(visited, x, y)) {
+                push(visited, [x, y]);
+                push(pending, [
+                    x, 
+                    y, 
+                    current[2] + 1, 
+                    current[2] + 1 + heuristic(x, y, goal_x, goal_y), 
+                    current, 
+                    direction
+                ]);
+            }
+            i = i + 1;
+        } 
+    } 
+};
+`;
+export const amazing_dijkstra = `\
+var walk_path = fn(n) {
+    if (n[3] != -1 && n[4] != -1) {
+        walk_path(n[3]);
+        move(n[4]);
+    } 
+};
+
+var remove_index = fn(arr, index) {
+    var i = 0;
+    var cur_index = 0;
+    var new_arr = [];
+    while (i < len(arr)) {
+        if (i == index) {
+            i = i + 1;
+        } else {
+            push(new_arr, arr[i]);
+            i = i + 1;
+        }
+    }
+    return new_arr;
+};
+
+var sort_by_length = fn(array) {
+    var new_arr = [];
+    
+    var i = 0;
+    while (i < len(array)) {
+        push(new_arr, array[i]);
+
+        var j = len(new_arr) - 1;
+        while (j > 1 && new_arr[j][2] > new_arr[j - 1][2]) {
+            var temp = new_arr[j - 1];
+            new_arr[j - 1] = new_arr[j];
+            new_arr[j] = temp;
+        }
+
+        i = i + 1;
+    }
+
+    return new_arr;
+};
+
+var contains = fn(arr, x, y) {
+    var i = 0;
+    while (i < len(arr)) {
+        var cur = arr[i];
+        if (cur[0] == x && cur[1] == y) {
+            return true;
+        }
+        i = i + 1;
+    }
+    return false;
+};
+
+var main = fn (goal_x, goal_y) {
+    var pending = [[
+        get_x(),                                     #0 - X-pos
+        get_y(),                                     #1 - Y-Pos
+        0,                                           #2 - Length
+        -1,                                          #3 - Parent
+        -1                                           #4 - Path (right, left, up, down)
+    ]];
+    var visited = [[get_x(), get_y()]];
+    while (len(pending) > 0) {
+        pending = sort_by_length(pending);
+        var current = pop(pending);
+
+        if (current[0] == goal_x && current[1] == goal_y) {
+            walk_path(current);
+            break;
+        }
+
+        var neighbors = [
+        [current[0] - 1, current[1], left],          # 0, left
+        [current[0] + 1, current[1], right],         # 1, right
+        [current[0], current[1] - 1, up],            # 2, up
+        [current[0], current[1] + 1, down]           # 3, down
+        ];
+
+        var i = 0;
+        while (i < 4) {
+            var neighbor = neighbors[i];
+            var x = neighbor[0];
+            var y = neighbor[1];
+            var direction = neighbor[2];
+
+            if (!is_wall(x, y) && in_bound(x, y) && !contains(visited, x, y)) {
+                push(visited, [x, y]);
+                push(pending, [
+                    x, 
+                    y, 
+                    current[2] + 1, 
+                    current, 
+                    direction
+                ]);
+            }
+            i = i + 1;
+        } 
+    } 
+}; 
+`;
