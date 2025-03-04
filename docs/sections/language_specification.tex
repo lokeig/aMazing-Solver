@@ -1,5 +1,3 @@
-\section{aMazing Language Specification}
-
 \subsection{Tokens}
 
 \subsubsection{Comments}
@@ -55,6 +53,7 @@ Otherwise it is a decimal integer and can only contain decimal digits.
     \item \verb|if|
     \item \verb|else|
     \item \verb|while|
+    \item \verb|for|
     \item \verb|return|
     \item \verb|continue|
     \item \verb|break|
@@ -162,19 +161,20 @@ Expressions must be of one of the following forms.
 Statements must be of one of the following forms.
 
 \begin{table}[H]
-    \begin{tabular}{ l l }
-        \verb|;|                                                                                          & No operation                \\
-        \textit{expression} \verb|;|                                                                      & Expression, ignoring result \\
-        \verb|var| \textit{name} \verb|=| \textit{expression} \verb|;|                                    & Variable declaration        \\
-        \textit{expression} \verb|=| \textit{expression} \verb|;|                                         & Variable assignment         \\
-        \verb|if| \verb|(| \textit{expression} \verb|)| \textit{statement}                                & If conditional              \\
-        \verb|if| \verb|(| \textit{expression} \verb|)| \textit{statement} \verb|else| \textit{statement} & If-else conditional         \\
-        \verb|while| \verb|(| \textit{expression} \verb|)| \textit{statement}                             & While loop                  \\
-        \verb|return| \verb|;|                                                                            & Return                      \\
-        \verb|return| \textit{expression} \verb|;|                                                        & Return value                \\
-        \verb|continue| \verb|;|                                                                          & Continue                    \\
-        \verb|break| \verb|;|                                                                             & Break                       \\
-        \verb|{| \textit{statement} \ldots \verb|}|                                                       & Code block                  \\
+    \begin{tabular}{ m{225pt} l }
+        \verb|;|                                                                                                                                                                                                        & No operation                \\
+        \textit{expression} \verb|;|                                                                                                                                                                                    & Expression, ignoring result \\
+        \verb|var| \textit{name} \verb|=| \textit{expression} \verb|;|                                                                                                                                                  & Variable declaration        \\
+        \textit{expression} \verb|=| \textit{expression} \verb|;|                                                                                                                                                       & Variable assignment         \\
+        \verb|if| \verb|(| \textit{expression} \verb|)| \textit{statement}                                                                                                                                              & If conditional              \\
+        \verb|if| \verb|(| \textit{expression} \verb|)| \textit{statement} \verb|else| \textit{statement}                                                                                                               & If-else conditional         \\
+        \verb|while| \verb|(| \textit{expression} \verb|)| \textit{statement}                                                                                                                                           & While loop                  \\
+        \verb|for| \verb|(| \textit{expression/assignment/declaration} \verb|;| \newline \hspace*{29pt} \textit{expression} \verb|;| \textit{expression/assignment} \verb|)| \newline \hspace*{29pt} \textit{statement} & For loop                    \\
+        \verb|return| \verb|;|                                                                                                                                                                                          & Return                      \\
+        \verb|return| \textit{expression} \verb|;|                                                                                                                                                                      & Return value                \\
+        \verb|continue| \verb|;|                                                                                                                                                                                        & Continue                    \\
+        \verb|break| \verb|;|                                                                                                                                                                                           & Break                       \\
+        \verb|{| \textit{statement} \ldots \verb|}|                                                                                                                                                                     & Code block                  \\
     \end{tabular}
 \end{table}
 
@@ -206,7 +206,7 @@ A function stores a reference to an object that can be called with a list of ord
 
 \subsection{Environment}
 
-The first frame created which points to nothing contains all predefined values. This is what the program frame, where the user written code runs, points to. After executing, the program frame must contain a variable named \verb|main| that stores a function. The number and types of the arguments this function is called with will depend on the implementation.
+The first frame created which points to nothing contains all predefined values. This is what the program frame, where the user written code runs, points to. After executing, the program frame must contain a variable named \verb|main| that stores a function. The number and types of the arguments this function is called with will depend on the use case.
 
 \paragraph{Creation}
 
@@ -343,6 +343,10 @@ If the value inside the parentheses is truthy the statement following them is ex
 \paragraph{While loop \quad \texttt{while (x) s}} \
 
 Evaluates the expression inside the parentheses in a new frame. If it is truthy the statement following them is evaluated. If it is a return, the return is carried through. If it is a break, the loop stops. Otherwise, this is repeated.
+
+\paragraph{For loop \quad \texttt{for (x; x; x) s}} \
+
+Evaluates the first expression inside the parentheses in a new frame. Evaluates the second expression inside the parentheses. If that second expression is truthy, the statement following the parentheses is evaluated. If it is a return, the return is carried through. If it is a break, the loop stops. Otherwise, the third expression inside the parentheses is evaluated and everything except the evaluation of the first expression is repeated.
 
 \paragraph{Return \quad \texttt{return;}} \
 
