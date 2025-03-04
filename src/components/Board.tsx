@@ -71,7 +71,7 @@ function Board() {
                 row.map((node: Node, j: number): Node => ({
                     row: node.row,
                     col: node.col,
-                    isWall: document.getElementById(getNodeID(i, j))?.classList.contains("wall"),
+                    isWall: node.isWall,
                     isStart: i === prev.start.row && j === prev.start.col,
                     isEnd: i === prev.end.row && j === prev.end.col,
                 }))

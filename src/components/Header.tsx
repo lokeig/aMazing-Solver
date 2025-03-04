@@ -13,7 +13,6 @@ import { Button, Listbox, ListboxButton, ListboxOption, ListboxOptions, Transiti
 import { ChevronDownIcon, PlayIcon, CodeBracketIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import Editor from "./Editor.tsx";
 import { evaluate_solver } from "../interpreter/evaluator.ts";
-import clsx from "clsx";
 
 type Algorithm = {
     id: number;
@@ -30,8 +29,9 @@ const algorithms: Algorithm[] = [
 function Header() {
     const { grid, setGrid } = useGrid();
     const { code, setLog } = useEditor();
-    const [editor, setEditor] = useState(false);
-    const [selected, setSelected] = useState(algorithms[0]);
+    const [editor, setEditor] = useState<boolean>(false);
+    const [selected, setSelected] = useState<Algorithm>(algorithms[0]);
+    const [disabled, setDisabled] = useState<boolean>(false);
 
     const clearSearch = (): void => {
         if (!document.querySelector(".search, .path")) return;
@@ -55,6 +55,7 @@ function Header() {
     const run = async () => {
         const editing: boolean = editor;
         try {
+            setDisabled(true);
             if (editing) {
                 setLog("");
                 setEditor(false);
@@ -67,6 +68,8 @@ function Header() {
                 setLog(String(error));
                 setEditor(true);
             }
+        } finally {
+            setDisabled(false);
         }
     };
 
@@ -88,9 +91,9 @@ function Header() {
                                 <Listbox
                                     value={selected}
                                     onChange={setSelected}
-                                    disabled={editor}
+                                    disabled={editor || disabled}
                                 >
-                                    <ListboxButton className={clsx(editor ? "text-gray-500" : "text-white hover:bg-gray-600", "flex items-center justify-between w-48 px-5 py-3 rounded-lg bg-gray-700 shadow-md cursor-pointer")}>
+                                    <ListboxButton className="flex items-center justify-between w-48 px-5 py-3 rounded-lg text-white disabled:text-gray-500 bg-gray-700 enabled:hover:bg-gray-600  shadow-md cursor-pointer">
                                         {selected.name} <ChevronDownIcon className="h-5 w-5 ml-2" />
                                     </ListboxButton>
 
@@ -109,15 +112,17 @@ function Header() {
                             </div>
 
                             <Button
-                                className="flex items-center bg-gray-700 text-white px-5 py-3 rounded-lg shadow-md cursor-pointer hover:bg-gray-600"
+                                className="flex items-center bg-gray-700 text-white disabled:text-gray-500 px-5 py-3 rounded-lg shadow-md cursor-pointer enabled:hover:bg-gray-600"
                                 onClick={generateMaze}
+                                disabled={disabled}
                             >
                                 Generate Maze
                             </Button>
 
                             <Button
-                                className="flex items-center bg-red-700 text-white px-5 py-3 rounded-lg shadow-md cursor-pointer hover:bg-red-600"
+                                className="flex items-center bg-red-700 text-white disabled:text-red-500 px-5 py-3 rounded-lg shadow-md cursor-pointer enabled:hover:bg-red-600"
                                 onClick={clearBoard}
+                                disabled={disabled}
                             >
                                 Clear Board
                             </Button>
@@ -125,8 +130,9 @@ function Header() {
 
                         <div className="flex space-x-4">
                             <Button
-                                className="flex items-center bg-indigo-700 text-white px-5 py-3 rounded-lg shadow-md cursor-pointer hover:bg-indigo-600"
+                                className="flex items-center bg-indigo-700 text-white disabled:text-indigo-500 px-5 py-3 rounded-lg shadow-md cursor-pointer enabled:hover:bg-indigo-600"
                                 onClick={run}
+                                disabled={disabled}
                             >
                                 <PlayIcon className="h-5 w-5 mr-2" /> Run
                             </Button>
