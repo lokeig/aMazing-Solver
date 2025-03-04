@@ -300,7 +300,3 @@ export function make_path(str: string): Path | null {
 export function join_paths(a: Path, b: Path): Path {
     return a.concat(b);
 }
-
-// was going to get used but apparently didn't
-export function draw_cell(val: Cell, p: Pos): void { }
-export function draw_maze(m: Maze): void { }

@@ -603,7 +603,7 @@ export function evaluate_solver(program: string): [MazeSolver, string[]] {
                         break;
                     default: throw new TypeError(`Invalid direction '${dir.val}' in move function.`);
                 }
-            } else throw new TypeError(`Invalid type '${type_err_name(dir)}' in lookup function.`);
+            } else throw new TypeError(`Invalid type '${type_err_name(dir)}' in move function.`);
         });
 
         const prelude = new Map<string, RValue>([
