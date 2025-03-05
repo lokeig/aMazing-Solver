@@ -54,7 +54,7 @@ The component uses \texttt{useGrid}, a custom Hook that provides the current gri
 
 \paragraph{Grid Initialization} \
 
-When the \texttt{Board} component is mounted, a \texttt{useEffect} Hook retrieves dimensions using \texttt{boardRef} and calculates the number of rows and columns based on a 32-pixel cell size. A grid is created using \texttt{makeGrid} and the initial grid is updated with the new grid. The effect runs only when \texttt{setGrid} changes because it is in the dependency list. Since setGrid is a state updater function (which does not change between renders), this effect essentially runs once on mount.
+When the \texttt{Board} component is mounted, a \texttt{useEffect} Hook retrieves dimensions using \texttt{boardRef} and calculates the number of rows and columns based on a 24-pixel cell size. A grid is created using \texttt{makeGrid} and the initial grid is updated with the new grid. The effect runs only when \texttt{setGrid} changes because it is in the dependency list. Since setGrid is a state updater function (which does not change between renders), this effect essentially runs once on mount.
 
 \paragraph{Interacting with the Grid} \
 
