@@ -15,7 +15,7 @@ type Children = {
 const EditorContext = createContext<EditorState | null>(null);
 
 export function EditorProvider({ children }: Children) {
-    const [code, setCode] = useState<string>("# Write your algorithm here");
+    const [code, setCode] = useState<string>("");
     const [log, setLog] = useState<string>("");
     return (
         <EditorContext.Provider value={{ code, setCode, log, setLog }}>
