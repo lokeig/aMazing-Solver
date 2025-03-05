@@ -1,5 +1,17 @@
 The Jest \cite{jest} testing framework is used for all tests.
 
+\subsection{Path Verification}
+
+The maze.ts file that defines the verify\_path function has above 88\% statement coverage. None of the remaining uncovered lines are part of the verify\_path function.
+
+\subsection{Maze Solving Algorithms}
+
+Both implementations of each maze solving algorithm have above 80\% statement coverage. The reason it is not higher is because they are easier to test manually on the final website where larger mazes can be automatically generated and the paths they take can be visualized.
+
 \subsection{aMazing Language Interpreter}
 
 Each part of the interpreter has above 90\% statement coverage. All remaining statements are for error handling, some of which are unreachable and the rest unreachable given input generated from the previous layer of the interpreter. These are kept in case a bug was missed and they end up being reachable or in case the interpreter is refactored and the same errors are no longer handled in the earlier stages.
+
+\subsection{Website}
+
+The website does not have automated tests because that is outside the functionality of Jest.
