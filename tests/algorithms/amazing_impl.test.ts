@@ -1,12 +1,14 @@
 import { make_maze, verify_path } from "../../src/maze";
 import { evaluate_solver } from "../../src/interpreter/evaluator";
-import { amazing_a_star, amazing_dijkstra, amazing_routing_alg } from "../../src/algorithms/amazing_impl";
+import { amazing_a_star, amazing_dijkstra, amazing_routing_alg, amazing_dfs } from "../../src/algorithms/amazing_impl";
 
 const a_star = evaluate_solver(amazing_a_star)[0];
 const dijkstra = evaluate_solver(amazing_dijkstra)[0];
 const routing_alg = evaluate_solver(amazing_routing_alg)[0];
+const dfs = evaluate_solver(amazing_dfs)[0];
 
-const algorithms = [a_star, dijkstra, routing_alg];
+
+const algorithms = [a_star, dijkstra, routing_alg, dfs];
 
 test("amazing impls only forward", () => {
     const maze = make_maze([

@@ -6,6 +6,7 @@ import {
 const heuristic = (p: Pos, goal: Pos): number => {
     return Math.abs(p.x - goal.x) + Math.abs(p.y - goal.y);
 };
+
 type Node = {
     pos: Pos,
     cost: number,     // g(n)
@@ -19,6 +20,9 @@ const walk_path = (n: Node, move: (d: Direction) => void) => {
         move(n.path);
     }
 }
+/**
+ * A MazeSolver using A* algorithm
+ */
 export const A_Star: MazeSolver = solver_wrapper((
     goal,
     cur,

@@ -8,7 +8,6 @@ type Node = {
     parent: Node | null
     path: Direction | null
     length: number
-
 }
 
 const walk_path = (n: Node, move: (d: Direction) => void) => {
@@ -17,6 +16,9 @@ const walk_path = (n: Node, move: (d: Direction) => void) => {
         move(n.path);
     }
 }
+/**
+ * A MazeSolver using Dijkstras algorithm
+ */
 export const dijkstra: MazeSolver = solver_wrapper((
     goal,
     cur,

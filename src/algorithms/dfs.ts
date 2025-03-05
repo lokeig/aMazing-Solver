@@ -16,6 +16,9 @@ const walk_path = (n: Node, move: (d: Direction) => void) => {
     }
 }
 
+/**
+ * A MazeSolver using DFS algorithm
+ */
 export const dfs: MazeSolver = solver_wrapper((
     goal,
     cur,
