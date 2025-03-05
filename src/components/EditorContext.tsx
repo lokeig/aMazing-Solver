@@ -1,4 +1,4 @@
-import type { ReactNode, Dispatch, SetStateAction } from "react";
+import type { JSX, Context, ReactNode, Dispatch, SetStateAction } from "react";
 import { createContext, useContext, useState } from "react";
 
 type EditorState = {
@@ -12,9 +12,9 @@ type Children = {
     children: ReactNode;
 };
 
-const EditorContext = createContext<EditorState | null>(null);
+const EditorContext: Context<EditorState | null> = createContext<EditorState | null>(null);
 
-export function EditorProvider({ children }: Children) {
+export function EditorProvider({ children }: Children): JSX.Element {
     const [code, setCode] = useState<string>("");
     const [log, setLog] = useState<string>("");
     return (

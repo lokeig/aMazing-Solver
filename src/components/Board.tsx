@@ -1,3 +1,4 @@
+import type { JSX, RefObject } from "react";
 import { useRef, useEffect } from "react";
 import { useGrid } from "./GridContext.tsx";
 import { makeGrid, getNodeID } from "../utils.ts";
@@ -19,11 +20,11 @@ export type Grid = {
     cols: number;
 };
 
-function Board() {
+function Board(): JSX.Element {
     const { grid, setGrid, disabled } = useGrid();
-    const boardRef = useRef<HTMLDivElement>(null);
-    const wallRef = useRef<"add" | "remove" | null>(null);
-    const nodeRef = useRef<"start" | "end" | null>(null);
+    const boardRef: RefObject<HTMLDivElement | null> = useRef<HTMLDivElement | null>(null);
+    const wallRef: RefObject<"add" | "remove" | null> = useRef<"add" | "remove" | null>(null);
+    const nodeRef: RefObject<"start" | "end" | null> = useRef<"start" | "end" | null>(null);
 
     useEffect((): void => {
         if (!boardRef.current) return;
@@ -116,9 +117,9 @@ function Board() {
         <div ref={boardRef} className={clsx({"disabled": disabled}, "board")} onMouseUp={handleMouseUp}>
             <table>
                 <tbody>
-                {grid.nodes.map((row: Node[], i: number) => (
+                {grid.nodes.map((row: Node[], i: number): JSX.Element => (
                     <tr key={i}>
-                        {row.map((node: Node, j: number) => (
+                        {row.map((node: Node, j: number): JSX.Element => (
                             <td
                                 key={j}
                                 id={getNodeID(node.row, node.col)}

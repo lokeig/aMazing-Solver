@@ -1,4 +1,4 @@
-import type { ReactNode, Dispatch, SetStateAction } from "react";
+import type { JSX, Context, ReactNode, Dispatch, SetStateAction } from "react";
 import { createContext, useContext, useState } from "react";
 import type { Grid } from "./Board.tsx";
 import { makeGrid } from "../utils.ts";
@@ -14,9 +14,9 @@ type Children = {
     children: ReactNode;
 };
 
-const GridContext = createContext<GridState | null>(null);
+const GridContext: Context<GridState | null> = createContext<GridState | null>(null);
 
-export function GridProvider({ children }: Children) {
+export function GridProvider({ children }: Children): JSX.Element {
     const [grid, setGrid] = useState<Grid>(makeGrid(0, 0));
     const [disabled, setDisabled] = useState<boolean>(false);
     return (

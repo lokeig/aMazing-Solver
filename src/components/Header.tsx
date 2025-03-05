@@ -1,8 +1,9 @@
-import type { Node, Grid } from "./Board.tsx";
-import type { MazeSolver } from "../maze.ts";
+import type { JSX } from "react"
 import { useState, useEffect } from "react";
 import { useEditor } from "./EditorContext.tsx";
 import { useGrid } from "./GridContext.tsx";
+import type { Node, Grid } from "./Board.tsx";
+import type { MazeSolver } from "../maze.ts";
 import { makeGrid, getNodeID } from "../utils.ts";
 import { visualize } from "../visualizer.ts";
 import { recursive_division } from "../algorithms/recursive_division.ts";
@@ -31,7 +32,7 @@ const algorithms: Algorithm[] = [
     { id: 4, name: "Custom", fn: (): never[] => [], impl: "# Implement your algorithm here" },
 ];
 
-function Header() {
+function Header(): JSX.Element {
     const { grid, setGrid, disabled, setDisabled } = useGrid();
     const { code, setCode, setLog } = useEditor();
 

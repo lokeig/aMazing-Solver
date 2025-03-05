@@ -1,12 +1,12 @@
-import type { KeyboardEvent, ChangeEvent } from "react";
+import type { JSX, KeyboardEvent, ChangeEvent, RefObject } from "react";
 import { useRef } from "react";
 import { useEditor } from "./EditorContext.tsx";
 import { Textarea } from "@headlessui/react";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 
-function Editor() {
+function Editor(): JSX.Element {
     const { code, setCode, log } = useEditor();
-    const editorRef = useRef<HTMLTextAreaElement>(null);
+    const editorRef: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement | null>(null);
 
     const handleKeyDown = (e: KeyboardEvent): void => {
         if (e.key === "Tab") {
