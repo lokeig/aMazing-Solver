@@ -3,10 +3,12 @@ import {
     is_wall, pos_eq, solver_wrapper, step_in_dir,
 } from "../maze";
 
+// manhattan distance
 function MD(p: Pos, q: Pos): number {
     return Math.abs(p.x - q.x) + Math.abs(p.y - q.y);
 }
 
+// move in dir of no wall, returns wether we moved
 function try_move(p: Pos, dir: Direction, lookup: (p: Pos) => Cell, move: (d: Direction) => void): boolean {
     if (!is_wall(lookup(step_in_dir(p, dir)))) {
         move(dir);
@@ -16,6 +18,7 @@ function try_move(p: Pos, dir: Direction, lookup: (p: Pos) => Cell, move: (d: Di
     }
 }
 
+// find a direction without a wall that takes us closer to the goal, or null if it doesn't exist
 function find_productive_path(src: Pos, dst: Pos, lookup: (p: Pos) => Cell): Direction | null {
     if (src.x < dst.x && !is_wall(lookup(step_in_dir(src, "right")))) {
         return "right";
@@ -30,6 +33,7 @@ function find_productive_path(src: Pos, dst: Pos, lookup: (p: Pos) => Cell): Dir
     return null;
 }
 
+// the order of direction to the left of the line from src to dst with productive paths removed
 function left_selection_try_order(src: Pos, dst: Pos): Direction[] {
     if (src.x < dst.x) {
         if (src.y > dst.y) {
@@ -58,6 +62,7 @@ function left_selection_try_order(src: Pos, dst: Pos): Direction[] {
     }
 }
 
+// the order of directions to try when following the right hand on wall algorothm
 function right_hand_rule_try_order(last_move: Direction): Direction[] {
     switch (last_move) {
         case "up":
@@ -71,8 +76,10 @@ function right_hand_rule_try_order(last_move: Direction): Direction[] {
     }
 }
 
-// explanation: https://en.wikipedia.org/wiki/Maze-solving_algorithm#Maze-routing_algorithm
-// won't always halt when in an unsolvable maze
+/**
+ * A MazeSolver using the Maze Routing algorithm.
+ * Won't always halt when in an unsolvable maze.
+ */
 export const maze_routing_alg: MazeSolver = solver_wrapper((
     goal,
     cur,
