@@ -9,11 +9,12 @@ import { recursiveDivision } from "../algorithms/recursive_division.ts";
 import { dijkstra } from "../algorithms/dijkstra.ts";
 import { A_Star } from "../algorithms/a_star.ts";
 import { maze_routing_alg } from "../algorithms/routing_alg.ts";
-import { amazing_dijkstra, amazing_a_star, amazing_routing_alg } from "../algorithms/amazing_impl.ts";
+import { amazing_dijkstra, amazing_a_star, amazing_routing_alg, amazing_dfs } from "../algorithms/amazing_impl.ts";
 import Editor from "./Editor.tsx";
 import { evaluate_solver } from "../interpreter/evaluator.ts";
 import { Button, Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition } from "@headlessui/react";
 import { ChevronDownIcon, CodeBracketIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { dfs } from "../algorithms/dfs.ts";
 
 type Algorithm = {
     id: number;
@@ -25,8 +26,9 @@ type Algorithm = {
 const algorithms: Algorithm[] = [
     { id: 0, name: "Dijkstra", fn: dijkstra, impl: amazing_dijkstra },
     { id: 1, name: "A*", fn: A_Star, impl: amazing_a_star },
-    { id: 2, name: "Maze Routing", fn: maze_routing_alg, impl: amazing_routing_alg },
-    { id: 3, name: "Custom", fn: (): never[] => [], impl: "# Implement your algorithm here" },
+    { id: 2, name: "DFS", fn: dfs, impl: amazing_dfs },
+    { id: 3, name: "Maze Routing", fn: maze_routing_alg, impl: amazing_routing_alg },
+    { id: 4, name: "Custom", fn: (): never[] => [], impl: "# Implement your algorithm here" },
 ];
 
 function Header() {
