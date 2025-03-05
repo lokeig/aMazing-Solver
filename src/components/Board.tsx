@@ -28,8 +28,8 @@ function Board() {
     useEffect((): void => {
         if (!boardRef.current) return;
         const { width, height } = boardRef.current.getBoundingClientRect();
-        const rows: number = Math.floor(height / 32);
-        const cols: number = Math.floor(width / 32);
+        const rows: number = Math.floor(height / 24);
+        const cols: number = Math.floor(width / 24);
         setGrid(makeGrid(rows, cols));
     }, [setGrid]);
 

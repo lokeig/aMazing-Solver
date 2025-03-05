@@ -13,7 +13,7 @@
 }
 
 .node {
-    @apply size-8 border border-collapse border-gray-200;
+    @apply w-6 h-6 border border-collapse border-gray-200;
 }
 
 .search {

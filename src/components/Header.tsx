@@ -82,7 +82,7 @@ function Header() {
 
     return (
         <>
-            <header className="z-20">
+            <header className="z-30">
                 <div className="flex bg-gray-800 p-4 shadow-lg">
                     <div className="flex items-center justify-between w-full">
                         <h1 className="text-white text-2xl">aMazing Solver</h1>
@@ -146,34 +146,34 @@ function Header() {
                         </div>
                     </div>
                 </div>
-
-                <div className="flex items-center justify-center space-x-8 mt-8 text-gray-800">
-                    <div className="flex items-center space-x-2">
-                        <div className="node start" />
-                        <span>Start Node</span>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                        <div className="node end"></div>
-                        <span>End Node</span>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                        <div className="node search !border-0"></div>
-                        <span>Visited Node</span>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                        <div className="node wall"></div>
-                        <span>Wall</span>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                        <div className="node path"></div>
-                        <span>Path</span>
-                    </div>
-                </div>
             </header>
+
+            <div className="flex items-center justify-center space-x-8 mt-8 text-gray-800 z-10">
+                <div className="flex items-center space-x-2">
+                    <div className="node start" />
+                    <span>Start Node</span>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                    <div className="node end"></div>
+                    <span>End Node</span>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                    <div className="node search !border-0"></div>
+                    <span>Visited Node</span>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                    <div className="node wall"></div>
+                    <span>Wall</span>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                    <div className="node path"></div>
+                    <span>Path</span>
+                </div>
+            </div>
 
             <Transition
                 show={editor}
@@ -184,7 +184,7 @@ function Header() {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
             >
-                <div className="z-10">
+                <div className="z-20">
                     <Editor />
                 </div>
             </Transition>
