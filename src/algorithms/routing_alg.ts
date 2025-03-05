@@ -62,7 +62,7 @@ function left_selection_try_order(src: Pos, dst: Pos): Direction[] {
     }
 }
 
-// the order of directions to try when following the right hand on wall algorothm
+// the order of directions to try when following the right hand on wall algorithm
 function right_hand_rule_try_order(last_move: Direction): Direction[] {
     switch (last_move) {
         case "up":
