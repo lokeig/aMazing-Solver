@@ -1,3 +1,39 @@
+\subsection{Mazes}
+
+\subsubsection{Interface}
+
+The core types that different parts of the program interface with are mazes, paths, maze solvers and maze generators. A maze stores its start and end positions, the width and height of the maze and a two-dimensional array of cells describing the maze where each cell can be either a wall or empty. A path is an array of actions where each action can either be checking wether a cell at a position is a wall or to move one step in a cardinal direction. A maze solver is a function that takes a maze as input and returns a path that solves that maze. A maze generator takes a width and a height as input and returns a randomly generated maze as output.
+
+\subsubsection{Path Verification}
+
+The verify\_path function takes a path and a maze as parameters and returns wether that path successfully moves from the start to the end of the maze without ever moving into a wall cell.
+
+\subsubsection{Solver Wrapper}
+
+To aid the creation of maze solvers, a solver\_wrapper function has been created that takes a function as input and returns a maze solver. The wrapper defines variables to keep track of the current position in the maze and the path it has taken to get there. The input function is then passed five arguments: the end position of the maze, a function to get the current position in the maze, a function to check wether a position lies within the maze, a function to check wether a cell at a position is a wall and a function to move one step in a cardinal direction. These functions also update the current position and path accordingly.
+
+\subsection{Maze Solving Algorithms}
+
+\subsubsection{A*}
+
+A* is implemented as a maze solver using the solver wrapper. It will always find the shortest path and always halt.
+
+\subsubsection{Depth First Search}
+
+DFS is implemented as a maze solver using the solver wrapper. It will not always find the shortest path but will always halt.
+
+\subsubsection{Dijkstra's Algorithm}
+
+Dijkstra's algorithm is implemented as a maze solver using the solver wrapper. It will always find the shortest path and always halt.
+
+\subsubsection{The Maze Routing algorithm}
+
+The maze routing algorithm is implemented as a maze solver using the solver wrapper. It will not always find the shortest path and may not halt when the maze is not solvable.
+
+\subsubsection{aMazing Language Implementations}
+
+In addition to typescript, each maze solving algorithm used is also implemented as strings executable by the aMazing Language in maze mode.
+
 \subsection{aMazing Language Interpreter}
 
 \subsubsection{Tokenizer}
@@ -17,3 +53,7 @@ The input array is treated as a stack from which tokens are consumed as subexpre
 The evaluator will use the tokenizer and parser to get the inputs intermediate representation. It uses environment frame to store a table for looking up the values associated with variable names as well as what frame to fall back on if a name could not be found.
 
 The predefined values are defined in a new environment frame before starting the evaluation of the intermediate representation in a new frame with that as fallback. Similarly to the parser, when evaluating statements, helper functions are called to parse the expressions that make them up which in turn call helper functions that evaluate their subexpressions and so on. Eventually, a function is returned that will evaluate the main function of the input using this same method.
+
+\subsubsection{Maze Solving Evaluator}
+
+To evaluate in maze mode, the solver wrapper is used. The regular evaluator is used but the functions passed by the solver wrapper are exposed to the program as additional predefined values. Additionally, the main function is called with the end position's coordinates as arguments. A tuple of a maze solver and an array of strings is returned. The array of strings represents the programs standard output and will be filled with the strings printed during execution after the maze solver is called.
