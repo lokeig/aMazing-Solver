@@ -104,7 +104,9 @@ To access the information needed, we define useGrid and useEditor inside Board a
 export function useGrid(): GridState {
     const context: GridState | null = useContext(GridContext);
     if (!context) {
-        throw new Error("useGrid must be used within a GridProvider");
+        throw new Error(
+            "useGrid must be used within a GridProvider"
+        );
     }
     return context;
 }
@@ -131,7 +133,7 @@ The Editor component renders a simple code editor that allow users to implement 
 
 The Editor consists of two Textarea components that are defined in Headless UI (Tailwind). One Textarea is used by the user to write code, and the other displays errors that would otherwise show on the console.
 
-A helper function, \texttt{handleKeyDown}, prevents the default behaviour of the tab allows the user to indent in the code editor. It uses a KeyboardEvent type defined in React to detect when the tab key is used.
+A helper function, \texttt{handleKeyDown}, prevents the default behavior of the tab allows the user to indent in the code editor. It uses a KeyboardEvent type defined in React to detect when the tab key is used.
 
 \subsection{aMazing Language Interpreter}
 
