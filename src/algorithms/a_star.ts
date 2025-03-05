@@ -23,7 +23,7 @@ const walk_path = (n: Node, move: (d: Direction) => void) => {
 /**
  * A MazeSolver using A* algorithm
  */
-export const A_Star: MazeSolver = solver_wrapper((
+export const a_star: MazeSolver = solver_wrapper((
     goal,
     cur,
     in_bound,

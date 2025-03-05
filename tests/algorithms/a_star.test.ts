@@ -1,5 +1,5 @@
 import { make_maze, verify_path } from "../../src/maze";
-import { A_Star } from "../../src/algorithms/a_star"
+import { a_star } from "../../src/algorithms/a_star"
 
 test("A* only forward", () => {
     const maze = make_maze([
@@ -8,7 +8,7 @@ test("A* only forward", () => {
         "#   #",
         "###E#",
     ])!;
-    const path = A_Star(maze);
+    const path = a_star(maze);
     expect(verify_path(path, maze)).toBe(true);
 });
 
@@ -19,7 +19,7 @@ test("A* no forks", () => {
         "   # ",
         "E#   ",
     ])!;
-    const path = A_Star(maze);
+    const path = a_star(maze);
     expect(verify_path(path, maze)).toBe(true);
 });
 
@@ -35,6 +35,6 @@ test("A* full", () => {
         "# #   ## #",
         "#   #    #",
     ])!;
-    const path = A_Star(maze);
+    const path = a_star(maze);
     expect(verify_path(path, maze)).toBe(true);
 });
