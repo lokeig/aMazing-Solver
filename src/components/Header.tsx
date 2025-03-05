@@ -30,12 +30,11 @@ const algorithms: Algorithm[] = [
 ];
 
 function Header() {
-    const { grid, setGrid } = useGrid();
+    const { grid, setGrid, disabled, setDisabled } = useGrid();
     const { code, setCode, setLog } = useEditor();
 
     const [editor, setEditor] = useState<boolean>(false);
     const [selected, setSelected] = useState<Algorithm>(algorithms[0]);
-    const [disabled, setDisabled] = useState<boolean>(false);
 
     const clearSearch = (): void => {
         if (!document.querySelector(".search, .path")) return;

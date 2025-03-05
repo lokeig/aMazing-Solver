@@ -8,6 +8,10 @@
     @apply flex flex-grow items-start justify-center select-none mx-4 mb-4 mt-8 z-0;
 }
 
+.disabled {
+    @apply pointer-events-none;
+}
+
 .node {
     @apply size-8 border border-collapse border-gray-200;
 }

@@ -6,6 +6,8 @@ import { makeGrid } from "../utils.ts";
 type GridState = {
     grid: Grid;
     setGrid: Dispatch<SetStateAction<Grid>>;
+    disabled: boolean;
+    setDisabled: Dispatch<SetStateAction<boolean>>;
 };
 
 type Children = {
@@ -16,8 +18,9 @@ const GridContext = createContext<GridState | null>(null);
 
 export function GridProvider({ children }: Children) {
     const [grid, setGrid] = useState<Grid>(makeGrid(0, 0));
+    const [disabled, setDisabled] = useState<boolean>(false);
     return (
-        <GridContext.Provider value={{ grid, setGrid }}>
+        <GridContext.Provider value={{ grid, setGrid, disabled, setDisabled }}>
             {children}
         </GridContext.Provider>
     );
