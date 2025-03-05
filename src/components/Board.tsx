@@ -20,7 +20,7 @@ export type Grid = {
 };
 
 function Board() {
-    const { grid, setGrid } = useGrid();
+    const { grid, setGrid, disabled } = useGrid();
     const boardRef = useRef<HTMLDivElement>(null);
     const wallRef = useRef<"add" | "remove" | null>(null);
     const nodeRef = useRef<"start" | "end" | null>(null);
@@ -113,7 +113,7 @@ function Board() {
     });
 
     return (
-        <div ref={boardRef} className="board" onMouseUp={handleMouseUp}>
+        <div ref={boardRef} className={clsx({"disabled": disabled}, "board")} onMouseUp={handleMouseUp}>
             <table>
                 <tbody>
                 {grid.nodes.map((row: Node[], i: number) => (
@@ -123,8 +123,8 @@ function Board() {
                                 key={j}
                                 id={getNodeID(node.row, node.col)}
                                 className={clsx(styles(node), "node")}
-                                onMouseDown={() => handleMouseDown(node.row, node.col)}
-                                onMouseEnter={() => handleMouseEnter(node.row, node.col)}
+                                onMouseDown={(): void => handleMouseDown(node.row, node.col)}
+                                onMouseEnter={(): void => handleMouseEnter(node.row, node.col)}
                             />
                         ))}
                     </tr>
