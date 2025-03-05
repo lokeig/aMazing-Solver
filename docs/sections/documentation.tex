@@ -30,6 +30,10 @@ Dijkstra's algorithm is implemented as a maze solver using the solver wrapper. I
 
 The maze routing algorithm is implemented as a maze solver using the solver wrapper. It will not always find the shortest path and may not halt when the maze is not solvable.
 
+\subsubsection{aMazing Language Implementations}
+
+In addition to typescript, each maze solving algorithm used is also implemented as strings executable by the aMazing Language in maze mode.
+
 \subsection{aMazing Language Interpreter}
 
 \subsubsection{Tokenizer}
@@ -49,3 +53,7 @@ The input array is treated as a stack from which tokens are consumed as subexpre
 The evaluator will use the tokenizer and parser to get the inputs intermediate representation. It uses environment frame to store a table for looking up the values associated with variable names as well as what frame to fall back on if a name could not be found.
 
 The predefined values are defined in a new environment frame before starting the evaluation of the intermediate representation in a new frame with that as fallback. Similarly to the parser, when evaluating statements, helper functions are called to parse the expressions that make them up which in turn call helper functions that evaluate their subexpressions and so on. Eventually, a function is returned that will evaluate the main function of the input using this same method.
+
+\subsubsection{Maze Solving Evaluator}
+
+To evaluate in maze mode, the solver wrapper is used. The regular evaluator is used but the functions passed by the solver wrapper are exposed to the program as additional predefined values. Additionally, the main function is called with the end position's coordinates as arguments. A tuple of a maze solver and an array of strings is returned. The array of strings represents the programs standard output and will be filled with the strings printed during execution after the maze solver is called.
