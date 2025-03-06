@@ -1,5 +1,5 @@
-import Board from "./components/Board";
-import Header from "./components/Header.tsx";
+import { Board } from "./components/Board.tsx";
+import { Header } from "./components/Header.tsx";
 import { GridProvider } from "./components/GridContext.tsx";
 import { EditorProvider } from "./components/EditorContext.tsx";
 

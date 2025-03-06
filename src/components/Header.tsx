@@ -12,7 +12,7 @@ import { a_star } from "../algorithms/a_star.ts";
 import { dfs } from "../algorithms/dfs.ts";
 import { maze_routing_alg } from "../algorithms/routing_alg.ts";
 import { amazing_dijkstra, amazing_a_star, amazing_routing_alg, amazing_dfs } from "../algorithms/amazing_impl.ts";
-import Editor from "./Editor.tsx";
+import { Editor } from "./Editor.tsx";
 import { evaluate_solver } from "../interpreter/evaluator.ts";
 import { Button, Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition } from "@headlessui/react";
 import { ChevronDownIcon, CodeBracketIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
@@ -32,7 +32,7 @@ const algorithms: Algorithm[] = [
     { id: 4, name: "Custom", fn: (): never[] => [], impl: "# Implement your algorithm here" },
 ];
 
-function Header(): JSX.Element {
+export function Header(): JSX.Element {
     const { grid, setGrid, disabled, setDisabled } = useGrid();
     const { code, setCode, setLog } = useEditor();
 
@@ -194,5 +194,3 @@ function Header(): JSX.Element {
         </>
     );
 }
-
-export default Header;

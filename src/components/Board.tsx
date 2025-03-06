@@ -20,7 +20,7 @@ export type Grid = {
     cols: number;
 };
 
-function Board(): JSX.Element {
+export function Board(): JSX.Element {
     const { grid, setGrid, disabled } = useGrid();
     const boardRef: RefObject<HTMLDivElement | null> = useRef<HTMLDivElement | null>(null);
     const wallRef: RefObject<"add" | "remove" | null> = useRef<"add" | "remove" | null>(null);
@@ -135,5 +135,3 @@ function Board(): JSX.Element {
         </div>
     );
 }
-
-export default Board;

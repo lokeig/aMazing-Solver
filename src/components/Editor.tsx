@@ -4,7 +4,7 @@ import { useEditor } from "./EditorContext.tsx";
 import { Textarea } from "@headlessui/react";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 
-function Editor(): JSX.Element {
+export function Editor(): JSX.Element {
     const { code, setCode, log } = useEditor();
     const editorRef: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement | null>(null);
 
@@ -53,5 +53,3 @@ function Editor(): JSX.Element {
         </div>
     );
 }
-
-export default Editor;
