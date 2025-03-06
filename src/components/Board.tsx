@@ -119,15 +119,18 @@ export function Board(): JSX.Element {
                 <tbody>
                 {grid.nodes.map((row: Node[], i: number): JSX.Element => (
                     <tr key={i}>
-                        {row.map((node: Node, j: number): JSX.Element => (
-                            <td
-                                key={j}
-                                id={getNodeID(node.row, node.col)}
-                                className={clsx(styles(node), "node")}
-                                onMouseDown={(): void => handleMouseDown(node.row, node.col)}
-                                onMouseEnter={(): void => handleMouseEnter(node.row, node.col)}
-                            />
-                        ))}
+                        {row.map((node: Node): JSX.Element => {
+                            const id: string = getNodeID(node.row, node.col);
+                            return (
+                                <td
+                                    key={id}
+                                    id={id}
+                                    className={clsx(styles(node), "node")}
+                                    onMouseDown={(): void => handleMouseDown(node.row, node.col)}
+                                    onMouseEnter={(): void => handleMouseEnter(node.row, node.col)}
+                                />
+                            );
+                        })}
                     </tr>
                 ))}
                 </tbody>
