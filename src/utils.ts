@@ -1,9 +1,21 @@
 import type { Grid, Node } from "./components/Board.tsx";
 
+/**
+ * Get the ID of a node based on its row and column indices.
+ * @param row
+ * @param col
+ * @returns string
+ */
 export function getNodeID(row: number, col: number): string {
     return `node-${row}-${col}`;
 }
 
+/**
+ * Creates a 2D grid.
+ * @param rows
+ * @param cols
+ * @returns Grid
+ */
 export function makeGrid(rows: number, cols: number): Grid {
     if (rows > 0 && cols > 0) {
         const nodes: Node[][] = Array.from({length: rows}, (_, row: number): Node[] =>

@@ -69,7 +69,7 @@ The \texttt{Board} component is the interactive grid where the maze-solving algo
 
 \paragraph{Data Types} \
 
-\texttt{Board} consists of two types:
+\texttt{Board} uses two important types:
 \begin{itemize}
     \item \texttt{Node}: Represents a single cell in the grid with properties about its row and column indices, and optional properties for the start node, end node, and walls (isStart, isEnd, isWall).
     \item \texttt{Grid}: Represents the entire grid as a 2D array of nodes, references to the start and end nodes, and the number of rows and columns.
@@ -117,53 +117,9 @@ The update logic decouples visual feedback from the underlying grid state for pe
     \item \texttt{styles}: Uses the clsx library to conditionally return a string of CSS classes for a given node. This helps in applying different styles for the cells (e.g. walls, start, and end nodes) based on the properties of the node.
 \end{itemize}
 
-\subsubsection{Editor}
-The \texttt{Editor} component is a simple code editor for users to implement their own algorithms using aMazing Language.
+\paragraph{Visualizing Algorithms} \
 
-\paragraph{Interacting with the Editor} \
-
-The editor consists of two \texttt{Textarea} components, one for users to write code and another for displaying error messages that would otherwise appear in the console.
-
-A helper function, \texttt{handleKeyDown}, prevents the default tab behavior to let users make tab indentations within the editor. It detects tab key presses using the \texttt{KeyboardEvent} type from React and updates the position of the cursor.
-
-\subsubsection{Header}
-The \texttt{Header} component interfaces with the \texttt{Board} and \texttt{Editor} components.
-
-The component inherits states and stateful logic from \texttt{GridProvider} and \texttt{EditorProvider}. The \texttt{disabled} state is used in \texttt{Header} to disable buttons and apply different styles. The \texttt{code} state and \texttt{setCode} and \texttt{setLog} functions are used to manage the code editor. When running algorithms from the code editor, \texttt{code} is passed to \texttt{evaluate\_solver}.
-
-The different maze-solving algorithms are displayed in the dropdown using an array of objects. Additionally, a Custom option allows users to write their own algorithm. A placeholder function is used in place of the maze solver, as it is not defined until the code is evaluated.
-
-\begin{verbatim}
-    fn: (): never[] => []
-\end{verbatim}
-
-
-Implementations of the available algorithms can be displayed in the dropdown when selected. This is handled using a \texttt{useEffect} Hook that updates the \texttt{code} state using \texttt{setCode}.
-
-The code editor will capture errors that would otherwise display in the console. These errors are displayed within the editor itself by updating the \texttt{log} state using \texttt{setLog}.
-
-\paragraph{Helper Functions} \
-
-\begin{itemize}
-    \item \texttt{clearSearch}: Clears previous searches and paths if there are any.
-    \item \texttt{clearBoard}: Resets the entire board and updates the \texttt{grid} state with \texttt{setGrid}, if there are walls, visited nodes, or paths.
-    \item \texttt{generateMaze}: Resets the board and generates a maze using recursive division and updates the \texttt{grid} state.
-    \item \texttt{run}: Starts the visualization. If the code editor is displayed, it runs the code in the editor.
-\end{itemize}
-
-\subsubsection{Styling}
-All components are styled using Tailwind CSS, which is a CSS framework that defines a list of utility CSS classes that can be used to build designs directly in the markup.
-
-\paragraph{Example} \
-
-\begin{verbatim}
-    <div className="flex items-center space-x-2">
-        <div className="node start" />
-        <span>Start Node</span>
-    </div>
-\end{verbatim}
-
-Tailwind scans the components for class names, generating the corresponding styles and then writing them to a static CSS file \cite{tailwind-utility}. For this reason, a CSS file must be included in which Tailwind can be imported.
+Algorithms are visualized on the board with an asynchronous function called \texttt{visualize}. Because the \texttt{Grid} type is not directly compatible with the \texttt{Maze} type, which is used by the maze-solving algorithms, a helper function \texttt{gridToMaze} is used to convert the \texttt{Grid} to a \texttt{Maze}. The reason for the asynchronous approach is to see the progression of the algorithm searching and drawing the path, as the DOM updates would otherwise happen instantly. Each step of the visualization is delayed by 10 milliseconds using \texttt{setTimeout}. The Promise API provides a \texttt{resolve} function, which is used to indicate that an asynchronous operation (the delay) is complete and allow the next step.
 
 \subsection{aMazing Language Interpreter}
 

@@ -20,6 +20,10 @@ export type Grid = {
     cols: number;
 };
 
+/**
+ * Board component that manages the interactive grid.
+ * @returns JSX.Element
+ */
 export function Board(): JSX.Element {
     const { grid, setGrid, disabled } = useGrid();
     const boardRef: RefObject<HTMLDivElement | null> = useRef<HTMLDivElement | null>(null);
@@ -34,6 +38,7 @@ export function Board(): JSX.Element {
         setGrid(makeGrid(rows, cols));
     }, [setGrid]);
 
+    // Toggle a wall node
     const editWall = (row: number, col: number): void => {
         const node: Node = grid.nodes[row][col];
         const cell: HTMLElement | null = document.getElementById(getNodeID(row, col));
@@ -48,6 +53,7 @@ export function Board(): JSX.Element {
         }
     };
 
+    // Move the start or end node to a new position
     const moveNode = (row: number, col: number): void => {
         if (grid.nodes[row][col].isWall) return;
         if ((nodeRef.current === "start" && grid.end.row === row && grid.end.col === col) ||
@@ -66,6 +72,7 @@ export function Board(): JSX.Element {
         }
     };
 
+    // Update the grid state
     const updateGrid = (): void => {
         setGrid((prev: Grid): Grid => {
             const nodes: Node[][] = prev.nodes.map((row: Node[], i: number): Node[] =>
@@ -107,6 +114,7 @@ export function Board(): JSX.Element {
         updateGrid();
     };
 
+    // Get class name for a given node
     const styles = (node: Node): string => clsx({
         "start": node.isStart,
         "end": node.isEnd,

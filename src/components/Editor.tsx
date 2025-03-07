@@ -4,10 +4,15 @@ import { useEditor } from "./EditorContext.tsx";
 import { Textarea } from "@headlessui/react";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 
+/**
+ * Editor component is a simple code editor.
+ * @returns JSX.Element
+ */
 export function Editor(): JSX.Element {
     const { code, setCode, log } = useEditor();
     const editorRef: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement | null>(null);
 
+    // Insert tab indents with the tab key
     const handleKeyDown = (e: KeyboardEvent): void => {
         if (e.key === "Tab") {
             e.preventDefault();

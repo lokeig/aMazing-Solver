@@ -24,6 +24,7 @@ type Algorithm = {
     impl: string;
 };
 
+// Data structure for the dropdown and selected algorithm
 const algorithms: Algorithm[] = [
     { id: 0, name: "Dijkstra", fn: dijkstra, impl: amazing_dijkstra },
     { id: 1, name: "A*", fn: a_star, impl: amazing_a_star },
@@ -32,6 +33,10 @@ const algorithms: Algorithm[] = [
     { id: 4, name: "Custom", fn: (): never[] => [], impl: "# Implement your algorithm here" },
 ];
 
+/**
+ * A Header component to interface with other components and visualizer.
+ * @returns JSX.Element
+ */
 export function Header(): JSX.Element {
     const { grid, setGrid, disabled, setDisabled } = useGrid();
     const { code, setCode, setLog } = useEditor();
@@ -39,6 +44,7 @@ export function Header(): JSX.Element {
     const [editor, setEditor] = useState<boolean>(false);
     const [selected, setSelected] = useState<Algorithm>(algorithms[0]);
 
+    // Clear previous searches
     const clearSearch = (): void => {
         if (!document.querySelector(".search, .path")) return;
         grid.nodes.flat().map((node: Node): void => {
@@ -47,25 +53,29 @@ export function Header(): JSX.Element {
         });
     };
 
+    // Reset the entire board
     const clearBoard = (): void => {
         if (!document.querySelector(".wall, .search, .path")) return;
         setGrid((prev: Grid): Grid => makeGrid(prev.rows, prev.cols));
         clearSearch();
     };
 
+    // Generate mazes with recursive division and update grid state
     const generateMaze = (): void => {
         clearBoard();
         setGrid((prev: Grid): Grid => recursive_division(prev));
     };
 
+    // Display implementations in the code editor
     useEffect((): void => {
         setCode(selected.impl);
     }, [selected, setCode]);
 
+    // Visualize algorithms
     const run = async (): Promise<void> => {
         const editing: boolean = editor;
         clearSearch();
-        setDisabled(true);
+        setDisabled(true);  // Disable interactions with the board and header
         try {
             if (editing) setEditor(false);
             const solver: MazeSolver = selected.name === "Custom" || editing
@@ -75,11 +85,11 @@ export function Header(): JSX.Element {
         } catch (error) {
             console.error(error);
             if (editing) {
-                setLog(String(error));
+                setLog(String(error));  // Display errors in code editor
                 setEditor(true);
             }
         } finally {
-            setDisabled(false);
+            setDisabled(false);  // Enable interactions
         }
     };
 
