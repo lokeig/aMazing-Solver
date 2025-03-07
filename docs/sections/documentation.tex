@@ -34,20 +34,22 @@ The maze routing algorithm \cite{maze-routing-alg} is implemented as a maze solv
 
 In addition to typescript, each maze solving algorithm used is also implemented as strings executable by the aMazing Language in maze mode.
 
+\subsection{Maze Generation}
+\subsubsection{Recursive Division}
+Recursive division is a maze generation algorithm that works by recursively dividing the board into smaller sections, adding horizontal and vertical walls with passage openings, and continues dividing until the sections reach a minimum size \cite{recursive-division-alg}.
+
 \subsection{Component Overview}
-This component overview provides a detailed explanation of the components. In a React app, a component is a reusable piece of UI defined as a function that returns JSX markup.
+React is a library that lets you build user interfaces with components. In a React app, a component is a reusable piece of UI defined as a function that returns JSX markup \cite{react-component}. This component overview provides a detailed explanation of the components.
 
 \subsubsection{App}
 The \texttt{App} component is the entry point to the React app.
 
 \subsubsection{Context}
-The \texttt{GridContext} and \texttt{EditorContext} components use React’s Context API to create contexts that allow components to share state and stateful logic without the need to explicitly pass props.
+The \texttt{GridContext} and \texttt{EditorContext} components use React’s Context API to create contexts that allow components to share state and stateful logic without the need to explicitly pass props \cite{react-context}.
 
 \paragraph{GridContext and EditorContext} \
 
-The \texttt{Editor} and \texttt{Board} components share information with the \texttt{Header} component. Context establishes a single source of truth from which the components can derive their data.
-
-GridContext defines a \texttt{GridProvider} component that wraps the components that need access to the shared information. In \texttt{App}, the \texttt{GridProvider} wraps both the \texttt{Header} and \texttt{Board} components, allowing them to share the \texttt{grid} and \texttt{disabled} states, as well as the stateful logic, which includes the functions \texttt{setGrid} and \texttt{setDisabled} to manage them.
+The \texttt{Editor} and \texttt{Board} components share information with the \texttt{Header} component. Contexts establish a single source of truth from which the components can derive their data. GridContext defines a \texttt{GridProvider} component that wraps the components that need access to the shared information. In \texttt{App}, the \texttt{GridProvider} wraps both the \texttt{Header} and \texttt{Board} components, allowing them to share the \texttt{grid} and \texttt{disabled} states, as well as the stateful logic, which includes the functions \texttt{setGrid} and \texttt{setDisabled} to manage them \cite{react-hooks}.
 
 \begin{verbatim}
     const [grid, setGrid] = useState<Grid>(makeGrid(0, 0));
@@ -56,28 +58,28 @@ GridContext defines a \texttt{GridProvider} component that wraps the components 
 
 Similarly, \texttt{EditorContext} defines an \texttt{EditorProvider} component that shares information about the code in the editor, logs and the stateful logic.
 
-To access the shared information, we define custom Hooks called \texttt{useGrid} and \texttt{useEditor} that can be imported in other components.
+To access shared information, we define custom Hooks called \texttt{useGrid} and \texttt{useEditor} that can be imported into other components.
 
 \begin{verbatim}
     const { grid, setGrid, disabled, setDisabled } = useGrid();
 \end{verbatim}
 
 \subsubsection{Board}
-The \texttt{Board} component renders and updates the interactive grid where the various maze-solving algorithms are visualized.
+The \texttt{Board} component is the interactive grid where the maze-solving algorithms are visualized.
 
 \paragraph{Data Types} \
 
 \texttt{Board} consists of two types:
 \begin{itemize}
-    \item \texttt{Node}: Represents a single cell in the grid with properties about its row and column indices, and optional status as a start node, end node, or wall.
+    \item \texttt{Node}: Represents a single cell in the grid with properties about its row and column indices, and optional properties for the start node, end node, and walls (isStart, isEnd, isWall).
     \item \texttt{Grid}: Represents the entire grid as a 2D array of nodes, references to the start and end nodes, and the number of rows and columns.
 \end{itemize}
 
 \paragraph{Integration with GridContext} \
 
-The component uses \texttt{useGrid}, which provides the current \texttt{grid} state and a function \texttt{setGrid} to manage the grid state and trigger a re-render when the state changes.
+The component uses \texttt{useGrid}, which provides the grid state and a function \texttt{setGrid} to manage the grid state and trigger a new render when the state changes.
 
-The \texttt{disabled} state in the \texttt{Board} component is used to control whether user interactions are allowed. When the \texttt{disabled} state is set to true, interactions with the board are prevented. The board receives the "disabled" class, which sets pointer events to none in CSS.
+The \texttt{disabled} state in the \texttt{Board} component controls if user interactions are allowed. When the \texttt{disabled} state is set to true, the board receives the "disabled" class, which sets pointer events to none in CSS, preventing interactions with the board are prevented.
 
 \begin{verbatim}
     <div
@@ -89,30 +91,30 @@ The \texttt{disabled} state in the \texttt{Board} component is used to control w
 
 \paragraph{Grid Initialization} \
 
-When the \texttt{Board} is mounted, a \texttt{useEffect} Hook retrieves dimensions using \texttt{boardRef} and calculates the number of rows and columns based on a 24-pixel cell size. A grid is created using \texttt{makeGrid}, and the initial grid is updated with the new grid. The effect will run only once because \texttt{setGrid} is stable and does not change between renders, which causes the effect to run once on mount (when the component first renders). The grid is initially defined in \texttt{GridContext}, but because the \texttt{Board} component is not rendered at this point and the dimensions are based on the layout defined by CSS, the dimensions cannot be retrieved until after the component has been mounted. This is why \texttt{useEffect} is used here.
+When the \texttt{Board} is mounted, a \texttt{useEffect} Hook \cite{react-hooks} gets dimensions using \texttt{boardRef} and calculates the number of rows and columns based on the size of a 24-pixel cell. Refs, created with the \texttt{useRef} Hook, remember information without triggering new renders and give access to DOM elements in React \cite{react-hooks}. The grid is created using \texttt{makeGrid}, and the initial grid is updated with the new grid. The effect will run only once because \texttt{setGrid} is stable and does not change between renders, which causes the effect to run only once on mount (when the component first renders). The grid is initially defined in \texttt{GridContext}, but because the \texttt{Board} component is not rendered at this point and the dimensions are based on the layout defined by CSS, the dimensions cannot be retrieved until after the component has been mounted. This is why \texttt{useEffect} is used here.
 
 \paragraph{Interacting with the Grid} \
 
-The \texttt{Board} component enables user interactions through mouse event handlers:
+The \texttt{Board} component enables user interactions through mouse event handlers.
 
 \begin{itemize}
-    \item \texttt{handleMouseDown}: This function is triggered when a mouse button is pressed down on a cell. It checks if the clicked cell is a start node, an end node, or a regular node. Then, it assigns an action to \texttt{nodeRef} or \texttt{wallRef}.
-    \item \texttt{handleMouseEnter}: This function is triggered when the mouse moves over a cell while the mouse button is pressed down. It uses helper functions to move the start node or end node, and modifies walls.
-    \item \texttt{handleMouseUp}: When a mouse button is released, it resets the mouse action references \texttt{nodeRef} and \texttt{wallRef} to null and updates the grid state to sync any changes made during the interactions.
+    \item \texttt{handleMouseDown}: This function is called when a mouse button is pressed on a cell and checks if the clicked cell is a start node, an end node, or a regular node. Then, it assigns an action to \texttt{nodeRef} or \texttt{wallRef}.
+    \item \texttt{handleMouseEnter}: This function is called when the mouse moves over a cell while the mouse button is pressed down. It uses helper functions to move the start node or end node and modifies walls.
+    \item \texttt{handleMouseUp}: When a mouse button is released, it resets the references \texttt{nodeRef} and \texttt{wallRef} to null and updates the grid state to sync changes made during interactions.
 \end{itemize}
 
 \paragraph{Rendering} \
 
-The grid is rendered as an HTML table, where each cell is a node in the grid and has a unique ID that can be retrieved using the \texttt{getNodeID} function. Using IDs helps when manipulating the cells in the DOM.
+The grid is rendered as an HTML table, where each cell is a node in the grid and has a unique ID that can be retrieved using the \texttt{getNodeID} function. Using IDs helps when manipulating cells in the DOM.
 
-The update logic decouples the immediate visual feedback from the underlying grid state for performance reasons. When the user interacts with the board, the component directly manipulates the DOM by adding or removing CSS classes on the cells to reflect the changes visually. When the user completes an interaction, \texttt{updateGrid} is called to update the grid state.
+The update logic decouples visual feedback from the underlying grid state for performance reasons. When the user interacts with the board, the component uses helper functions to manipulate the DOM by adding or removing CSS classes on the cells to reflect the changes visually. When an interaction is completed, \texttt{updateGrid} is called to update the grid state.
 
 \paragraph{Helper Functions} \
 
 \begin{itemize}
-    \item \texttt{editWall}: Modifies the class attributes of a specific cell. If the cell is not marked as a start or end node, it toggles the \texttt{isWall} property of the node based on whether the current action in \texttt{wallRef} is to add or remove a wall. This function adds or removes the corresponding CSS class to visually update the cell.
-    \item \texttt{moveNode}: Allows repositioning of the start or end node. First, it ensures that the target cell is not a wall and is not occupied by the opposite node. Then, it moves the node by removing the relevant CSS class from the old cell and adding it to the new one, while also updating the \texttt{isStart} or \texttt{isEnd} properties of the nodes.
-    \item \texttt{styles}: Uses the clsx library to conditionally return a string of CSS classes for a given node. This helps in applying different styles for the cells (e.g., walls, start, and end nodes) based on the properties of the node.
+    \item \texttt{editWall}: Modifies the class attributes of a specific cell. If the cell is not a start or end node, it changes the \texttt{isWall} property of the node based on whether the current action in \texttt{wallRef} is to add or remove a wall. This function adds or removes the corresponding CSS class to visually update the cell.
+    \item \texttt{moveNode}: Repositions of the start and end nodes. First, it ensures that the target cell is not a wall and is not occupied by the opposite node. Then, it moves the node by removing the relevant CSS class from the old cell and adding it to the new one, while also updating the \texttt{isStart} or \texttt{isEnd} properties of the nodes.
+    \item \texttt{styles}: Uses the clsx library to conditionally return a string of CSS classes for a given node. This helps in applying different styles for the cells (e.g. walls, start, and end nodes) based on the properties of the node.
 \end{itemize}
 
 \subsubsection{Editor}
@@ -120,25 +122,25 @@ The \texttt{Editor} component is a simple code editor for users to implement the
 
 \paragraph{Interacting with the Editor} \
 
-The editor consists of two \texttt{Textarea} components from Headless UI (accessible UI components by TailwindCSS). One for users to write code and another for displaying error messages that would otherwise appear in the console.
+The editor consists of two \texttt{Textarea} components, one for users to write code and another for displaying error messages that would otherwise appear in the console.
 
-A helper function, \texttt{handleKeyDown}, overrides the default tab behavior to allow users to use tab indentation within the editor. It detects tab key presses using the \texttt{KeyboardEvent} type from React and updates the position of the cursor.
+A helper function, \texttt{handleKeyDown}, prevents the default tab behavior to let users make tab indentations within the editor. It detects tab key presses using the \texttt{KeyboardEvent} type from React and updates the position of the cursor.
 
 \subsubsection{Header}
 The \texttt{Header} component interfaces with the \texttt{Board} and \texttt{Editor} components.
 
-The component inherits states and stateful logic from \texttt{GridProvider} and \texttt{EditorProvider}. The \texttt{disabled} state is used in \texttt{Header} to disable buttons and apply different styles. The \texttt{code}, \texttt{setCode}, and \texttt{setLog} variables are used to manage the code editor. When running algorithms from the code editor, \texttt{code} is passed to \texttt{evaluate\_solver}.
+The component inherits states and stateful logic from \texttt{GridProvider} and \texttt{EditorProvider}. The \texttt{disabled} state is used in \texttt{Header} to disable buttons and apply different styles. The \texttt{code} state and \texttt{setCode} and \texttt{setLog} functions are used to manage the code editor. When running algorithms from the code editor, \texttt{code} is passed to \texttt{evaluate\_solver}.
 
-The different maze-solving algorithms are displayed in the dropdown using an array of objects. Additionally, a Custom option allows users to write their own algorithm. The Custom algorithm entry provides a placeholder function in place of the maze solver, as it is not defined until the code is evaluated.
+The different maze-solving algorithms are displayed in the dropdown using an array of objects. Additionally, a Custom option allows users to write their own algorithm. A placeholder function is used in place of the maze solver, as it is not defined until the code is evaluated.
 
 \begin{verbatim}
     fn: (): never[] => []
 \end{verbatim}
 
 
-Implementations of the available algorithms in the dropdown can be displayed when selected. This is handled using a \texttt{useEffect} Hook that updates the \texttt{code} state using \texttt{setCode}.
+Implementations of the available algorithms can be displayed in the dropdown when selected. This is handled using a \texttt{useEffect} Hook that updates the \texttt{code} state using \texttt{setCode}.
 
-The code editor will capture errors that would otherwise show up in the console. These errors are displayed within the editor itself by updating the \texttt{log} state using \texttt{setLog}.
+The code editor will capture errors that would otherwise display in the console. These errors are displayed within the editor itself by updating the \texttt{log} state using \texttt{setLog}.
 
 \paragraph{Helper Functions} \
 
@@ -149,15 +151,19 @@ The code editor will capture errors that would otherwise show up in the console.
     \item \texttt{run}: Starts the visualization. If the code editor is displayed, it runs the code in the editor.
 \end{itemize}
 
-\subsubsection{Editor}
+\subsubsection{Styling}
+All components are styled using Tailwind CSS, which is a CSS framework that defines a list of utility CSS classes that can be used to build designs directly in the markup.
 
-The Editor component renders a simple code editor that allow users to implement their own algorithms in aMazing Language.
+\paragraph{Example} \
 
-\paragraph{Interacting with the Editor} \
+\begin{verbatim}
+    <div className="flex items-center space-x-2">
+        <div className="node start" />
+        <span>Start Node</span>
+    </div>
+\end{verbatim}
 
-The Editor consists of two Textarea components that are defined in Headless UI (Tailwind). One Textarea is used by the user to write code, and the other displays errors that would otherwise show on the console.
-
-A helper function, \texttt{handleKeyDown}, prevents the default behavior of the tab allows the user to indent in the code editor. It uses a KeyboardEvent type defined in React to detect when the tab key is used.
+Tailwind scans the components for class names, generating the corresponding styles and then writing them to a static CSS file \cite{tailwind-utility}. For this reason, a CSS file must be included in which Tailwind can be imported.
 
 \subsection{aMazing Language Interpreter}
 
