@@ -2,13 +2,13 @@
 
 Before visualizing an algorithm, it must complete and return. This means that an algorithm stuck in an infinite loop will crash the page, but also that it makes implementing them much simpler. It also makes it easier to create a website and algorithm separately before joining them together, making it possible to work on different parts in parallel.
 
-When updating the maze on the website, the immediate visual feedback is decouples from the underlying state which is only updated after the user completes an action. This provides great performance boosts for larger mazes.
+When updating the maze on the website, the immediate visual feedback is decoupled from the underlying state which is only updated after the user completes an action. This provides great performance boosts for larger mazes.
 
 In the aMazing Language, whenever the next subexpression could be of different forms, it is always possible to disambiguate just from the very next token. For example, a function literal starts with \verb|fn| instead of using the JavaScript arrow function syntax. This makes parsing easier without a GLR parser.
 
 \subsection{Strengths}
 
-The code is modular, with a well defined interface for different components to interact with each other. This makes it easy to add och change some parts of the code without modifying the rest.
+The code is modular, with a well defined interface for different components to interact with each other. This makes it easy to add or change some parts of the code without modifying the rest.
 
 The website provides a clean and intuitive interface. It makes it easier to focus on understanding the algorithms instead of how to use and navigate the website.
 
@@ -18,12 +18,14 @@ The fact that you can view the code of the predefined algorithms makes it possib
 
 Unfortunately, the website cannot use the same maze type we agreed on at the beginning of the project and instead implements a separate grid type. This makes the code somewhat less readable and coherent but was necessary in order to store the visual states like visited and path.
 
-Not all algorithms halt when presented with an impossible maze. This could have been fixed in multiple ways but was ignored in order prioritize other functionality.
+Not all algorithms halt when presented with an impossible maze. This could have been fixed in multiple ways but was ignored in order to prioritize other functionality.
 
 Despite initial ambitions, there is only one maze generation algorithm available on the website.
 
+The website does not work well for mobile devices. The header does not fit the page and the grid does not have touch controls.
+
 \subsection{Conclusion}
 
-We have created a website where users can visualize different maze solving algorithm. Additionally, we defined a new programming language and created an interpreter for it built in to the website. This language can be used to create custom maze solving algorithms to be visualized on the website.
+We have created a website where users can visualize different maze solving algorithms. Additionally, we defined a new programming language and created an interpreter for it built into the website. This language can be used to create custom maze solving algorithms to be visualized on the website.
 
 We are very pleased with the end result and feel we have accomplished our goals. However, the website has not been tested in a real setting and so we cannot determine how effectively it aids in learning.

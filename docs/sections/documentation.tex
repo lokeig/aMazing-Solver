@@ -2,15 +2,15 @@
 
 \subsubsection{Interface}
 
-The core types that different parts of the program interface with are mazes, paths, maze solvers and maze generators. A maze stores its start and end positions, the width and height of the maze and a two-dimensional array of cells describing the maze where each cell can be either a wall or empty. A path is an array of actions where each action can either be checking wether a cell at a position is a wall or to move one step in a cardinal direction. A maze solver is a function that takes a maze as input and returns a path that solves that maze. A maze generator takes a width and a height as input and returns a randomly generated maze as output.
+The core types that different parts of the program interface with are mazes, paths, maze solvers and maze generators. A maze stores its start and end positions, the width and height of the maze and a two-dimensional array of cells describing the layout where each cell can be either a wall or empty. A path is an array of actions where each action can either be checking whether a cell at a position is a wall or to move one step in a cardinal direction. A maze solver is a function that takes a maze as input and returns a path that solves that maze. A maze generator takes a width and a height as input and returns a randomly generated maze as output.
 
 \subsubsection{Path Verification}
 
-The verify\_path function takes a path and a maze as parameters and returns wether that path successfully moves from the start to the end of the maze without ever moving into a wall cell.
+The verify\_path function takes a path and a maze as parameters and returns whether that path successfully moves from the start to the end of the maze without ever moving into a wall cell.
 
 \subsubsection{Solver Wrapper}
 
-To aid the creation of maze solvers, a solver\_wrapper function has been created that takes a function as input and returns a maze solver. The wrapper defines variables to keep track of the current position in the maze and the path it has taken to get there. The input function is then passed five arguments: the end position of the maze, a function to get the current position in the maze, a function to check wether a position lies within the maze, a function to check wether a cell at a position is a wall and a function to move one step in a cardinal direction. These functions also update the current position and path accordingly.
+To aid the creation of maze solvers, a solver\_wrapper function has been created that takes a function as input and returns a maze solver. The wrapper defines variables to keep track of the current position in the maze and the path it has taken to get there. The input function is then passed five arguments: the end position of the maze, a function to get the current position in the maze, a function to check whether a position lies within the maze, a function to check whether a cell at a position is a wall and a function to move one step in a cardinal direction. These functions also update the current position and path accordingly.
 
 \subsection{Maze Solving Algorithms}
 
@@ -69,7 +69,7 @@ The \texttt{Board} component is the interactive grid where the maze-solving algo
 
 \paragraph{Data Types} \
 
-\texttt{Board} uses two important types:
+\texttt{Board} uses two essential types:
 \begin{itemize}
     \item \texttt{Node}: Represents a single cell in the grid with properties about its row and column indices, and optional properties for the start node, end node, and walls (isStart, isEnd, isWall).
     \item \texttt{Grid}: Represents the entire grid as a 2D array of nodes, references to the start and end nodes, and the number of rows and columns.
@@ -79,7 +79,7 @@ The \texttt{Board} component is the interactive grid where the maze-solving algo
 
 The component uses \texttt{useGrid}, which provides the grid state and a function \texttt{setGrid} to manage the grid state and trigger a new render when the state changes.
 
-The \texttt{disabled} state in the \texttt{Board} component controls if user interactions are allowed. When the \texttt{disabled} state is set to true, the board receives the "disabled" class, which sets pointer events to none in CSS, preventing interactions with the board are prevented.
+The \texttt{disabled} state in the \texttt{Board} component controls if user interactions are allowed. When the \texttt{disabled} state is set to true, the board receives the "disabled" class, which sets pointer events to none in CSS, preventing interactions with the board.
 
 \begin{verbatim}
     <div
@@ -121,13 +121,60 @@ The update logic decouples visual feedback from the underlying grid state for pe
 
 Algorithms are visualized on the board with an asynchronous function called \texttt{visualize}. Because the \texttt{Grid} type is not directly compatible with the \texttt{Maze} type, which is used by the maze-solving algorithms, a helper function \texttt{gridToMaze} is used to convert the \texttt{Grid} to a \texttt{Maze}. The reason for the asynchronous approach is to see the progression of the algorithm searching and drawing the path, as the DOM updates would otherwise happen instantly. Each step of the visualization is delayed by 10 milliseconds using \texttt{setTimeout}. The Promise API provides a \texttt{resolve} function, which is used to indicate that an asynchronous operation (the delay) is complete and allow the next step.
 
+\subsubsection{Editor}
+The \texttt{Editor} component is a simple code editor for users to implement their own algorithms using aMazing Language.
+
+\paragraph{Interacting with the Editor} \
+
+The editor consists of two \texttt{Textarea} components, one for users to write code and another for displaying error messages that would otherwise appear in the console.
+
+A helper function, \texttt{handleKeyDown}, prevents the default tab behavior to let users make tab indentations within the editor. It detects tab key presses using the \texttt{KeyboardEvent} type from React and updates the position of the cursor.
+
+\subsubsection{Header}
+The \texttt{Header} component interfaces with the \texttt{Board} and \texttt{Editor} components.
+
+The component inherits states and stateful logic from \texttt{GridProvider} and \texttt{EditorProvider}. The \texttt{disabled} state is used in \texttt{Header} to disable buttons and apply different styles. The \texttt{code} state and \texttt{setCode} and \texttt{setLog} functions are used to manage the code editor. When running algorithms from the code editor, \texttt{code} is passed to \texttt{evaluate\_solver}.
+
+The different maze-solving algorithms are displayed in the dropdown using an array of objects. Additionally, a Custom option allows users to write their own algorithm. A placeholder function is used in place of the maze solver, as it is not defined until the code is evaluated.
+
+\begin{verbatim}
+    fn: (): never[] => []
+\end{verbatim}
+
+Implementations of the available algorithms can be displayed in the dropdown when selected. This is handled using a \texttt{useEffect} Hook that updates the \texttt{code} state using \texttt{setCode}.
+
+The code editor will capture errors that would otherwise display in the console. These errors are displayed within the editor itself by updating the \texttt{log} state using \texttt{setLog}.
+
+\paragraph{Helper Functions} \
+
+\begin{itemize}
+    \item \texttt{clearSearch}: Clears previous searches and paths if there are any.
+    \item \texttt{clearBoard}: Resets the entire board and updates the \texttt{grid} state with \texttt{setGrid}, if there are walls, visited nodes, or paths.
+    \item \texttt{generateMaze}: Resets the board and generates a maze using recursive division and updates the \texttt{grid} state.
+    \item \texttt{run}: Starts the visualization. If the code editor is displayed, it runs the code in the editor.
+\end{itemize}
+
+\subsubsection{Styling}
+All components are styled using Tailwind CSS, which is a CSS framework that defines a list of utility CSS classes that can be used to build designs directly in the markup.
+
+\paragraph{Example} \
+
+\begin{verbatim}
+    <div className="flex items-center space-x-2">
+        <div className="node start" />
+        <span>Start Node</span>
+    </div>
+\end{verbatim}
+
+Tailwind scans the components for class names, generating the corresponding styles and then writing them to a static CSS file \cite{tailwind-utility}. For this reason, a CSS file must be included in which Tailwind can be imported.
+
 \subsection{aMazing Language Interpreter}
 
 \subsubsection{Tokenizer}
 
 The first step of interpreting a string is to convert it to an array of tokens. A token consists of its type, the text it represents, the line number it started on and the column number it started on.
 
-The input string is read one character at a time and that character is added to a string containing the current token. When whitespace is encountered or the current token string would become invalid, the current token string is matched against keyword, symbols, integer literal rules and variable naming rules. It it matches any of them, a new token of that type is pushed to the resulting array and the current token string is reset to begin accumulating the next token.
+The input string is read one character at a time and that character is added to a string containing the current token. When whitespace is encountered or the current token string would become invalid, the current token string is matched against keyword, symbols, integer literal rules and variable naming rules. If it matches any of them, a new token of that type is pushed to the resulting array and the current token string is reset to begin accumulating the next token.
 
 \subsubsection{Parser}
 
@@ -137,10 +184,10 @@ The input array is treated as a stack from which tokens are consumed as subexpre
 
 \subsubsection{Evaluator}
 
-The evaluator will use the tokenizer and parser to get the inputs intermediate representation. It uses environment frame to store a table for looking up the values associated with variable names as well as what frame to fall back on if a name could not be found.
+The evaluator will use the tokenizer and parser to get the inputs intermediate representation. It uses an environment frame to store a table for looking up the values associated with variable names as well as what frame to fall back on if a name could not be found.
 
 The predefined values are defined in a new environment frame before starting the evaluation of the intermediate representation in a new frame with that as fallback. Similarly to the parser, when evaluating statements, helper functions are called to parse the expressions that make them up which in turn call helper functions that evaluate their subexpressions and so on. Eventually, a function is returned that will evaluate the main function of the input using this same method.
 
 \subsubsection{Maze Solving Evaluator}
 
-To evaluate in maze mode, the solver wrapper is used. The regular evaluator is used but the functions passed by the solver wrapper are exposed to the program as additional predefined values. Additionally, the main function is called with the end position's coordinates as arguments. A tuple of a maze solver and an array of strings is returned. The array of strings represents the programs standard output and will be filled with the strings printed during execution after the maze solver is called.
+To evaluate in maze mode, the solver wrapper is used. The regular evaluator is used but the functions passed by the solver wrapper are exposed to the program as additional predefined values. Additionally, the main function is called with the end position's coordinates as arguments. A tuple of a maze solver and an array of strings is returned. The array of strings represents the program's standard output and will be filled with the strings printed during execution after the maze solver is called.

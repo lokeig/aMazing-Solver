@@ -13,7 +13,7 @@ The first \verb|#| character in a line and all characters after it until the nex
 
 \subsubsection{Naming Rules}
 
-A variable name is case sensitive and must start with a letter a-z or A-Z or an underscore and every following character must be a letter a-z or A-Z, an underscore or a digit 0-9. A variables cannot share a name with any of the reserved keywords.
+A variable name is case sensitive and must start with a letter a-z or A-Z or an underscore and every following character must be a letter a-z or A-Z, an underscore or a digit 0-9. A variable cannot share a name with any of the reserved keywords.
 
 \paragraph{Example}
 
@@ -21,12 +21,12 @@ A variable name is case sensitive and must start with a letter a-z or A-Z or an 
     x
     _x
     x1
-    _123    
+    _123
 \end{verbatim}
 
 \subsubsection{Integers}
 
-An integer literal is case insensitive must start with a digit 0-9 and every following character must be a letter a-z or A-Z, an underscore or a digit 0-9. Underscores are ignored for purposes of determining its value.
+An integer literal is case insensitive and must start with a digit 0-9 and every following character must be a letter a-z or A-Z, an underscore or a digit 0-9. Underscores are ignored for purposes of determining its value.
 
 If it begins with \verb|0b| it is a binary integer and can only contain binary digits. At least one non-underscore character must follow.
 
@@ -105,7 +105,7 @@ Binary operators are listed top to bottom in descending precedence. Operators on
 
 \subsubsection{Other Symbols}
 
-All symbols (including operators) are parsed greedily, not ending a symbol before it would become invalid or encounters whitespace.
+All symbols (including operators) are parsed greedily, not ending a symbol before it would become invalid or encounter whitespace.
 
 \begin{table}[H]
     \begin{tabular}{ l l }
@@ -214,7 +214,7 @@ When a statement inside a conditional, loop or code block is executed, it will d
 
 \paragraph{Usage}
 
-When reading or assigning to a variable, the name will be search for within the current frame and if it has not been declared, it will recursively search the frame it points to. If it has not been declared and it does not point to anything, an error is thrown. When declaring a variable, if the name has not been declared in the current frame, it will be, otherwise an error is thrown. Note that if a variable is read or assigned to but would be declared later in the same scope, the reading or assigning will still search the frame pointed to.
+When reading or assigning to a variable, the name will be searched for within the current frame and if it has not been declared, it will recursively search the frame it points to. If it has not been declared and it does not point to anything, an error is thrown. When declaring a variable, if the name has not been declared in the current frame, it will be, otherwise an error is thrown. Note that if a variable is read or assigned to but would be declared later in the same scope, the reading or assigning will still search the frame pointed to.
 
 \paragraph{Example}
 
@@ -245,10 +245,9 @@ Takes a function as its primary operand and optionally a list of values between 
 
 Takes an array as its primary operand and an integer between the brackets to use as index. The index must be between 0 (inclusive) and the length of the array (exclusive) where 0 corresponds to the first element in the array. Returns the value stored at that index which can be assigned to.
 
-
 \paragraph{Logical NOT \quad \texttt{!x}} \
 
-Takes a value as operand and returns 0 if its truthy and 1 otherwise.
+Takes a value as operand and returns 0 if it's truthy and 1 otherwise.
 
 \paragraph{Unary plus \quad \texttt{+i}} \
 
@@ -330,7 +329,7 @@ If the left hand side of the equals sign is a variable name, that variable is as
 
 If the left hand sign is an array subscripting expression, the element at that index of the array is assigned the value on the right hand side of the equals sign.
 
-Otherwise and error is thrown.
+Otherwise an error is thrown.
 
 \paragraph{If conditional \quad \texttt{if (x) s} } \
 
@@ -350,11 +349,11 @@ Evaluates the first expression inside the parentheses in a new frame. Evaluates 
 
 \paragraph{Return \quad \texttt{return;}} \
 
-Skips all following statement when inside a code block and returns 0 when inside a function.
+Skips all following statements when inside a code block and returns 0 when inside a function.
 
 \paragraph{Return value \quad \texttt{return x;}} \
 
-Skips all following statement when inside a code block and returns the value following the return keyword when inside a function.
+Skips all following statements when inside a code block and returns the value following the return keyword when inside a function.
 
 \paragraph{Continue \quad \texttt{continue;}} \
 
@@ -362,7 +361,7 @@ Skips all following statements when inside a code block.
 
 \paragraph{Break \quad \texttt{break;}} \
 
-Skips all following statement when inside a code block and stops the loop when inside a while loop.
+Skips all following statements when inside a code block and stops the loop when inside a while loop.
 
 \paragraph{Code block \quad \texttt{\{s\ldots\}}} \
 
@@ -384,19 +383,19 @@ A function that takes no arguments and throws an error.
 
 \paragraph{\texttt{print}} \
 
-A function that takes any number of arguments of any types and prints them to stdout separated by spaces.
+A function that takes any number of arguments of any type and prints them to stdout separated by spaces.
 
 \paragraph{\texttt{len}} \
 
-A function that takes an array as only argument and returns its length as an integer.
+A function that takes an array as its only argument and returns its length as an integer.
 
 \paragraph{\texttt{push}} \
 
-A function that takes an array as its first argument and a value of any type as its second argument and adds then second argument to end of the array, increasing its length by one. Returns 0.
+A function that takes an array as its first argument and a value of any type as its second argument and then adds the second argument to the end of the array, increasing its length by one. Returns 0.
 
 \paragraph{\texttt{pop}} \
 
-A function that takes an array as its only argument. If the array if empty, an error is thrown. Otherwise the last element of the array is removed, reducing its length by one. Returns the removed element.
+A function that takes an array as its only argument. If the array is empty, an error is thrown. Otherwise the last element of the array is removed, reducing its length by one. Returns the removed element.
 
 \paragraph{\texttt{is\_int}} \
 
