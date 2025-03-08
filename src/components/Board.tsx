@@ -111,10 +111,10 @@ export function Board(): JSX.Element {
     const handleMouseUp = (): void => {
         wallRef.current = null;
         nodeRef.current = null;
-        updateGrid();
+        updateGrid();  // Batch updates
     };
 
-    // Get class name for a given node
+    // Get class attribute for a given node
     const styles = (node: Node): string => clsx({
         "start": node.isStart,
         "end": node.isEnd,

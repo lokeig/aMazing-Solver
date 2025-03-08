@@ -14,15 +14,19 @@ export function Editor(): JSX.Element {
     // Insert tab indents with the tab key
     const handleKeyDown = (e: KeyboardEvent): void => {
         if (e.key === "Tab") {
-            e.preventDefault();
+            e.preventDefault();  // Prevent default behavior of tab key
             const textarea: HTMLTextAreaElement | null = editorRef.current;
             if (!textarea) return;
+
             const start: number = textarea.selectionStart;
             const end: number = textarea.selectionEnd;
-            setCode(code.slice(0, start) + "\t" + code.slice(end));
-            setTimeout((): void => {
-                textarea.selectionStart = textarea.selectionEnd = start + 1;
-            }, 0);
+
+            setCode(code.slice(0, start) + "\t" + code.slice(end));  // Insert tab character
+
+            // Defer setting the cursor position
+            requestAnimationFrame((): void => {
+                textarea.setSelectionRange(start + 1, start + 1);
+            });
         }
     };
 

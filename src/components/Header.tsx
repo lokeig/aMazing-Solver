@@ -46,7 +46,7 @@ export function Header(): JSX.Element {
 
     // Clear previous searches
     const clearSearch = (): void => {
-        if (!document.querySelector(".search, .path")) return;
+        if (!document.querySelector(".search, .path")) return;  // Early exit if no cells have the selectors
         grid.nodes.flat().map((node: Node): void => {
             const cell: HTMLElement | null = document.getElementById(getNodeID(node.row, node.col));
             cell?.classList.remove("search", "path");
@@ -77,19 +77,21 @@ export function Header(): JSX.Element {
         clearSearch();
         setDisabled(true);  // Disable interactions with the board and header
         try {
-            if (editing) setEditor(false);
+            if (editing) {
+                setLog("");  // Clear logs
+                setEditor(false);  // Hide code editor
+            }
             const solver: MazeSolver = selected.name === "Custom" || editing
                 ? evaluate_solver(code)[0]
                 : selected.fn;
             await visualize(grid, solver);
         } catch (error) {
-            console.error(error);
             if (editing) {
                 setLog(String(error));  // Display errors in code editor
                 setEditor(true);
             }
         } finally {
-            setDisabled(false);  // Enable interactions
+            setDisabled(false);
         }
     };
 

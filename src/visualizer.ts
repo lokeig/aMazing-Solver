@@ -4,7 +4,7 @@ import { step_in_dir, is_lookup_action, is_move_action } from "./maze.ts";
 import { getNodeID } from "./utils.ts";
 
 /**
- * Converts a Grid type to a Maze type to interface with MazeSolver.
+ * Converts a Grid to a Maze.
  * @param grid
  * @returns Maze
  */
