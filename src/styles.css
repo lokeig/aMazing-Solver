@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
 @import "tailwindcss";
 
 .app {
@@ -37,8 +38,8 @@
 }
 
 @theme {
-    --font-serif: Inter, ui-sans-serif, system-ui, sans-serif;
-    --font-mono: JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-sans: Inter, ui-sans-serif, sans-serif;
+    --font-mono: JetBrains Mono, ui-monospace, monospace;
 
     --animate-node: node 0.3s ease-in-out;
     @keyframes node {
