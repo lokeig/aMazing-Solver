@@ -1,7 +1,6 @@
 import type { JSX, KeyboardEvent, ChangeEvent, RefObject } from "react";
 import { useRef } from "react";
 import { useEditor } from "./EditorContext.tsx";
-import { Textarea } from "@headlessui/react";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 
 /**
@@ -37,7 +36,7 @@ export function Editor(): JSX.Element {
                     </a>
                 </div>
                 <div className="w-full h-px bg-gray-500" />
-                <Textarea
+                <textarea
                     ref={editorRef}
                     className="w-full h-4/5 p-6 whitespace-pre-wrap font-mono text-white resize-none focus:outline-none"
                     spellCheck={false}
@@ -46,7 +45,7 @@ export function Editor(): JSX.Element {
                     onKeyDown={handleKeyDown}
                 />
                 <div className="w-full h-px bg-gray-500" />
-                <Textarea
+                <textarea
                     className="w-full h-1/5 p-6 font-mono text-red-400 resize-none focus:outline-none"
                     readOnly={true}
                     spellCheck={false}

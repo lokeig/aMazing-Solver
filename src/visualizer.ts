@@ -1,6 +1,6 @@
 import type { Grid, Node } from "./components/Board.tsx";
 import type { Maze, MazeSolver, Cell, Path, Pos } from "./maze.ts";
-import { step_in_dir } from "./maze.ts";
+import { step_in_dir, is_lookup_action, is_move_action } from "./maze.ts";
 import { getNodeID } from "./utils.ts";
 
 /**
@@ -33,13 +33,13 @@ export async function visualize(grid: Grid, solver: MazeSolver): Promise<void> {
     for (const action of actions) {
         await new Promise<void>((resolve): void => {
             setTimeout((): void => {
-                if (action.type === "lookup") {
+                if (is_lookup_action(action)) {
                     const node: Node = grid.nodes[action.pos.y][action.pos.x];
                     const cell: HTMLElement | null = document.getElementById(getNodeID(node.row, node.col));
                     if (!node.isStart && !node.isEnd && !node.isWall) {
                         cell?.classList.add("search");
                     }
-                } else if (action.type === "move") {
+                } else if (is_move_action(action)) {
                     cur = step_in_dir(cur, action.dir);
                     const node: Node = grid.nodes[cur.y][cur.x];
                     const cell: HTMLElement | null = document.getElementById(getNodeID(node.row, node.col));

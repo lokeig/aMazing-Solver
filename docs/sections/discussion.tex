@@ -2,7 +2,7 @@
 
 Before visualizing an algorithm, it must complete and return. This means that an algorithm stuck in an infinite loop will crash the page, but also that it makes implementing them much simpler. It also makes it easier to create the website and the algorithms separately before joining them together, making it possible to work on different parts in parallel.
 
-When updating the grid on the website, the immediate visual feedback is decoupled from the underlying grid state, which is only updated after the user completes an interaction. This provides great performance boosts for larger grids.
+When updating the board on the website, the immediate visual feedback is decoupled from the underlying grid state, which is only updated after the user completes an interaction. This provides great performance boosts for larger grids.
 
 In the aMazing Language, whenever the next subexpression could be of different forms, it is always possible to disambiguate just from the very next token. For example, a function literal starts with \verb|fn| instead of using the JavaScript arrow function syntax. This makes parsing easier without a GLR parser.
 
@@ -22,7 +22,7 @@ Not all algorithms halt when presented with an impossible maze. This could have 
 
 Despite initial ambitions, there is only one maze generation algorithm available on the website.
 
-The website does not work well for mobile devices. The header does not fit the page and the grid does not have touch controls.
+The website does not work well on mobile devices. The header does not fit the page, and the board does not have dedicated touch controls.
 
 \subsection{Conclusion}
 
