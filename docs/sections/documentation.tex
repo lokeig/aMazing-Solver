@@ -2,7 +2,7 @@
 
 \subsubsection{Interface}
 
-The core types that different parts of the program interface with are mazes, paths, maze solvers and maze generators. A maze stores its start and end positions, the width and height of the maze and a two-dimensional array of cells describing the layout where each cell can be either a wall or empty. A path is an array of actions where each action can either be checking whether a cell at a position is a wall or to move one step in a cardinal direction. A maze solver is a function that takes a maze as input and returns a path that solves that maze. A maze generator takes a width and a height as input and returns a randomly generated maze as output.
+The core types that different parts of the program interface with are mazes, paths, maze solvers and maze generators. A maze stores its start and end positions, the width and height of the maze, and a two-dimensional array of cells that describe the layout, where each cell can be a wall or empty. A path is an array of actions where each action can either be checking whether a cell at a position is a wall or to move one step in a cardinal direction. A maze solver is a function that takes a maze as input and returns a path that solves that maze. A maze generator takes a width and a height as input and returns a randomly generated maze as output.
 
 \subsubsection{Path Verification}
 
@@ -12,13 +12,13 @@ The verify\_path function takes a path and a maze as parameters and returns whet
 
 To aid the creation of maze solvers, a solver\_wrapper function has been created that takes a function as input and returns a maze solver. The wrapper defines variables to keep track of the current position in the maze and the path it has taken to get there. The input function is then passed five arguments: the end position of the maze, a function to get the current position in the maze, a function to check whether a position lies within the maze, a function to check whether a cell at a position is a wall and a function to move one step in a cardinal direction. These functions also update the current position and path accordingly.
 
-\subsection{Maze Solving Algorithms}
+\subsection{Maze-Solving Algorithms}
 
 \subsubsection{A*}
 
 A* \cite{a-star-alg} is implemented as a maze solver using the solver wrapper. It will always find the shortest path and always halt.
 
-\subsubsection{Depth First Search}
+\subsubsection{Depth-First Search}
 
 DFS \cite{pkd} is implemented as a maze solver using the solver wrapper. It will not always find the shortest path but will always halt.
 
@@ -26,60 +26,63 @@ DFS \cite{pkd} is implemented as a maze solver using the solver wrapper. It will
 
 Dijkstra's algorithm \cite{dijkstras-alg} is implemented as a maze solver using the solver wrapper. It will always find the shortest path and always halt.
 
-\subsubsection{The Maze Routing algorithm}
+\subsubsection{Maze Routing algorithm}
 
 The maze routing algorithm \cite{maze-routing-alg} is implemented as a maze solver using the solver wrapper. It will not always find the shortest path and may not halt when the maze is not solvable.
 
 \subsubsection{aMazing Language Implementations}
 
-In addition to typescript, each maze solving algorithm used is also implemented as strings executable by the aMazing Language in maze mode.
+In addition to TypeScript, each maze-solving algorithm used is also implemented as strings executable by the aMazing Language in maze mode.
 
 \subsection{Maze Generation}
 \subsubsection{Recursive Division}
 Recursive division is a maze generation algorithm that works by recursively dividing the board into smaller sections, adding horizontal and vertical walls with passage openings, and continues dividing until the sections reach a minimum size \cite{recursive-division-alg}.
 
 \subsection{Component Overview}
-React is a library that lets you build user interfaces with components. In a React app, a component is a reusable piece of UI defined as a function that returns JSX markup \cite{react-component}. This component overview provides a detailed explanation of the components.
+React is a library that lets you build user interfaces with components. In a React app, a component is a reusable UI element defined as a function that returns JSX markup \cite{react-component}. This component overview provides a detailed explanation of the components.
 
 \subsubsection{App}
 The \texttt{App} component is the entry point to the React app.
 
 \subsubsection{Context}
-The \texttt{GridContext} and \texttt{EditorContext} components use React’s Context API to create contexts that allow components to share state and stateful logic without the need to explicitly pass props \cite{react-context}.
+React’s Context API is used to create contexts that allow components to share state and stateful logic without the need to explicitly pass props \cite{react-context}.
 
-\paragraph{GridContext and EditorContext} \
+\paragraph{Context Providers} \
 
-The \texttt{Editor} and \texttt{Board} components share information with the \texttt{Header} component. Contexts establish a single source of truth from which the components can derive their data. GridContext defines a \texttt{GridProvider} component that wraps the components that need access to the shared information. In \texttt{App}, the \texttt{GridProvider} wraps both the \texttt{Header} and \texttt{Board} components, allowing them to share the \texttt{grid} and \texttt{disabled} states, as well as the stateful logic, which includes the functions \texttt{setGrid} and \texttt{setDisabled} to manage them \cite{react-hooks}.
+The \texttt{Editor} and \texttt{Board} components share information with the \texttt{Header} component. Context provides a way for the components to access and share data. A \texttt{GridProvider} component is defined to wrap the components that need access to the shared information. In \texttt{App}, the \texttt{GridProvider} wraps both the \texttt{Header} and \texttt{Board} components, allowing them to share the \texttt{grid} and \texttt{disabled} states, as well as the stateful logic, which includes the functions \texttt{setGrid} and \texttt{setDisabled} to manage them. State variables are created using a \texttt{useState} Hook \cite{react-hooks}.
 
 \begin{verbatim}
     const [grid, setGrid] = useState<Grid>(makeGrid(0, 0));
     const [disabled, setDisabled] = useState<boolean>(false);
 \end{verbatim}
 
-Similarly, \texttt{EditorContext} defines an \texttt{EditorProvider} component that shares information about the code in the editor, logs and the stateful logic.
+Similarly, \texttt{EditorProvider} shares information about its state variables and stateful logic.
 
-To access shared information, we define custom Hooks called \texttt{useGrid} and \texttt{useEditor} that can be imported into other components.
+\paragraph{Custom Hooks} \
+
+To access shared information, custom Hooks \texttt{useGrid} and \texttt{useEditor} are defined and can be imported into other components.
 
 \begin{verbatim}
+    import { useGrid } from "./GridContext.tsx";
     const { grid, setGrid, disabled, setDisabled } = useGrid();
 \end{verbatim}
 
 \subsubsection{Board}
-The \texttt{Board} component is the interactive grid where the maze-solving algorithms are visualized.
+The \texttt{Board} component is an interactive grid where the maze-solving algorithms are visualized.
 
 \paragraph{Data Types} \
 
-\texttt{Board} uses two essential types:
+\texttt{Board} uses two important types:
 \begin{itemize}
-    \item \texttt{Node}: Represents a single cell in the grid with properties about its row and column indices, and optional properties for the start node, end node, and walls (isStart, isEnd, isWall).
-    \item \texttt{Grid}: Represents the entire grid as a 2D array of nodes, references to the start and end nodes, and the number of rows and columns.
+    \item \texttt{Node}: Represents a single cell in the grid with properties about its row and column indices, and optional Boolean properties for the start node, the end node, and walls (\texttt{isStart}, \texttt{isEnd}, \texttt{isWall}).
+    \item \texttt{Grid}: Represents the entire grid as a 2D array of nodes, with references to the start and end nodes, and the number of rows and columns.
 \end{itemize}
 
-\paragraph{Integration with GridContext} \
+\paragraph{Integration with Context} \
 
 The component uses \texttt{useGrid}, which provides the grid state and a function \texttt{setGrid} to manage the grid state and trigger a new render when the state changes.
 
-The \texttt{disabled} state in the \texttt{Board} component controls if user interactions are allowed. When the \texttt{disabled} state is set to true, the board receives the "disabled" class, which sets pointer events to none in CSS, preventing interactions with the board.
+The \texttt{disabled} state in the \texttt{Board} component controls whether user interactions are allowed. When the \texttt{disabled} state is set to true, the board receives the \texttt{disabled} class, which sets pointer events to none in CSS, preventing interactions with the board.
 
 \begin{verbatim}
     <div
@@ -91,7 +94,7 @@ The \texttt{disabled} state in the \texttt{Board} component controls if user int
 
 \paragraph{Grid Initialization} \
 
-When the \texttt{Board} is mounted, a \texttt{useEffect} Hook \cite{react-hooks} gets dimensions using \texttt{boardRef} and calculates the number of rows and columns based on the size of a 24-pixel cell. Refs, created with the \texttt{useRef} Hook, remember information without triggering new renders and give access to DOM elements in React \cite{react-hooks}. The grid is created using \texttt{makeGrid}, and the initial grid is updated with the new grid. The effect will run only once because \texttt{setGrid} is stable and does not change between renders, which causes the effect to run only once on mount (when the component first renders). The grid is initially defined in \texttt{GridContext}, but because the \texttt{Board} component is not rendered at this point and the dimensions are based on the layout defined by CSS, the dimensions cannot be retrieved until after the component has been mounted. This is why \texttt{useEffect} is used here.
+When the \texttt{Board} is mounted, a \texttt{useEffect} Hook \cite{react-hooks} gets dimensions using \texttt{boardRef} and calculates the number of rows and columns based on the size of a 24-pixel cell. Refs, created with the \texttt{useRef} Hook \cite{react-hooks}, remember information without triggering new renders and gives access to DOM elements in React \cite{react-hooks}. The grid is created using \texttt{makeGrid}, and the initial grid is updated with the new grid. The effect will run only once on mount (when the component first renders) because \texttt{setGrid} is stable and does not change between renders. The grid is initially created in \texttt{GridProvider}, but because the \texttt{Board} component is not rendered at this point and the dimensions are based on the layout defined by CSS, the dimensions cannot be retrieved until after the component has been mounted. This is why \texttt{useEffect} is used here.
 
 \paragraph{Interacting with the Grid} \
 
@@ -105,7 +108,7 @@ The \texttt{Board} component enables user interactions through mouse event handl
 
 \paragraph{Rendering} \
 
-The grid is rendered as an HTML table, where each cell is a node in the grid and has a unique ID that can be retrieved using the \texttt{getNodeID} function. Using IDs helps when manipulating cells in the DOM.
+The grid is rendered as an HTML table, where each cell is a node in the grid and has a unique ID that can be retrieved with \texttt{getNodeID}. Using IDs helps when manipulating cells in the DOM.
 
 The update logic decouples visual feedback from the underlying grid state for performance reasons. When the user interacts with the board, the component uses helper functions to manipulate the DOM by adding or removing CSS classes on the cells to reflect the changes visually. When an interaction is completed, \texttt{updateGrid} is called to update the grid state.
 
@@ -119,29 +122,23 @@ The update logic decouples visual feedback from the underlying grid state for pe
 
 \paragraph{Visualizing Algorithms} \
 
-Algorithms are visualized on the board with an asynchronous function called \texttt{visualize}. Because the \texttt{Grid} type is not directly compatible with the \texttt{Maze} type, which is used by the maze-solving algorithms, a helper function \texttt{gridToMaze} is used to convert the \texttt{Grid} to a \texttt{Maze}. The reason for the asynchronous approach is to see the progression of the algorithm searching and drawing the path, as the DOM updates would otherwise happen instantly. Each step of the visualization is delayed by 10 milliseconds using \texttt{setTimeout}. The Promise API provides a \texttt{resolve} function, which is used to indicate that an asynchronous operation (the delay) is complete and allow the next step.
+Algorithms are visualized on the board with an asynchronous function \texttt{visualize}. Because the \texttt{Grid} type is not directly compatible with the \texttt{Maze} type, which is used by the maze-solving algorithms, a helper function \texttt{gridToMaze} is used to convert the \texttt{Grid} to a \texttt{Maze}. The reason for the asynchronous approach is to see the progression of the algorithm searching and drawing the path, as the DOM updates would otherwise happen instantly. Each visualization step is delayed by 10 milliseconds using \texttt{setTimeout}. The Promise API provides a \texttt{resolve} function, which is used to indicate that an asynchronous operation (the delay) is complete and allows the next step.
 
 \subsubsection{Editor}
 The \texttt{Editor} component is a simple code editor for users to implement their own algorithms using aMazing Language.
 
-\paragraph{Interacting with the Editor} \
-
-The editor consists of two \texttt{Textarea} components, one for users to write code and another for displaying error messages that would otherwise appear in the console.
-
-A helper function, \texttt{handleKeyDown}, prevents the default tab behavior to let users make tab indentations within the editor. It detects tab key presses using the \texttt{KeyboardEvent} type from React and updates the position of the cursor.
+It consists of two textareas: one for users to write code and another for displaying error messages that would otherwise appear in the console. A helper function, \texttt{handleKeyDown}, prevents the default tab behavior to let users make tab indentations within the editor. It detects tab key presses using the \texttt{KeyboardEvent} type from React and updates the position of the cursor.
 
 \subsubsection{Header}
-The \texttt{Header} component interfaces with the \texttt{Board} and \texttt{Editor} components.
-
-The component inherits states and stateful logic from \texttt{GridProvider} and \texttt{EditorProvider}. The \texttt{disabled} state is used in \texttt{Header} to disable buttons and apply different styles. The \texttt{code} state and \texttt{setCode} and \texttt{setLog} functions are used to manage the code editor. When running algorithms from the code editor, \texttt{code} is passed to \texttt{evaluate\_solver}.
+The \texttt{Header} component interfaces with the \texttt{Board} and \texttt{Editor} components. It inherits states and stateful logic from \texttt{GridProvider} and \texttt{EditorProvider}. The \texttt{disabled} state is used in \texttt{Header} to disable buttons and apply different styles. The \texttt{code} state and \texttt{setCode} and \texttt{setLog} functions are used to manage the code editor. When running algorithms from the code editor, \texttt{code} is passed to \texttt{evaluate\_solver}.
 
 The different maze-solving algorithms are displayed in the dropdown using an array of objects. Additionally, a Custom option allows users to write their own algorithm. A placeholder function is used in place of the maze solver, as it is not defined until the code is evaluated.
 
 \begin{verbatim}
-    fn: (): never[] => []
+    { id: 4, name: "Custom", fn: (): never[] => [], impl: "" }
 \end{verbatim}
 
-Implementations of the available algorithms can be displayed in the dropdown when selected. This is handled using a \texttt{useEffect} Hook that updates the \texttt{code} state using \texttt{setCode}.
+Implementations of the available algorithms can be displayed in the dropdown when selected. This is handled by a \texttt{useEffect} Hook that updates the \texttt{code} state using \texttt{setCode}.
 
 The code editor will capture errors that would otherwise display in the console. These errors are displayed within the editor itself by updating the \texttt{log} state using \texttt{setLog}.
 
@@ -149,15 +146,13 @@ The code editor will capture errors that would otherwise display in the console.
 
 \begin{itemize}
     \item \texttt{clearSearch}: Clears previous searches and paths if there are any.
-    \item \texttt{clearBoard}: Resets the entire board and updates the \texttt{grid} state with \texttt{setGrid}, if there are walls, visited nodes, or paths.
-    \item \texttt{generateMaze}: Resets the board and generates a maze using recursive division and updates the \texttt{grid} state.
-    \item \texttt{run}: Starts the visualization. If the code editor is displayed, it runs the code in the editor.
+    \item \texttt{clearBoard}: Resets the entire board and updates the grid state with \texttt{setGrid}, if there are walls, visited nodes, or paths.
+    \item \texttt{generateMaze}: Resets the board and generates a maze using recursive division and updates the grid state.
+    \item \texttt{run}: Starts the visualization of the selected algorithm. If the code editor is open, it runs the code in the editor.
 \end{itemize}
 
 \subsubsection{Styling}
-All components are styled using Tailwind CSS, which is a CSS framework that defines a list of utility CSS classes that can be used to build designs directly in the markup.
-
-\paragraph{Example} \
+All components are styled with Tailwind CSS, which is a CSS framework that defines a list of utility CSS classes that can be used to build designs directly in the markup. Utility classes are included in the class attribute to define the style.
 
 \begin{verbatim}
     <div className="flex items-center space-x-2">
@@ -166,7 +161,13 @@ All components are styled using Tailwind CSS, which is a CSS framework that defi
     </div>
 \end{verbatim}
 
-Tailwind scans the components for class names, generating the corresponding styles and then writing them to a static CSS file \cite{tailwind-utility}. For this reason, a CSS file must be included in which Tailwind can be imported.
+Tailwind scans the components for utility classes and generates the necessary CSS \cite{tailwind-utility}. This project also includes a CSS file in which Tailwind is imported to allow the use of directives like \texttt{@apply} and \texttt{@theme}, which are used to customize and extend the framework \cite{tailwind-directives}. In the example below, the \texttt{@theme} directive is used to define a custom animation for the nodes.
+
+\begin{verbatim}
+    @theme {
+        --animate-node: node 0.3s ease-in-out;
+    }
+\end{verbatim}
 
 \subsection{aMazing Language Interpreter}
 
@@ -174,20 +175,20 @@ Tailwind scans the components for class names, generating the corresponding styl
 
 The first step of interpreting a string is to convert it to an array of tokens. A token consists of its type, the text it represents, the line number it started on and the column number it started on.
 
-The input string is read one character at a time and that character is added to a string containing the current token. When whitespace is encountered or the current token string would become invalid, the current token string is matched against keyword, symbols, integer literal rules and variable naming rules. If it matches any of them, a new token of that type is pushed to the resulting array and the current token string is reset to begin accumulating the next token.
+The input string is read one character at a time, and that character is added to a string containing the current token. When whitespace is encountered or the current token string would become invalid, the current token string is matched against keyword, symbols, integer literal rules, and variable naming rules. If it matches any of them, a new token of that type is pushed to the resulting array, and the current token string is reset to begin accumulating the next token.
 
 \subsubsection{Parser}
 
-Second is to convert the token array of tokens into intermediate representation. The intermediate representation is a tree-like structure where each node contains the type of expression or statement it represents as well as what other values and nodes it consists of.
+Second is to convert the token array of tokens into an intermediate representation. The intermediate representation is a tree-like structure where each node contains the type of expression or statement it represents, as well as what other values and nodes it consists of.
 
-The input array is treated as a stack from which tokens are consumed as subexpressions are parsed. The main parse function will look at the next token and depending on what it is, it will call different helper functions capable of parsing that specific type of statement. Those functions will in turn call different helpers to parse the expressions they consist of which will call helpers to parse their subexpressions. Once all subexpressions are parsed they can be combined into the full expression node and returned to be combined into a full statement node and so on.
+The input array is treated as a stack from which tokens are consumed as subexpressions are parsed. The main parse function will look at the next token and depending on what it is, it will call different helper functions capable of parsing that specific type of statement. Those functions will in turn call different helpers to parse the expressions they consist of, which will call helpers to parse their subexpressions. Once all subexpressions are parsed, they can be combined into the full expression node and returned to be combined into a full statement node, and so on.
 
 \subsubsection{Evaluator}
 
-The evaluator will use the tokenizer and parser to get the inputs intermediate representation. It uses an environment frame to store a table for looking up the values associated with variable names as well as what frame to fall back on if a name could not be found.
+The evaluator will use the tokenizer and parser to get the intermediate representation of the inputs. It uses an environment frame to store a table for looking up the values associated with variable names, as well as which frame to fall back on if a name could not be found.
 
-The predefined values are defined in a new environment frame before starting the evaluation of the intermediate representation in a new frame with that as fallback. Similarly to the parser, when evaluating statements, helper functions are called to parse the expressions that make them up which in turn call helper functions that evaluate their subexpressions and so on. Eventually, a function is returned that will evaluate the main function of the input using this same method.
+The predefined values are defined in a new environment frame before starting the evaluation of the intermediate representation in a new frame with that as fallback. Similarly to the parser, when evaluating statements, helper functions are called to parse the expressions that make them up, which in turn call helper functions that evaluate their subexpressions, and so on. Eventually, a function is returned that will evaluate the main function of the input using this same method.
 
-\subsubsection{Maze Solving Evaluator}
+\subsubsection{Maze-Solving Evaluator}
 
-To evaluate in maze mode, the solver wrapper is used. The regular evaluator is used but the functions passed by the solver wrapper are exposed to the program as additional predefined values. Additionally, the main function is called with the end position's coordinates as arguments. A tuple of a maze solver and an array of strings is returned. The array of strings represents the program's standard output and will be filled with the strings printed during execution after the maze solver is called.
+To evaluate in maze mode, the solver wrapper is used. The regular evaluator is used, but the functions passed by the solver wrapper are exposed to the program as additional predefined values. Additionally, the main function is called with the end position's coordinates as arguments. A tuple of a maze solver and an array of strings is returned. The array of strings represents the program's standard output and will be filled with the strings printed during execution after the maze solver is called.

@@ -1,14 +1,14 @@
 \subsection{Technical Decisions}
 
-Before visualizing an algorithm, it must complete and return. This means that an algorithm stuck in an infinite loop will crash the page, but also that it makes implementing them much simpler. It also makes it easier to create a website and algorithm separately before joining them together, making it possible to work on different parts in parallel.
+Before visualizing an algorithm, it must complete and return. This means that an algorithm stuck in an infinite loop will crash the page, but also that it makes implementing them much simpler. It also makes it easier to create the website and the algorithms separately before joining them together, making it possible to work on different parts in parallel.
 
-When updating the maze on the website, the immediate visual feedback is decoupled from the underlying state which is only updated after the user completes an action. This provides great performance boosts for larger mazes.
+When updating the grid on the website, the immediate visual feedback is decoupled from the underlying grid state, which is only updated after the user completes an interaction. This provides great performance boosts for larger grids.
 
 In the aMazing Language, whenever the next subexpression could be of different forms, it is always possible to disambiguate just from the very next token. For example, a function literal starts with \verb|fn| instead of using the JavaScript arrow function syntax. This makes parsing easier without a GLR parser.
 
 \subsection{Strengths}
 
-The code is modular, with a well defined interface for different components to interact with each other. This makes it easy to add or change some parts of the code without modifying the rest.
+The code is modular, with a well-defined interface for different components to interact with each other. This makes it easy to add or change some parts of the code without modifying the rest.
 
 The website provides a clean and intuitive interface. It makes it easier to focus on understanding the algorithms instead of how to use and navigate the website.
 
@@ -16,9 +16,9 @@ The fact that you can view the code of the predefined algorithms makes it possib
 
 \subsection{Weaknesses}
 
-Unfortunately, the website cannot use the same maze type we agreed on at the beginning of the project and instead implements a separate grid type. This makes the code somewhat less readable and coherent but was necessary in order to store the visual states like visited and path.
+Unfortunately, the website cannot use the same \texttt{Maze} type we agreed on at the beginning of the project and instead implements a separate \texttt{Grid} type. This makes the code somewhat less readable and coherent, but was necessary because \texttt{Grid} is designed to handle user interactions by including additional properties and storing nodes as \texttt{Node} objects, whereas \texttt{Maze} is more suitable for maze-solving algorithms.
 
-Not all algorithms halt when presented with an impossible maze. This could have been fixed in multiple ways but was ignored in order to prioritize other functionality.
+Not all algorithms halt when presented with an impossible maze. This could have been fixed in multiple ways, but was ignored in order to prioritize other functionality.
 
 Despite initial ambitions, there is only one maze generation algorithm available on the website.
 
@@ -26,6 +26,6 @@ The website does not work well for mobile devices. The header does not fit the p
 
 \subsection{Conclusion}
 
-We have created a website where users can visualize different maze solving algorithms. Additionally, we defined a new programming language and created an interpreter for it built into the website. This language can be used to create custom maze solving algorithms to be visualized on the website.
+We have created a website where users can visualize different maze-solving algorithms. Additionally, we defined a new programming language and created an interpreter for it built into the website. This language can be used to create custom maze-solving algorithms to be visualized on the website.
 
-We are very pleased with the end result and feel we have accomplished our goals. However, the website has not been tested in a real setting and so we cannot determine how effectively it aids in learning.
+We are very pleased with the end result and feel that we have accomplished our goals. However, the website has not been tested in a real setting, so we cannot determine how effectively it aids in learning.

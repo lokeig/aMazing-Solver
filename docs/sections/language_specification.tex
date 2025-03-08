@@ -13,7 +13,7 @@ The first \verb|#| character in a line and all characters after it until the nex
 
 \subsubsection{Naming Rules}
 
-A variable name is case sensitive and must start with a letter a-z or A-Z or an underscore and every following character must be a letter a-z or A-Z, an underscore or a digit 0-9. A variable cannot share a name with any of the reserved keywords.
+A variable name is case sensitive and must start with a letter a-z or A-Z or an underscore, and every following character must be a letter a-z or A-Z, an underscore or a digit 0-9. A variable cannot share a name with any of the reserved keywords.
 
 \paragraph{Example}
 
@@ -28,11 +28,11 @@ A variable name is case sensitive and must start with a letter a-z or A-Z or an 
 
 An integer literal is case insensitive and must start with a digit 0-9 and every following character must be a letter a-z or A-Z, an underscore or a digit 0-9. Underscores are ignored for purposes of determining its value.
 
-If it begins with \verb|0b| it is a binary integer and can only contain binary digits. At least one non-underscore character must follow.
+If it begins with \verb|0b|, it is a binary integer and can only contain binary digits. At least one non-underscore character must follow.
 
-If it begins with \verb|0x| it is a hexadecimal integer and can only contain hexadecimal digits. At least one non-underscore character must follow.
+If it begins with \verb|0x|, it is a hexadecimal integer and can only contain hexadecimal digits. At least one non-underscore character must follow.
 
-Otherwise it is a decimal integer and can only contain decimal digits.
+Otherwise, it is a decimal integer and can only contain decimal digits.
 
 \paragraph{Example}
 
@@ -63,7 +63,7 @@ Otherwise it is a decimal integer and can only contain decimal digits.
 
 \paragraph{Unary Prefix Operators}
 
-All unary prefix operators have the same precedence which is higher than all binary operators. All unary prefix operators are right-to-left associative.
+All unary prefix operators have the same precedence, which is higher than all binary operators. All unary prefix operators are right-to-left associative.
 
 \begin{table}[H]
     \begin{tabular}{ l l }
@@ -206,15 +206,15 @@ A function stores a reference to an object that can be called with a list of ord
 
 \subsection{Environment}
 
-The first frame created which points to nothing contains all predefined values. This is what the program frame, where the user written code runs, points to. After executing, the program frame must contain a variable named \verb|main| that stores a function. The number and types of the arguments this function is called with will depend on the use case.
+The first frame created, which points to nothing, contains all predefined values. This is what the program frame, where the user-written code runs, points to. After executing, the program frame must contain a variable named \verb|main| that stores a function. The number and types of the arguments this function is called with will depend on the use case.
 
 \paragraph{Creation}
 
-When a statement inside a conditional, loop or code block is executed, it will do so inside a newly created frame pointing to the frame the condition, loop or code block was executed inside. Additionally a function object will store what frame it was created in and when called, the body will be executed in a new frame pointing to the one stored in the function object. The function body is executed in the same frame that the parameters were declared in.
+When a statement inside a conditional, loop or code block is executed, it will do so inside a newly created frame pointing to the frame the condition, loop or code block was executed inside. Additionally, a function object will store what frame it was created in and when called, the body will be executed in a new frame pointing to the one stored in the function object. The function body is executed in the same frame the parameters were declared in.
 
 \paragraph{Usage}
 
-When reading or assigning to a variable, the name will be searched for within the current frame and if it has not been declared, it will recursively search the frame it points to. If it has not been declared and it does not point to anything, an error is thrown. When declaring a variable, if the name has not been declared in the current frame, it will be, otherwise an error is thrown. Note that if a variable is read or assigned to but would be declared later in the same scope, the reading or assigning will still search the frame pointed to.
+When reading or assigning to a variable, the name will be searched for within the current frame, and if it has not been declared, it will recursively search the frame it points to. If it has not been declared and does not point to anything, an error is thrown. When declaring a variable, if the name has not been declared in the current frame, it will be, otherwise an error is thrown. Note that if a variable is read or assigned to but would be declared later in the same scope, the reading or assigning will still search the frame pointed to.
 
 \paragraph{Example}
 
@@ -243,11 +243,11 @@ Takes a function as its primary operand and optionally a list of values between 
 
 \paragraph{Array subscripting \quad \texttt{a[i]}} \
 
-Takes an array as its primary operand and an integer between the brackets to use as index. The index must be between 0 (inclusive) and the length of the array (exclusive) where 0 corresponds to the first element in the array. Returns the value stored at that index which can be assigned to.
+Takes an array as its primary operand and an integer between the brackets to use as index. The index must be between 0 (inclusive) and the length of the array (exclusive) where 0 corresponds to the first element in the array. Returns the value stored at that index, which can be assigned to.
 
 \paragraph{Logical NOT \quad \texttt{!x}} \
 
-Takes a value as operand and returns 0 if it's truthy and 1 otherwise.
+Takes a value as an operand and returns 0 if it is truthy and 1 otherwise.
 
 \paragraph{Unary plus \quad \texttt{+i}} \
 
@@ -271,7 +271,7 @@ Takes two integers and returns the integer $ a - b \left\lfloor \frac{a}{b} \rig
 
 \paragraph{Addition / Concatenation \quad \texttt{x+x}} \
 
-Takes two integers or two arrays. If they are integers it returns their sum. If they are arrays it returns a new array containing all the elements in the left operand followed by all the elements in the right operand.
+Takes two integers or two arrays. If they are integers, it returns their sum. If they are arrays, it returns a new array containing all the elements in the left operand followed by all the elements in the right operand.
 
 \paragraph{Subtraction \quad \texttt{i-i}} \
 
@@ -279,35 +279,35 @@ Takes two integers and returns their difference.
 
 \paragraph{Less than \quad \texttt{i<i}} \
 
-Takes two integers and returns 1 if the left operand is less than the right operand or 0 otherwise.
+Takes two integers and returns 1 if the left operand is less than the right operand, or 0 otherwise.
 
 \paragraph{Less than or equal to \quad \texttt{i<=i}} \
 
-Takes two integers and returns 1 if the left operand is less than or equal to the right operand or 0 otherwise.
+Takes two integers and returns 1 if the left operand is less than or equal to the right operand, or 0 otherwise.
 
 \paragraph{Greater than \quad \texttt{i>i}} \
 
-Takes two integers and returns 1 if the left operand is greater than the right operand or 0 otherwise.
+Takes two integers and returns 1 if the left operand is greater than the right operand, or 0 otherwise.
 
 \paragraph{Greater than or equal to \quad \texttt{i>=i}} \
 
-Takes two integers and returns 1 if the left operand is greater than or equal to the right operand or 0 otherwise.
+Takes two integers and returns 1 if the left operand is greater than or equal to the right operand, or 0 otherwise.
 
 \paragraph{Equality \quad \texttt{x==x}} \
 
-Takes two values and returns 1 if they are equal or 0 otherwise.
+Takes two values and returns 1 if they are equal, or 0 otherwise.
 
 \paragraph{Inequality \quad \texttt{x!=x}} \
 
-Takes two values and returns 0 if they are equal or 1 otherwise.
+Takes two values and returns 0 if they are equal, or 1 otherwise.
 
 \paragraph{Logical AND \quad \texttt{x\&\&x}} \
 
-Evaluates the left operand and returns it if it is not truthy. Otherwise it evaluates the right operand and returns it.
+Evaluates the left operand and returns it if it is not truthy. Otherwise, it evaluates the right operand and returns it.
 
 \paragraph{Logical NOT \quad \texttt{x||x}} \
 
-Evaluates the left operand and returns it if it is truthy. Otherwise it evaluates the right operand and returns it.
+Evaluates the left operand and returns it if it is truthy. Otherwise, it evaluates the right operand and returns it.
 
 \subsubsection{Statements}
 
@@ -321,27 +321,27 @@ Evaluates the expression, discarding its value.
 
 \paragraph{Variable declaration \quad \texttt{var n = x;} } \
 
-Declares a variable with the name following the var keyword in the current frame and assigns it the value on the right hand side of the equals sign.
+Declares a variable with the name following the var keyword in the current frame and assigns it the value on the right-hand side of the equal sign.
 
 \paragraph{Variable assignment \quad \texttt{x = x;} } \
 
-If the left hand side of the equals sign is a variable name, that variable is assigned the value on the right hand side of the equals sign.
+If the left-hand side of the equals sign is a variable name, that variable is assigned the value on the right-hand side of the equals sign.
 
-If the left hand sign is an array subscripting expression, the element at that index of the array is assigned the value on the right hand side of the equals sign.
+If the left-hand sign is an array subscripting expression, the element at that index of the array is assigned the value on the right-hand side of the equal sign.
 
 Otherwise an error is thrown.
 
 \paragraph{If conditional \quad \texttt{if (x) s} } \
 
-If the value inside the parentheses is truthy the statement following them is executed in a new frame. Any returns, continues and breaks are passed through.
+If the value inside the parentheses is truthy, the statement following them is executed in a new frame. Any returns, continues and breaks are passed through.
 
 \paragraph{If-else conditional \quad \texttt{if (x) s else (x) s} } \
 
-If the value inside the parentheses is truthy the statement following them is executed in a new frame. Otherwise the statement following the else keyword is executed in a new frame. Any returns, continues and breaks are passed through.
+If the value inside the parentheses is truthy, the statement following them is executed in a new frame. Otherwise, the statement following the else keyword is executed in a new frame. Any returns, continues and breaks are passed through.
 
 \paragraph{While loop \quad \texttt{while (x) s}} \
 
-Evaluates the expression inside the parentheses in a new frame. If it is truthy the statement following them is evaluated. If it is a return, the return is carried through. If it is a break, the loop stops. Otherwise, this is repeated.
+Evaluates the expression inside the parentheses in a new frame. If it is truthy, the statement following them is evaluated. If it is a return, the return is carried through. If it is a break, the loop stops. Otherwise, this is repeated.
 
 \paragraph{For loop \quad \texttt{for (x; x; x) s}} \
 
@@ -365,7 +365,7 @@ Skips all following statements when inside a code block and stops the loop when 
 
 \paragraph{Code block \quad \texttt{\{s\ldots\}}} \
 
-Evaluates all statements inside the curly brackets in a new frame. If a statement is a return, continue or break, the statements following it are not evaluated and the return, continue or break is passed through.
+Evaluates all statements inside the curly brackets in a new frame. If a statement is a return, continue, or break, the statements following it are not evaluated, and the return, continue, or break is passed through.
 
 \subsubsection{Predefined Values}
 
@@ -395,19 +395,19 @@ A function that takes an array as its first argument and a value of any type as 
 
 \paragraph{\texttt{pop}} \
 
-A function that takes an array as its only argument. If the array is empty, an error is thrown. Otherwise the last element of the array is removed, reducing its length by one. Returns the removed element.
+A function that takes an array as its only argument. If the array is empty, an error is thrown. Otherwise, the last element of the array is removed, reducing its length by one. Returns the removed element.
 
 \paragraph{\texttt{is\_int}} \
 
-A function that takes a value as its only argument and returns 1 if it is an integer or 0 otherwise.
+A function that takes a value as its only argument and returns 1 if it is an integer, or 0 otherwise.
 
 \paragraph{\texttt{is\_arr}} \
 
-A function that takes a value as its only argument and returns 1 if it is an array or 0 otherwise.
+A function that takes a value as its only argument and returns 1 if it is an array, or 0 otherwise.
 
 \paragraph{\texttt{is\_fun}} \
 
-A function that takes a value as its only argument and returns 1 if it is a function or 0 otherwise.
+A function that takes a value as its only argument and returns 1 if it is a function, or 0 otherwise.
 
 \paragraph{Example}
 
@@ -426,11 +426,11 @@ Maze mode is meant to aid in creating maze solving algorithms using the language
 
 \subsubsection{Mazes}
 
-A maze is a grid of cells with a current position and a goal position. Each cell in the grid can be either a wall or not a wall and a valid maze solving algorithm should never occupy the same space as a wall. The top left cell has x coordinate 0 and y coordinate 0 and the x and y coordinates of cells increase as you move right and down through the maze respectively.
+A maze is a grid of cells with a current position and a goal position. Each cell in the grid can either be a wall or not a wall, and a valid maze solving algorithm should never occupy the same space as a wall. The top left cell has x-coordinate 0 and y-coordinate 0, and the x and y coordinates of cells increase as you move right and down through the maze, respectively.
 
 \subsubsection{The main Function}
 
-The main function will be called with two integers, The first being the x coordinate of the goal and the second being the y coordinate of the goal. If the main function returns when the current position is the same as the goal position and the current position has never overlapped with a wall or exceeded the boundaries of the maze, it has successfully solved the maze. The return value is ignored.
+The main function will be called with two integers, the first being the x-coordinate of the goal, and the second being the y-coordinate of the goal. If the main function returns when the current position is the same as the goal position and the current position has never overlapped with a wall or exceeded the boundaries of the maze, it has successfully solved the maze. The return value is ignored.
 
 \subsubsection{Additional Predefined Values}
 
@@ -452,23 +452,23 @@ The integer 3.
 
 \paragraph{\texttt{get\_x}} \
 
-A function that takes no arguments and returns the current x coordinate within the maze as an integer.
+A function that takes no arguments and returns the current x-coordinate within the maze as an integer.
 
 \paragraph{\texttt{get\_y}} \
 
-A function that takes no arguments and returns the current y coordinate within the maze as an integer.
+A function that takes no arguments and returns the current y-coordinate within the maze as an integer.
 
 \paragraph{\texttt{in\_bound}} \
 
-A function that takes two integer arguments and returns 1 if the position with x value equal to the first argument and y value equal to the second argument is within the bounds of the maze. Otherwise it returns 0.
+A function that takes two integer arguments and returns 1 if the position with x value equal to the first argument and y value equal to the second argument is within the bounds of the maze. Otherwise, it returns 0.
 
 \paragraph{\texttt{is\_wall}} \
 
-A function that takes two integer arguments and returns 1 if the position with x value equal to the first argument and y value equal to the second argument is within the bounds of the maze or if that position is occupied by a wall. Otherwise it returns 0.
+A function that takes two integer arguments and returns 1 if the position with x value equal to the first argument and y value equal to the second argument is within the bounds of the maze or if that position is occupied by a wall. Otherwise, it returns 0.
 
 \paragraph{\texttt{move}} \
 
-A function that takes one integer value. If the value is 0, the current x coordinate is incremented by one. If the value is 1, the current y coordinate is decremented by one. If the value is 2, the current x coordinate is decremented by one. If the value is 3, the current y coordinate is incremented by one. Otherwise an error is thrown.
+A function that takes one integer value. If the value is 0, the current x-coordinate is incremented by one. If the value is 1, the current y-coordinate is decremented by one. If the value is 2, the current x-coordinate is decremented by one. If the value is 3, the current y-coordinate is incremented by one. Otherwise, an error is thrown.
 
 \paragraph{Example}
 
