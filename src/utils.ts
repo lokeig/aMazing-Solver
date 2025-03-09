@@ -2,21 +2,21 @@ import type { Grid, Node } from "./components/Board.tsx";
 
 /**
  * Get the ID of a node based on its row and column indices.
- * @param row
- * @param col
- * @returns string
+ * @param row - The row index of the node
+ * @param col - The column index of the node
+ * @returns A unique identifier
  */
-export function getNodeID(row: number, col: number): string {
+export function get_node_id(row: number, col: number): string {
     return `node-${row}-${col}`;
 }
 
 /**
- * Creates a 2D grid.
- * @param rows
- * @param cols
- * @returns Grid
+ * Creates a 2D grid of nodes with a start node and end node.
+ * @param rows - The number of rows in the grid
+ * @param cols - The number of columns in the grid
+ * @returns A 2D grid
  */
-export function makeGrid(rows: number, cols: number): Grid {
+export function make_grid(rows: number, cols: number): Grid {
     if (rows > 0 && cols > 0) {
         const nodes: Node[][] = Array.from({length: rows}, (_, row: number): Node[] =>
             Array.from({length: cols}, (_, col: number): Node => ({row, col}))

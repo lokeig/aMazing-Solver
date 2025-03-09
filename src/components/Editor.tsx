@@ -4,8 +4,8 @@ import { useEditor } from "./EditorContext.tsx";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 
 /**
- * Editor component is a simple code editor.
- * @returns JSX.Element
+ * A simple code editor for implementing algorithms and displaying errors.
+ * @returns The Editor component
  */
 export function Editor(): JSX.Element {
     const { code, setCode, log } = useEditor();
@@ -18,10 +18,12 @@ export function Editor(): JSX.Element {
             const textarea: HTMLTextAreaElement | null = editorRef.current;
             if (!textarea) return;
 
+            // Cursor start and end positions
             const start: number = textarea.selectionStart;
             const end: number = textarea.selectionEnd;
 
-            setCode(code.slice(0, start) + "\t" + code.slice(end));  // Insert tab character
+            // Insert tab character
+            setCode(code.slice(0, start) + "\t" + code.slice(end));
 
             // Defer setting the cursor position
             requestAnimationFrame((): void => {

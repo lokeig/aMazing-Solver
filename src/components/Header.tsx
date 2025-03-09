@@ -4,7 +4,7 @@ import { useEditor } from "./EditorContext.tsx";
 import { useGrid } from "./GridContext.tsx";
 import type { Node, Grid } from "./Board.tsx";
 import type { MazeSolver } from "../maze.ts";
-import { makeGrid, getNodeID } from "../utils.ts";
+import { make_grid, get_node_id } from "../utils.ts";
 import { visualize } from "../visualizer.ts";
 import { recursive_division } from "../algorithms/recursive_division.ts";
 import { dijkstra } from "../algorithms/dijkstra.ts";
@@ -34,21 +34,21 @@ const algorithms: Algorithm[] = [
 ];
 
 /**
- * A Header component to interface with other components and visualizer.
- * @returns JSX.Element
+ * A Header to interface with other components and visualizer.
+ * @returns The Header component
  */
 export function Header(): JSX.Element {
     const { grid, setGrid, disabled, setDisabled } = useGrid();
     const { code, setCode, setLog } = useEditor();
 
-    const [editor, setEditor] = useState<boolean>(false);
-    const [selected, setSelected] = useState<Algorithm>(algorithms[0]);
+    const [editor, setEditor] = useState<boolean>(false);  // Show or hide code editor
+    const [selected, setSelected] = useState<Algorithm>(algorithms[0]);  // Selected algorithm
 
     // Clear previous searches
     const clearSearch = (): void => {
         if (!document.querySelector(".search, .path")) return;  // Early exit if no cells have the selectors
         grid.nodes.flat().map((node: Node): void => {
-            const cell: HTMLElement | null = document.getElementById(getNodeID(node.row, node.col));
+            const cell: HTMLElement | null = document.getElementById(get_node_id(node.row, node.col));
             cell?.classList.remove("search", "path");
         });
     };
@@ -56,7 +56,7 @@ export function Header(): JSX.Element {
     // Reset the entire board
     const clearBoard = (): void => {
         if (!document.querySelector(".wall, .search, .path")) return;
-        setGrid((prev: Grid): Grid => makeGrid(prev.rows, prev.cols));
+        setGrid((prev: Grid): Grid => make_grid(prev.rows, prev.cols));
         clearSearch();
     };
 
@@ -81,6 +81,7 @@ export function Header(): JSX.Element {
                 setLog("");  // Clear logs
                 setEditor(false);  // Hide code editor
             }
+            // Run code if editor is open or "Custom" is selected, otherwise use selected algorithm
             const solver: MazeSolver = selected.name === "Custom" || editing
                 ? evaluate_solver(code)[0]
                 : selected.fn;

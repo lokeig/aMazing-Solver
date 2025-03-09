@@ -4,8 +4,8 @@ type Axis = "H" | "V";
 
 /**
  * Generates a maze using the recursive division algorithm and returns a new grid.
- * @param grid
- * @returns Grid
+ * @param grid - The grid to generate the maze from
+ * @returns A new grid containing the maze
  */
 export function recursive_division(grid: Grid): Grid {
     // Deep copy of grid
@@ -29,6 +29,7 @@ export function recursive_division(grid: Grid): Grid {
         }
     }
 
+    // Divide within the borders
     divide(maze, 1, maze.rows - 2, 1, maze.cols - 2, get_axis(maze.rows - 2, maze.cols - 2));
 
     return maze;
@@ -37,21 +38,21 @@ export function recursive_division(grid: Grid): Grid {
 /**
  * Recursively divide grid into smaller sections, adding horizontal and vertical walls with passage openings,
  * until the sections reach a minimum size.
- * @param grid
- * @param r1
- * @param r2
- * @param c1
- * @param c2
- * @param axis
+ * @param grid - The grid to divide
+ * @param r1 - Starting row index of section
+ * @param r2 - Ending row index of section
+ * @param c1 - Starting column index of section
+ * @param c2 - Ending column index of section
+ * @param axis - The axis of the section to be divided
  */
 function divide(grid: Grid, r1: number, r2: number, c1: number, c2: number, axis: Axis): void {
-    if (r2 - r1 < 2 || c2 - c1 < 2) return;  // Exit early if section reaches minimum size
+    if (r2 - r1 < 2 || c2 - c1 < 2) return;  // Exit early if section reaches minimum size (variant)
 
     const walls: number[] = [];  // Possible walls
     for (let i: number = (axis === "H" ? r1 : c1) + 1; i <= (axis === "H" ? r2 : c2) - 1; i++) {
         if (i % 2 === 0) walls.push(i);
     }
-    if (walls.length === 0) return;
+    if (walls.length === 0) return;  // No possible walls
     const wall: number = choice(walls);
 
     const passages: number[] = [];  // Possible passages
@@ -60,12 +61,15 @@ function divide(grid: Grid, r1: number, r2: number, c1: number, c2: number, axis
     }
     const passage: number = choice(passages);
 
+    // Create a horizontal or vertical wall with a passage
     for (let i: number = (axis === "H" ? c1 : r1); i <= (axis === "H" ? c2 : r2); i++) {
-        if (i === passage) continue;
-        const node: Node = axis === "H" ? grid.nodes[wall][i] : grid.nodes[i][wall];
-        make_wall(node);
+        if (i !== passage) {
+            const node: Node = axis === "H" ? grid.nodes[wall][i] : grid.nodes[i][wall];
+            make_wall(node);
+        }
     }
 
+    // Recurse with updated boundaries and axes
     if (axis === "H") {
         divide(grid, r1, wall - 1, c1, c2, get_axis(wall - r1, c2 - c1 + 1));
         divide(grid, wall + 1, r2, c1, c2, get_axis(r2 - wall, c2 - c1 + 1));
@@ -91,7 +95,7 @@ function get_axis(height: number, width: number): Axis {
     }
 }
 
-// Set isWall property of a node to true if node is not start node or end node
+// Set isWall property of a node to true if not the start node or end node
 function make_wall(node: Node): void {
     if (!node.isStart && !node.isEnd) {
         node.isWall = true;

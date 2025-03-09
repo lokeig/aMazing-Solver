@@ -1,6 +1,7 @@
 import type { JSX, Context, ReactNode, Dispatch, SetStateAction } from "react";
 import { createContext, useContext, useState } from "react";
 
+// Define types for state variables and stateful logic
 type EditorProps = {
     code: string;
     setCode: Dispatch<SetStateAction<string>>;
@@ -15,8 +16,9 @@ type Children = {
 const EditorContext: Context<EditorProps | null> = createContext<EditorProps | null>(null);
 
 /**
- * EditorProvider wraps components that need access to EditorProps.
- * @param children
+ * Provides the context to child components.
+ * @param children - Child components
+ * @returns The EditorProvider component
  */
 export function EditorProvider({ children }: Children): JSX.Element {
     const [code, setCode] = useState<string>("");
@@ -29,13 +31,15 @@ export function EditorProvider({ children }: Children): JSX.Element {
 }
 
 /**
- * A custom Hook to provide the context for other components.
- * @returns EditorProps
+ * Custom Hook to access context.
+ * Must be used within a component wrapped by EditorProvider.
+ * @throws {Error} If the Hook is used outside EditorProvider
+ * @returns The state variables and stateful logic
  */
 export function useEditor(): EditorProps {
     const context: EditorProps | null = useContext(EditorContext);
     if (!context) {
-        throw new Error("useEditor must be used within an EditorProvider");
+        throw new Error("useEditor must be used within EditorProvider");
     }
     return context;
 }
