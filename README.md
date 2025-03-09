@@ -9,5 +9,12 @@ Documentation at [docs/report.pdf](/docs/report.pdf).
 
 1. Clone this repository
 2. Install dependencies using `npm install`
-3. Start using `npm run preview`
-4. Open the URL displayed after `Local:`
+3. Start the development server `npm run dev`
+4. Open the URL shown in the terminal after `Local:`
+
+### Optional: Preview production build
+
+```
+npm run build
+npm run preview
+```
