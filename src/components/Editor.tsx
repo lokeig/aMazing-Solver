@@ -1,6 +1,6 @@
 import type { JSX, KeyboardEvent, ChangeEvent, RefObject } from "react";
 import { useRef } from "react";
-import { useEditor } from "./EditorContext.tsx";
+import { type EditorProps, useEditor } from "./EditorContext.tsx";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 
 /**
@@ -8,7 +8,7 @@ import { DocumentIcon } from "@heroicons/react/24/outline";
  * @returns The Editor component
  */
 export function Editor(): JSX.Element {
-    const { code, setCode, log } = useEditor();
+    const { code, setCode, log }: EditorProps = useEditor();
     const editorRef: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement | null>(null);
 
     // Insert tab indents with the tab key

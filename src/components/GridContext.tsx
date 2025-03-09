@@ -4,7 +4,7 @@ import type { Grid } from "./Board.tsx";
 import { make_grid } from "../utils.ts";
 
 // Define types for state variables and stateful logic
-type GridProps = {
+export type GridProps = {
     grid: Grid;
     setGrid: Dispatch<SetStateAction<Grid>>;
     disabled: boolean;

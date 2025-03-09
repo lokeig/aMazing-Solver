@@ -2,7 +2,7 @@ import type { JSX, Context, ReactNode, Dispatch, SetStateAction } from "react";
 import { createContext, useContext, useState } from "react";
 
 // Define types for state variables and stateful logic
-type EditorProps = {
+export type EditorProps = {
     code: string;
     setCode: Dispatch<SetStateAction<string>>;
     log: string;

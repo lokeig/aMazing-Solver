@@ -1,7 +1,7 @@
 import type { JSX } from "react"
 import { useState, useEffect } from "react";
-import { useEditor } from "./EditorContext.tsx";
-import { useGrid } from "./GridContext.tsx";
+import { type EditorProps, useEditor } from "./EditorContext.tsx";
+import { type GridProps, useGrid } from "./GridContext.tsx";
 import type { Node, Grid } from "./Board.tsx";
 import type { MazeSolver } from "../maze.ts";
 import { make_grid, get_node_id } from "../utils.ts";
@@ -38,8 +38,8 @@ const algorithms: Algorithm[] = [
  * @returns The Header component
  */
 export function Header(): JSX.Element {
-    const { grid, setGrid, disabled, setDisabled } = useGrid();
-    const { code, setCode, setLog } = useEditor();
+    const { grid, setGrid, disabled, setDisabled }: GridProps = useGrid();
+    const { code, setCode, setLog }: EditorProps = useEditor();
 
     const [editor, setEditor] = useState<boolean>(false);  // Show or hide code editor
     const [selected, setSelected] = useState<Algorithm>(algorithms[0]);  // Selected algorithm

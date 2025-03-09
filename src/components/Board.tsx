@@ -1,6 +1,6 @@
 import type { JSX, RefObject } from "react";
 import { useRef, useEffect } from "react";
-import { useGrid } from "./GridContext.tsx";
+import { type GridProps, useGrid } from "./GridContext.tsx";
 import { make_grid, get_node_id } from "../utils.ts";
 import clsx from "clsx";
 
@@ -35,7 +35,7 @@ export type Grid = {
  * @returns The Board component
  */
 export function Board(): JSX.Element {
-    const { grid, setGrid, disabled } = useGrid();
+    const { grid, setGrid, disabled }: GridProps = useGrid();
     const boardRef: RefObject<HTMLDivElement | null> = useRef<HTMLDivElement | null>(null);
     const wallRef: RefObject<"add" | "remove" | null> = useRef<"add" | "remove" | null>(null);
     const nodeRef: RefObject<"start" | "end" | null> = useRef<"start" | "end" | null>(null);
