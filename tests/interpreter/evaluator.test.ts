@@ -61,6 +61,7 @@ test("arrays", () => {
         b[0] = 4;
         print(a);
         print([] == []);
+        print([[[[[[[[[[]]]]]]]]]]);
 
         var main = fn () {
             return a[0];
@@ -68,7 +69,7 @@ test("arrays", () => {
     `, stdout);
     const output = main();
     expect(output).toStrictEqual(make_int(4));
-    expect(stdout).toStrictEqual(["[4, 2, 3]", "0"]);
+    expect(stdout).toStrictEqual(["[4, 2, 3]", "0", "[[[[[...]]]]]"]);
 });
 
 test("len push pop", () => {
