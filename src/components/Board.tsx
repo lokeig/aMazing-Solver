@@ -30,6 +30,7 @@ export function Board(): JSX.Element {
     const wallRef: RefObject<"add" | "remove" | null> = useRef<"add" | "remove" | null>(null);
     const nodeRef: RefObject<"start" | "end" | null> = useRef<"start" | "end" | null>(null);
 
+    // Update grid with dimensions of boardRef on mount
     useEffect((): void => {
         if (!boardRef.current) return;
         const { width, height } = boardRef.current.getBoundingClientRect();

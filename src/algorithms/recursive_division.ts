@@ -29,7 +29,7 @@ export function recursive_division(grid: Grid): Grid {
         }
     }
 
-    divide(maze, 1, grid.rows - 2, 1, maze.cols - 2, get_axis(maze.rows - 2, maze.cols - 2));
+    divide(maze, 1, maze.rows - 2, 1, maze.cols - 2, get_axis(maze.rows - 2, maze.cols - 2));
 
     return maze;
 }
