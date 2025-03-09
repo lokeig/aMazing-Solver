@@ -179,13 +179,13 @@ The input string is read one character at a time, and that character is added to
 
 \subsubsection{Parser}
 
-Second is to convert the token array of tokens into an intermediate representation. The intermediate representation is a tree-like structure where each node contains the type of expression or statement it represents, as well as what other values and nodes it consists of.
+Second is to convert the token of tokens into an intermediate representation. The intermediate representation is a tree-like structure where each node contains the type of expression or statement it represents, as well as what other values and nodes it consists of.
 
 The input array is treated as a stack from which tokens are consumed as subexpressions are parsed. The main parse function will look at the next token and depending on what it is, it will call different helper functions capable of parsing that specific type of statement. Those functions will in turn call different helpers to parse the expressions they consist of, which will call helpers to parse their subexpressions. Once all subexpressions are parsed, they can be combined into the full expression node and returned to be combined into a full statement node, and so on.
 
 \subsubsection{Evaluator}
 
-The evaluator will use the tokenizer and parser to get the intermediate representation of the inputs. It uses an environment frame to store a table for looking up the values associated with variable names, as well as which frame to fall back on if a name could not be found.
+The evaluator will use the tokenizer and parser to get the intermediate representation of the input. It uses an environment frame to store a table for looking up the values associated with variable names, as well as which frame to fall back on if a name could not be found.
 
 The predefined values are defined in a new environment frame before starting the evaluation of the intermediate representation in a new frame with that as fallback. Similarly to the parser, when evaluating statements, helper functions are called to parse the expressions that make them up, which in turn call helper functions that evaluate their subexpressions, and so on. Eventually, a function is returned that will evaluate the main function of the input using this same method.
 

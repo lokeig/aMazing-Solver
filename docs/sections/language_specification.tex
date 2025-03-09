@@ -61,9 +61,20 @@ Otherwise, it is a decimal integer and can only contain decimal digits.
 
 \subsubsection{Operators}
 
+\paragraph{Unary Postfix Operators}
+
+All unary postfix operators have the same precedence which is higher than that of all unary prefix operators. All unary postfix operators are left-to-right associative.
+
+\begin{table}[H]
+    \begin{tabular}{ l l }
+        \verb|()| & Function call      \\
+        \verb|[]| & Array subscripting \\
+    \end{tabular}
+\end{table}
+
 \paragraph{Unary Prefix Operators}
 
-All unary prefix operators have the same precedence, which is higher than all binary operators. All unary prefix operators are right-to-left associative.
+All unary prefix operators have the same precedence, which is higher than that of all binary operators. All unary prefix operators are right-to-left associative.
 
 \begin{table}[H]
     \begin{tabular}{ l l }
@@ -84,7 +95,7 @@ Binary operators are listed top to bottom in descending precedence. Operators on
         \verb|<| \verb|<=| \verb|>| \verb|>=| & The common relational operators     \\
         \verb|==| \verb|!=|                   & Equality and inequality             \\
         \verb|&&|                             & Logical AND                         \\
-        \verb||||                             & Logical OR
+        \verb!||!                             & Logical OR
     \end{tabular}
 \end{table}
 
@@ -95,7 +106,7 @@ Binary operators are listed top to bottom in descending precedence. Operators on
     !-x         → !(-x)
 
     x + y * z   → x + (y * z)
-    x + y - z   → (x + y) - z
+    x - y + z   → (x - y) + z
     x && y || z → (x && y) || z
 
     -x[y]       → -(x[y])
@@ -134,15 +145,15 @@ Expressions must be of one of the following forms.
 
 \begin{table}[H]
     \begin{tabular}{ l l }
-        \textit{name}                                                                                      & Variable name         \\
-        \textit{integer}                                                                                   & Integer literal       \\
-        \verb|(| \textit{expression} \verb|)|                                                              & Overriding precedence \\
-        \verb|[| \textit{expression} \ldots \verb|]|                                                       & Array literal         \\
-        \verb|fn| \verb|(| \textit{expression} \ldots \verb|)| \verb|{| \textit{statement} \ldots \verb|}| & Function literal      \\
-        \textit{expression} \verb|(| \textit{expression} \ldots \verb|)|                                   & Function call         \\
-        \textit{expression} \verb|(| \textit{expression} \verb|)|                                          & Array subscripting    \\
-        \textit{unary-prefix-operator} \textit{expression}                                                 & Unary prefix operator \\
-        \textit{expression} \textit{binary-operator} \textit{expression}                                   & Binary operator
+        \textit{name}                                                                                               & Variable name         \\
+        \textit{integer}                                                                                            & Integer literal       \\
+        \verb|(| \textit{expression} \verb|)|                                                                       & Overriding precedence \\
+        \verb|[| \textit{expression} \verb|,| \ldots \verb|]|                                                       & Array literal         \\
+        \verb|fn| \verb|(| \textit{expression} \verb|,| \ldots \verb|)| \verb|{| \textit{statement} \ldots \verb|}| & Function literal      \\
+        \textit{expression} \verb|(| \textit{expression} \verb|,| \ldots \verb|)|                                   & Function call         \\
+        \textit{expression} \verb|[| \textit{expression} \verb|]|                                                   & Array subscripting    \\
+        \textit{unary-prefix-operator} \textit{expression}                                                          & Unary prefix operator \\
+        \textit{expression} \textit{binary-operator} \textit{expression}                                            & Binary operator
     \end{tabular}
 \end{table}
 
@@ -151,9 +162,9 @@ Expressions must be of one of the following forms.
 \begin{verbatim}
     [1, 2, 3] + [x, y, z]
     fn () {}
-    (fn (x, y) { return x + y; })()
+    (fn (x, y) { return x + y; })(1, 1)
     -x[y]
-    1 * (1 + 1)
+    2 * (1 + 1)
 \end{verbatim}
 
 \subsubsection{Statements}
@@ -162,19 +173,19 @@ Statements must be of one of the following forms.
 
 \begin{table}[H]
     \begin{tabular}{ m{225pt} l }
-        \verb|;|                                                                                                                                                                                                        & No operation                \\
-        \textit{expression} \verb|;|                                                                                                                                                                                    & Expression, ignoring result \\
-        \verb|var| \textit{name} \verb|=| \textit{expression} \verb|;|                                                                                                                                                  & Variable declaration        \\
-        \textit{expression} \verb|=| \textit{expression} \verb|;|                                                                                                                                                       & Variable assignment         \\
-        \verb|if| \verb|(| \textit{expression} \verb|)| \textit{statement}                                                                                                                                              & If conditional              \\
-        \verb|if| \verb|(| \textit{expression} \verb|)| \textit{statement} \verb|else| \textit{statement}                                                                                                               & If-else conditional         \\
-        \verb|while| \verb|(| \textit{expression} \verb|)| \textit{statement}                                                                                                                                           & While loop                  \\
-        \verb|for| \verb|(| \textit{expression/assignment/declaration} \verb|;| \newline \hspace*{29pt} \textit{expression} \verb|;| \textit{expression/assignment} \verb|)| \newline \hspace*{29pt} \textit{statement} & For loop                    \\
-        \verb|return| \verb|;|                                                                                                                                                                                          & Return                      \\
-        \verb|return| \textit{expression} \verb|;|                                                                                                                                                                      & Return value                \\
-        \verb|continue| \verb|;|                                                                                                                                                                                        & Continue                    \\
-        \verb|break| \verb|;|                                                                                                                                                                                           & Break                       \\
-        \verb|{| \textit{statement} \ldots \verb|}|                                                                                                                                                                     & Code block                  \\
+        \verb|;|                                                                                                                                                                                                        & No operation         \\
+        \textit{expression} \verb|;|                                                                                                                                                                                    & Expression           \\
+        \verb|var| \textit{name} \verb|=| \textit{expression} \verb|;|                                                                                                                                                  & Variable declaration \\
+        \textit{expression} \verb|=| \textit{expression} \verb|;|                                                                                                                                                       & Variable assignment  \\
+        \verb|if| \verb|(| \textit{expression} \verb|)| \textit{statement}                                                                                                                                              & If conditional       \\
+        \verb|if| \verb|(| \textit{expression} \verb|)| \textit{statement} \verb|else| \textit{statement}                                                                                                               & If-else conditional  \\
+        \verb|while| \verb|(| \textit{expression} \verb|)| \textit{statement}                                                                                                                                           & While loop           \\
+        \verb|for| \verb|(| \textit{expression/assignment/declaration} \verb|;| \newline \hspace*{29pt} \textit{expression} \verb|;| \textit{expression/assignment} \verb|)| \newline \hspace*{29pt} \textit{statement} & For loop             \\
+        \verb|return| \verb|;|                                                                                                                                                                                          & Return               \\
+        \verb|return| \textit{expression} \verb|;|                                                                                                                                                                      & Return value         \\
+        \verb|continue| \verb|;|                                                                                                                                                                                        & Continue             \\
+        \verb|break| \verb|;|                                                                                                                                                                                           & Break                \\
+        \verb|{| \textit{statement} \ldots \verb|}|                                                                                                                                                                     & Code block           \\
     \end{tabular}
 \end{table}
 
@@ -185,12 +196,13 @@ Statements must be of one of the following forms.
     x = 2;
     if (x) return x; else if (y) continue; else break;
     while (f(x));
+    for (var i = 0; i < 10; i = i + 1) {}
     { var x = 1; x = 2; }
 \end{verbatim}
 
 \subsection{Types}
 
-There are three types: integer, array and function. Variables, elements, parameters and return values do not have types associated with them and can store, accept and return different types than they did originally. No two values of different types are equal.
+There are three types: integer, array and function. Variables, elements, parameters and return values do not have types associated with them and can store, accept and return values of different types at different times. No two values of different types are equal.
 
 \paragraph{Integer}
 
@@ -239,7 +251,7 @@ An integer is truthy if it is not 0. An array is truthy if its length is not 0. 
 
 \paragraph{Function call \quad \texttt{f(x)}} \
 
-Takes a function as its primary operand and optionally a list of values between the parentheses as arguments to the function. Returns the value returned by its body or 0 if no return value was returned.
+Takes a function as its primary operand and optionally a list of values between the parentheses as arguments to the function. Returns the value returned by its body or 0 if no return value was specified.
 
 \paragraph{Array subscripting \quad \texttt{a[i]}} \
 
@@ -255,7 +267,7 @@ Takes an integer and returns the same integer.
 
 \paragraph{Unary minus \quad \texttt{-i}} \
 
-Takes an integer and returns its negation.
+Takes an integer and returns its additive inverse.
 
 \paragraph{Multiplication \quad \texttt{i*i}} \
 
@@ -325,6 +337,8 @@ Declares a variable with the name following the var keyword in the current frame
 
 \paragraph{Variable assignment \quad \texttt{x = x;} } \
 
+The expression on right-hand side of the equals sign is evaluated before the expression of the left-hand sign.
+
 If the left-hand side of the equals sign is a variable name, that variable is assigned the value on the right-hand side of the equals sign.
 
 If the left-hand sign is an array subscripting expression, the element at that index of the array is assigned the value on the right-hand side of the equal sign.
@@ -335,7 +349,7 @@ Otherwise an error is thrown.
 
 If the value inside the parentheses is truthy, the statement following them is executed in a new frame. Any returns, continues and breaks are passed through.
 
-\paragraph{If-else conditional \quad \texttt{if (x) s else (x) s} } \
+\paragraph{If-else conditional \quad \texttt{if (x) s else s} } \
 
 If the value inside the parentheses is truthy, the statement following them is executed in a new frame. Otherwise, the statement following the else keyword is executed in a new frame. Any returns, continues and breaks are passed through.
 
@@ -345,7 +359,7 @@ Evaluates the expression inside the parentheses in a new frame. If it is truthy,
 
 \paragraph{For loop \quad \texttt{for (x; x; x) s}} \
 
-Evaluates the first expression inside the parentheses in a new frame. Evaluates the second expression inside the parentheses. If that second expression is truthy, the statement following the parentheses is evaluated. If it is a return, the return is carried through. If it is a break, the loop stops. Otherwise, the third expression inside the parentheses is evaluated and everything except the evaluation of the first expression is repeated.
+Evaluates the first expression inside the parentheses in a new frame. Evaluates the second expression inside the parentheses. If that second expression is truthy, the statement following the parentheses is evaluated in a new frame. If it is a return, the return is carried through. If it is a break, the loop stops. Otherwise, the third expression inside the parentheses is evaluated and everything except the evaluation of the first expression is repeated.
 
 \paragraph{Return \quad \texttt{return;}} \
 
@@ -361,7 +375,7 @@ Skips all following statements when inside a code block.
 
 \paragraph{Break \quad \texttt{break;}} \
 
-Skips all following statements when inside a code block and stops the loop when inside a while loop.
+Skips all following statements when inside a code block and stops the loop when inside one.
 
 \paragraph{Code block \quad \texttt{\{s\ldots\}}} \
 
@@ -383,7 +397,7 @@ A function that takes no arguments and throws an error.
 
 \paragraph{\texttt{print}} \
 
-A function that takes any number of arguments of any type and prints them to stdout separated by spaces.
+A function that takes any number of arguments of any type and prints them separated by spaces. When printing arrays, a maximum depth of 5 nested arrays are printed.
 
 \paragraph{\texttt{len}} \
 
@@ -418,6 +432,7 @@ A function that takes a value as its only argument and returns 1 if it is a func
     print(is_int(true));                  # "1"
     print(is_arr([3, 2][0]));             # "0"
     print(is_fun(is_fun));                # "1"
+    print([[[[[[[[[[]]]]]]]]]]);          # "[[[[[...]]]]]"
 \end{verbatim}
 
 \subsection{Maze Mode}
