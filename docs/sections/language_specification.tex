@@ -47,6 +47,8 @@ Otherwise, it is a decimal integer and can only contain decimal digits.
 
 \subsubsection{Reserved Keywords}
 
+All reserved keywords are case sensitive.
+
 \begin{itemize}
     \item \verb|var|
     \item \verb|fn|
@@ -120,11 +122,11 @@ All symbols (including operators) are parsed greedily, not ending a symbol befor
 
 \begin{table}[H]
     \begin{tabular}{ l l }
-        \verb|(| \verb|)| & Overriding precedence      \\
-        \verb|{| \verb|}| & Grouping statements        \\
-        \verb|[| \verb|]| & Creating arrays            \\
-        \verb|=|          & Declaration and assignment \\
-        \verb|,|          & Separating elements        \\
+        \verb|(| \verb|)| & Override precedence \\
+        \verb|{| \verb|}| & Code block          \\
+        \verb|[| \verb|]| & Array literal       \\
+        \verb|=|          & Declare or assign   \\
+        \verb|,|          & Separate elements   \\
         \verb|;|          & End statement
     \end{tabular}
 \end{table}
@@ -218,11 +220,11 @@ A function stores a reference to an object that can be called with a list of ord
 
 \subsection{Environment}
 
-The first frame created, which points to nothing, contains all predefined values. This is what the program frame, where the user-written code runs, points to. After executing, the program frame must contain a variable named \verb|main| that stores a function. The number and types of the arguments this function is called with will depend on the use case.
+The first frame created, which points to nothing, contains all predefined values. This is what the program frame, where the user-written code runs, points to. After evaluation, the program frame must contain a variable named \verb|main| that stores a function. The number and types of the arguments this function is called with will depend on the use case.
 
 \paragraph{Creation}
 
-When a statement inside a conditional, loop or code block is executed, it will do so inside a newly created frame pointing to the frame the condition, loop or code block was executed inside. Additionally, a function object will store what frame it was created in and when called, the body will be executed in a new frame pointing to the one stored in the function object. The function body is executed in the same frame the parameters were declared in.
+When a statement inside a conditional, loop or code block is evaluated, it will do so inside a newly created frame pointing to the frame the condition, loop or code block was evaluated inside. Additionally, a function object will store what frame it was created in and when called, the body will be evaluated in a new frame pointing to the one stored in the function object. The function body is evaluated in the same frame the parameters were declared in.
 
 \paragraph{Usage}
 
@@ -259,7 +261,7 @@ Takes an array as its primary operand and an integer between the brackets to use
 
 \paragraph{Logical NOT \quad \texttt{!x}} \
 
-Takes a value as an operand and returns 0 if it is truthy and 1 otherwise.
+Takes a value as an operand and returns 0 if it is truthy, or 1 otherwise.
 
 \paragraph{Unary plus \quad \texttt{+i}} \
 
@@ -347,11 +349,11 @@ Otherwise an error is thrown.
 
 \paragraph{If conditional \quad \texttt{if (x) s} } \
 
-If the value inside the parentheses is truthy, the statement following them is executed in a new frame. Any returns, continues and breaks are passed through.
+If the value inside the parentheses is truthy, the statement following them is evaluated in a new frame. Any returns, continues and breaks are passed through.
 
 \paragraph{If-else conditional \quad \texttt{if (x) s else s} } \
 
-If the value inside the parentheses is truthy, the statement following them is executed in a new frame. Otherwise, the statement following the else keyword is executed in a new frame. Any returns, continues and breaks are passed through.
+If the value inside the parentheses is truthy, the statement following them is evaluated in a new frame. Otherwise, the statement following the else keyword is evaluated in a new frame. Any returns, continues and breaks are passed through.
 
 \paragraph{While loop \quad \texttt{while (x) s}} \
 
@@ -475,11 +477,11 @@ A function that takes no arguments and returns the current y-coordinate within t
 
 \paragraph{\texttt{in\_bound}} \
 
-A function that takes two integer arguments and returns 1 if the position with x value equal to the first argument and y value equal to the second argument is within the bounds of the maze. Otherwise, it returns 0.
+A function that takes two integer arguments and returns 1 if the position with x value equal to the first argument and y value equal to the second argument is within the boundaries of the maze. Otherwise, it returns 0.
 
 \paragraph{\texttt{is\_wall}} \
 
-A function that takes two integer arguments and returns 1 if the position with x value equal to the first argument and y value equal to the second argument is within the bounds of the maze or if that position is occupied by a wall. Otherwise, it returns 0.
+A function that takes two integer arguments and returns 1 if the position with x value equal to the first argument and y value equal to the second argument is within the boundaries of the maze or if that position is occupied by a wall. Otherwise, it returns 0.
 
 \paragraph{\texttt{move}} \
 
