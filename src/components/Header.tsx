@@ -16,6 +16,7 @@ import { Editor } from "./Editor.tsx";
 import { evaluate_solver } from "../interpreter/evaluator.ts";
 import { Button, Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition } from "@headlessui/react";
 import { ChevronDownIcon, CodeBracketIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { maze_to_grid } from "../grid_conversion.ts";
 
 type Algorithm = {
     id: number;
@@ -63,7 +64,7 @@ export function Header(): JSX.Element {
     // Generate mazes with recursive division and update grid state
     const generateMaze = (): void => {
         clearBoard();
-        setGrid((prev: Grid): Grid => recursive_division(prev));
+        setGrid((prev: Grid): Grid => maze_to_grid(recursive_division(prev.cols, prev.rows)));
     };
 
     // Display implementations in the code editor

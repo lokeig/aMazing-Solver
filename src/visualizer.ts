@@ -1,24 +1,8 @@
 import type { Grid, Node } from "./components/Board.tsx";
-import type { Maze, MazeSolver, Cell, Path, Pos } from "./maze.ts";
+import { grid_to_maze } from "./grid_conversion.ts";
+import type { Maze, MazeSolver, Path, Pos } from "./maze.ts";
 import { step_in_dir, is_lookup_action, is_move_action } from "./maze.ts";
 import { get_node_id } from "./utils.ts";
-
-/**
- * Converts a Grid to a Maze.
- * @param grid - The grid to convert
- * @returns A Maze representation of the grid
- */
-function grid_to_maze(grid: Grid): Maze {
-    return {
-        start: { x: grid.start.col, y: grid.start.row },
-        end: { x: grid.end.col, y: grid.end.row },
-        width: grid.nodes[0].length,
-        height: grid.nodes.length,
-        cells: grid.nodes.map((row: Node[]): Cell[] =>
-            row.map((node: Node): Cell => (node.isWall ? "wall" : "empty"))
-        ),
-    };
-}
 
 /**
  * Asynchronous function to visualize algorithms on a grid.

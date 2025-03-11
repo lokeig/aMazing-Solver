@@ -1,4 +1,4 @@
-import type { Grid, Node } from "../components/Board.tsx";
+import { Cell, EMPTY_CELL, make_pos, Maze, Pos, pos_eq, set_cell, WALL_CELL, type MazeGenerator } from "../maze.ts";
 
 type Axis = "H" | "V";
 
@@ -7,45 +7,53 @@ type Axis = "H" | "V";
  * @param grid - The grid to generate the maze from
  * @returns A new grid containing the maze
  */
-export function recursive_division(grid: Grid): Grid {
-    // Deep copy of grid
-    const maze: Grid = {
-        nodes: grid.nodes.map((row: Node[]) => row.map((node: Node) => ({ ...node }))),
-        start: { ...grid.start },
-        end: { ...grid.end },
-        rows: grid.rows,
-        cols: grid.cols,
-    };
+export const recursive_division: MazeGenerator = (w, h) => {
+    const start: Pos = make_pos(Math.floor(w / 4), Math.floor(h / 2));
+    const end: Pos = make_pos(Math.floor(w * 3 / 4), Math.floor(h / 2));
+    const cells: Cell[][] = Array.from({ length: h }, () => Array.from({ length: w }, () => EMPTY_CELL));
+
+    const maze: Maze = {
+        start,
+        end,
+        width: w,
+        height: h,
+        cells
+    }
 
     // Make borders
-    for (let row: number = 0; row < maze.rows; row++) {
-        for (const col of [0, maze.cols - 1]) {
-            make_wall(maze.nodes[row][col]);
+    for (let x = 0; x < w; x++) {
+        const top = make_pos(x, 0);
+        if (!pos_eq(top, maze.start) && !pos_eq(top, maze.end)) {
+            set_cell(WALL_CELL, top, maze);
+        }
+
+        const bottom = make_pos(x, h - 1);
+        if (!pos_eq(bottom, maze.start) && !pos_eq(bottom, maze.end)) {
+            set_cell(WALL_CELL, bottom, maze);
         }
     }
-    for (let col: number = 0; col < maze.cols; col++) {
-        for (const row of [0, maze.rows - 1]) {
-            make_wall(maze.nodes[row][col]);
-        }
+    for (let y = 0; y < h; y++) {
+        set_cell(WALL_CELL, make_pos(0, y), maze);
+        set_cell(WALL_CELL, make_pos(w - 1, y), maze);
     }
 
     // Divide within the borders
-    divide(maze, 1, maze.rows - 2, 1, maze.cols - 2, get_axis(maze.rows - 2, maze.cols - 2));
+    divide(maze, 1, h - 2, 1, w - 2, get_axis(h - 2, w - 2));
 
     return maze;
 }
 
 /**
- * Recursively divide grid into smaller sections, adding horizontal and vertical walls with passage openings,
+ * Recursively divide maze into smaller sections, adding horizontal and vertical walls with passage openings,
  * until the sections reach a minimum size.
- * @param grid - The grid to divide
+ * @param maze - The maze to divide
  * @param r1 - Starting row index of section
  * @param r2 - Ending row index of section
  * @param c1 - Starting column index of section
  * @param c2 - Ending column index of section
  * @param axis - The axis of the section to be divided
  */
-function divide(grid: Grid, r1: number, r2: number, c1: number, c2: number, axis: Axis): void {
+function divide(maze: Maze, r1: number, r2: number, c1: number, c2: number, axis: Axis): void {
     if (r2 - r1 < 2 || c2 - c1 < 2) return;  // Exit early if section reaches minimum size (variant)
 
     const walls: number[] = [];  // Possible walls
@@ -64,18 +72,20 @@ function divide(grid: Grid, r1: number, r2: number, c1: number, c2: number, axis
     // Create a horizontal or vertical wall with a passage
     for (let i: number = (axis === "H" ? c1 : r1); i <= (axis === "H" ? c2 : r2); i++) {
         if (i !== passage) {
-            const node: Node = axis === "H" ? grid.nodes[wall][i] : grid.nodes[i][wall];
-            make_wall(node);
+            const pos = axis === "H" ? make_pos(i, wall) : make_pos(wall, i);
+            if (!pos_eq(pos, maze.start) && !pos_eq(pos, maze.end)) {
+                set_cell(WALL_CELL, pos, maze);
+            }
         }
     }
 
-    // Recurse with updated boundaries and axes
+    // Recursively with updated boundaries and axes
     if (axis === "H") {
-        divide(grid, r1, wall - 1, c1, c2, get_axis(wall - r1, c2 - c1 + 1));
-        divide(grid, wall + 1, r2, c1, c2, get_axis(r2 - wall, c2 - c1 + 1));
+        divide(maze, r1, wall - 1, c1, c2, get_axis(wall - r1, c2 - c1 + 1));
+        divide(maze, wall + 1, r2, c1, c2, get_axis(r2 - wall, c2 - c1 + 1));
     } else {
-        divide(grid, r1, r2, c1, wall - 1, get_axis(r2 - r1 + 1, wall - c1));
-        divide(grid, r1, r2, wall + 1, c2, get_axis(r2 - r1 + 1, c2 - wall));
+        divide(maze, r1, r2, c1, wall - 1, get_axis(r2 - r1 + 1, wall - c1));
+        divide(maze, r1, r2, wall + 1, c2, get_axis(r2 - r1 + 1, c2 - wall));
     }
 }
 
@@ -92,12 +102,5 @@ function get_axis(height: number, width: number): Axis {
         return "V";
     } else {
         return Math.random() < 0.5 ? "H" : "V";
-    }
-}
-
-// Set isWall property of a node to true if not the start node or end node
-function make_wall(node: Node): void {
-    if (!node.isStart && !node.isEnd) {
-        node.isWall = true;
     }
 }
